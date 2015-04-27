@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Homework List</h1>
+    <script src="static/jquery.js"></script>
+    <script src="static/lodash.js"></script>
+    <script src="static/backbone.js"></script>
+    <script src="static/backbone.marionette.js"></script>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <script type="text/template" id="t">
+      <td><%- clas %></td><td><%- homework %></td><td><%- deadline %></td><td><button id="delete" class="pure-button">Delete</button>
+    </script>
+
+    <script type="text/template" id="comptemp">
+      Add new assignment: 
+      <br>
+      Class: <input id="newclass">
+      <br>
+      Assignment: <input id="newassignment">
+      <br>
+      Deadline (in hours): <input id="newdeadline">
+      <button class="pure-button" id="add">Add</button>
+      <table class="pure-table pure-table-bordered">
+	<thead>
+	  <tr><th>Class</th><th>Assignment</th><th>Deadline</th><th>Done?</th></tr>
+	</thead>
+	<tbody>
+	</tbody>
+      </table>
+    </script>
+
+    <table class="pure-table pure-table-bordered" id="homework">
+    </table>
+    <script src="static/app.js"></script>
+  </body>
+</html>
