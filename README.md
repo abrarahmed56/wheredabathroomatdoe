@@ -7,7 +7,7 @@ A crowd-sourced public utility rating and locator application for when you need 
 - Afterwards, improve UI and usability on website, and make optimizations/cleanup.
 
 ## Members
-Abrar Ahmed
-Eric Kolbusz
-Aaron Mortenson
-Chesley Tan
+**Abrar Ahmed**  
+**Aaron Mortenson**  
+**Chesley Tan**  
+**Eric Kolbusz**  
