@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, flash, redirect
 from pymongo import Connection
 import json, random
 from bson.objectid import ObjectId
 
 app = Flask(__name__)
+with open('key', 'r') as f:
+   app.secret_key = f.read().strip()
 conn = Connection()
 db = conn['c']
 
