@@ -22,6 +22,10 @@ def redirect_if_not_logged_in(func):
 def index():
     return render_template("index.html")
 
+@app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
+def geo():
+    return render_template("geo.html")
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     session ['username'] = None
