@@ -14,3 +14,13 @@ https://www.python.org/dev/peps/pep-0008/
 **Aaron Mortenson**  
 **Chesley Tan**  
 **Eric Kolbusz**  
+
+## Organization of the website
+- Home page will have a link to login if you are not logged in
+- If you are logged in, show personal locations/favorites
+- Have a link from the homepage (whether logged in or not) to browse popular locations
+- The search bar will be at the top of each page
+- After searching, a list of locations will appear
+  - Under each location, show the average rating, and a few of the most recent reviews
+- There will be a page for each location showing all the reviews, as well as pictures
+  - Also, show suggestions for other locations nearby
