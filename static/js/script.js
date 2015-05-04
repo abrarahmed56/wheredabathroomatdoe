@@ -6,13 +6,14 @@ var MARK = false;
 function initialize() {
     getPosition(SHOW);
     err = document.getElementById("error-div");//will use marionette
-    button = document.getElementById("b");
-    button.addEventListener('click',getPosition(MARK));
+    //button = document.getElementById("b");
+    //button.addEventListener('click',getPosition(MARK));
 }
 
-function getPosition(show) {
+function getPosition(show) {  
     if (navigator.geolocation) {
 	if (show) {
+	    console.log("page loaded");
             navigator.geolocation.getCurrentPosition(function(position) {
 		var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
 		var mapOptions = {
@@ -23,6 +24,7 @@ function getPosition(show) {
 	    }, showError);
 	    
 	} else {
+	    console.log("button pressed");
 	    navigator.geolocation.getCurrentPosition(function(position) {
 		var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
 		var marker = new google.maps.Marker({
