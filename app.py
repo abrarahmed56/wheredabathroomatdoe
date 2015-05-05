@@ -17,31 +17,31 @@ def redirect_if_not_logged_in(func):
         return func(*args, **kwargs)
     return inner
 
-@app.route("/")
+@app.route('/')
 @redirect_if_not_logged_in
 def index():
-    return render_template("index.html")
+    return render_template('index.html')
 
-@app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
+@app.route('/geo', methods=['GET', 'POST'])#geolocation almost not broken lmoa
 def geo():
-    return render_template("geo.html")
+    return render_template('geo.html')
 
-@app.route("/login", methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     session ['username'] = None
     # TODO use POST for login
-    submit = request.args.get("submit")
-    if submit == "Submit":
-        username = request.args.get("username")
-        password = request.args.get("password")
+    submit = request.args.get('submit')
+    if submit == 'Submit':
+        username = request.args.get('username')
+        password = request.args.get('password')
         does_account_exist = db.user_auth(username, password);
         if does_account_exist:
             session ['username'] = username
             return redirect(url_for('index'))
         flash ("Invalid Username or Password")
         return redirect(url_for('login'))
-    return render_template("login.html")
+    return render_template('login.html')
     
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.debug = True
-    app.run(host="0.0.0.0", port=1776)
+    app.run(host='0.0.0.0', port=1776)
