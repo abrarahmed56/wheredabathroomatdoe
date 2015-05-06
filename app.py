@@ -5,24 +5,29 @@ app = Flask(__name__)
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
 
-def redirect_if_not_logged_in(func):
-    @wraps(func)
-    def inner(*args, **kwargs):
-        if not session.has_key('username') or session['username'] == None:
-            flash ("You are not logged in!")
-            session.clear()
-            return redirect(url_for('login'))
-        else:
-            pass
-        return func(*args, **kwargs)
-    return inner
+def redirect_if_not_logged_in(target):
+    def wrap(func):
+       def inner(*args, **kwargs):
+          if not session.has_key('username') or session['username'] == None:
+             flash ("You are not logged in!")
+             session.clear()
+             return redirect(url_for(target))
+          else:
+             pass
+          return func(*args, **kwargs)
+       return inner
+    return wrap
 
-@app.route('/')
-@redirect_if_not_logged_in
+@app.route("/")
+@redirect_if_not_logged_in("welcome")
 def index():
     return render_template('index.html')
 
-@app.route('/geo', methods=['GET', 'POST'])#geolocation almost not broken lmoa
+@app.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
+
+@app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
     return render_template('geo.html')
 
