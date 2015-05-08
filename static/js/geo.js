@@ -5,9 +5,7 @@ var MARK = false;
 
 function initialize() {
     getPosition(SHOW);
-    err = document.getElementById("error-div");//will use marionette
-    //button = document.getElementById("b");
-    //button.addEventListener('click',getPosition(MARK));
+    err = document.getElementById("error-div");//do something about this
 }
 
 function getPosition(show) {
@@ -28,7 +26,7 @@ function getPosition(show) {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
                 var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
-		var img = 'static/img/bench.gif';
+		var img = document.getElementById("utilType").value;
                 var marker = new google.maps.Marker({
                     position: myLatlng,
                     map: map,
