@@ -28,9 +28,11 @@ function getPosition(show) {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
                 var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
+		var img = 'static/img/bench.gif';
                 var marker = new google.maps.Marker({
                     position: myLatlng,
-                    map: map
+                    map: map,
+		    icon: img
                 });
             }, showError);
         }
