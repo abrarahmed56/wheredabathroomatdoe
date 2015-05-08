@@ -37,6 +37,17 @@
     </div>	  
     <h1>wheredabathroomatdoe?!</h1>
     {% block bodycontent %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- If jQuery was not loaded from CDN, use the local version -->
+    <script>window.jQuery || document.write("<script src=\"{{ url_for('static',
+							   filename='js/jQuery/jquery-1.10.2.min.js') }}\"><\/script>")</script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script>window.jQuery.fn.modal || document.write('<script src="/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
+    <script src="{{ url_for('static', filename='js/material-design-bootstrap/material.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/material-design-bootstrap/ripples.min.js') }}"></script>
+    <script>$.material.init()</script>
+    {% block scripts %}
+    {% endblock scripts %}
     {% endblock bodycontent %}
   </body>
 </html>

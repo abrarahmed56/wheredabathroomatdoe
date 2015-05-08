@@ -7,26 +7,28 @@ with open('key', 'r') as f:
 
 def redirect_if_not_logged_in(target):
     def wrap(func):
+       @wraps(func)
        def inner(*args, **kwargs):
           if not session.has_key('username') or session['username'] == None:
              flash ("You are not logged in!")
              session.clear()
-             print "target: " + target
              return redirect(url_for(target))
           else:
              pass
           return func(*args, **kwargs)
        return inner
     return wrap
-@redirect_if_not_logged_in("welcome")
+
 @app.route("/")
+@redirect_if_not_logged_in("welcome")
 def index():
     return render_template('index.html')
+    #return "index"
 
 @app.route("/welcome")
 def welcome():
+    #return "welcome"
     return render_template('welcome.html')
-    #return "FUUUUUUUUUUUUUUUUUUUUUUUUU"
     
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
