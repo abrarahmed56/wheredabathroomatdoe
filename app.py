@@ -11,22 +11,23 @@ def redirect_if_not_logged_in(target):
           if not session.has_key('username') or session['username'] == None:
              flash ("You are not logged in!")
              session.clear()
+             print "target: " + target
              return redirect(url_for(target))
           else:
              pass
           return func(*args, **kwargs)
        return inner
     return wrap
-
-@app.route("/")
 @redirect_if_not_logged_in("welcome")
+@app.route("/")
 def index():
     return render_template('index.html')
 
 @app.route("/welcome")
 def welcome():
-    return render_template("welcome.html")
-
+    return render_template('welcome.html')
+    #return "FUUUUUUUUUUUUUUUUUUUUUUUUU"
+    
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
     return render_template('geo.html')
