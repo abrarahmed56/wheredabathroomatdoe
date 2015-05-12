@@ -3,19 +3,18 @@ import string
 from validate_email import validate_email
 from werkzeug.security import generate_password_hash, check_password_hash
 
+PASSWORD_VALID_CHARS = string.ascii_letters + string.digits + string.punctuation
 
 def is_valid_email(email):
     # TODO verify that email is not already in the database
     return validate_email(email)
 
 def is_valid_password(password):
-    valid_chars = string.ascii_letters + string.digits + string.punctuation
-    all_chars_valid = True
+    global PASSWORD_VALID_CHARS
     for char in password:
-        if char not in valid_chars:
-            all_chars_valid = False
-            break
-    return (len(password) > 8) and (len(password) < 50) and all_chars_valid
+        if char not in PASSWORD_VALID_CHARS:
+            return False
+    return 8 < len(password) < 50
     
 def hash_password(s):
     return generate_password_hash(s)
