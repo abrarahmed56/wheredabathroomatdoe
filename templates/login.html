@@ -1,18 +1,15 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  </head>
+{% extends "base.html" %}
+{% block bodycontent %}
   <body>
-    HELLO this is the login page!!!
-    <form >
+    Enter your credentials here.
+    <form method="POST">
       Username:
-      <input type="text" id="username"></input>
+      <input type="text" id="email" placeholder="your_awesome@email.com" required></input>
       <br>
       Password:
-      <input type="password" id="password"></input>
+      <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" required></input>
       <br>
       <input type="submit" value="Login" id="submit"></input>
     </form>
     <script></script>
-  </body>
-</html>
+{% endblock bodycontent %}

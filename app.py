@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from functools import wraps
+from validator import *
 
 app = Flask(__name__)
 with open('key', 'r') as f:
@@ -36,20 +37,24 @@ def geo():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    session ['username'] = None
+    session ['email'] = None
     # TODO use POST for login
-    submit = request.args.get('submit')
-    if submit == 'Submit':
-        username = request.args.get('username')
-        password = request.args.get('password')
-        does_account_exist = db.user_auth(username, password);
-        if does_account_exist:
-            session ['username'] = username
-            return redirect(url_for('index'))
-        flash ("Invalid Username or Password")
-        return redirect(url_for('login'))
+    if request.method=="POST" and request.form.has_key('password') \
+      and request.form.has_key('email'):
+       if not is_valid_email(request['email']):
+          flash("Good job.")
+       else:
+          flash("Bad job.")
+       if not is_valid_password(request['password']):
+          flash("Good job.")
+       else:
+          flash("Bad job.")
     return render_template('login.html')
-    
+
+@app.route('/about', methods=['GET', 'POST'])
+def about():
+   return render_template('about.html')
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=8000)

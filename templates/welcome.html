@@ -1,14 +1,12 @@
 {% extends "base.html" %}
-{% block headcontent %}
-{% endblock headcontent %}
 {% block navbar_left %}
 {% endblock navbar_left %}
 {% block navbar_right %}
-<li>Login</li>
-<li>About</li>
+<li><a href="{{ url_for('login') }}">Login</a></li>
+<li><a href="{{ url_for('about') }}">About</a></li>
 {% endblock navbar_right %}
 {% block bodycontent %}
-<div>I am chill -Abrar</div>
+<div>You gotta go when you gotta go.</div>
 {% block scripts %}
 {% endblock scripts %}
 {% endblock bodycontent %}
