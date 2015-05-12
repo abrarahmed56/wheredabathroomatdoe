@@ -45,3 +45,6 @@ https://www.python.org/dev/peps/pep-0008/
 - Reviews -> [String]
 - Rating -> Integer
 - Last updated date -> Date
+
+## Set up dependencies
+See `dependencies.md`  
