@@ -1,3 +1,8 @@
+# Swap files
+*~
+*.swp
+*.swo
+# Secret key!
 key
 # Byte-compiled / optimized / DLL files
 __pycache__/
