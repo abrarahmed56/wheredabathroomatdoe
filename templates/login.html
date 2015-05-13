@@ -4,15 +4,16 @@
 	    {% endblock login_link %}
 {% block bodycontent %}
   <body>
-    Enter your credentials here.
+    <p>Enter your credentials here</p>
     <form method="POST">
-      Username:
-      <input type="text" id="email" placeholder="your_awesome@email.com" required></input>
+      <label class="active" for="email">Username</label>
+      <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
       <br>
-      Password:
-      <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" required></input>
+      <label class="active" for="password">Password</label>
+      <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+      
       <br>
-      <input type="submit" value="Login" id="submit"></input>
+      <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
     </form>
     <script></script>
 {% endblock bodycontent %}
