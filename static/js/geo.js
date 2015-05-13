@@ -40,6 +40,14 @@ function getPosition(show) {
     }
 }
 
+function getNearbyUtils() {
+    //gets data of format: {1:["bench", 40.324342, 29.432423], 2: ["bathroom", 40.324564, 29.432948], etc...} and marks them
+}
+
+function markUtil(util) {
+    //marks utility. format of util: ["bench", 40.324342, 29.432423]
+}
+
 function showError(error) {
     switch(error.code) {
         case error.PERMISSION_DENIED:

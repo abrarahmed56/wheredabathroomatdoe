@@ -21,15 +21,17 @@
       <option value="static/img/fountain.gif">Water Fountain</option>
       <option value="static/img/bathroom.gif">Bathroom</option>
     </select>
-    <input type="button" id="b" value="Bench Spotted" onclick="getPosition(MARK);" />
+    <input type="button" id="b" value="Bench Spotted" onclick="getPosition(MARK);" class="btn green darken-3"/>
     <div id="map-canvas"></div>
     <div id="error-div"></div>
+    {% endblock bodycontent %}
     {% block scripts %}
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <!-- TO DO: load locally with slow connections -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
     <script src="static/js/geo.js"></script>
     {% endblock scripts %}
-    {% endblock bodycontent %}
+
+ 
 
 
     
