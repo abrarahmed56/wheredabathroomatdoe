@@ -7,44 +7,51 @@
   </head>
   <body>
     <div>
-      <div>
-	<a href="{{ url_for('index') }}">wheredabathroomatdoe</a>
-      </div>
-      <div>
-	<ul>
+      <nav>
+	<div class="nav-wrapper blue darken-3">
 	  {% block navbar_left %}
+	  <a href="{{ url_for('index') }}" class="brand-logo">wheredabathroomatdoe</a>
 	  {% endblock navbar_left %}
-	</ul>
-	<ul>
-	  {% block navbar_right %}
-	  {% endblock navbar_right %}
-	</ul>
-      </div>
+	  <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+	  <ul id="nav-mobile" class="right hide-on-med-and-down">
+	    {% block navbar_right %}
+	    <li><a href="{{ url_for('login') }}">Login</a></li>
+	    <li><a href="{{ url_for('about') }}">About</a></li>
+	    {% endblock navbar_right %}
+	  </ul>
+	  <ul class="side-nav" id="mobile-version">
+	    {{ self.navbar_right() }}
+	  </ul>
+	</div>
+      </nav>
     </div>
     <div id="flashed_messages">
       {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <ul class=flashes>
-	    {% for message in messages %}
-	      {{ message }}
-	    {% endfor %}
-          </ul>
-        {% endif %}
+      {% if messages %}
+      <ul class=flashes>
+	{% for message in messages %}
+	{{ message }}
+	{% endfor %}
+      </ul>
+      {% endif %}
       {% endwith %}
-    </div>	  
-    <h1>wheredabathroomatdoe?!</h1>
+    </div>	   
+    <div class="container">
+      <h1>wheredabathroomatdoe?!</h1>
     {% block bodycontent %}
     {% endblock bodycontent %}
+    </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- If jQuery was not loaded from CDN, use the local version -->
     <script>window.jQuery || document.write("<script src=\"{{ url_for('static',
 							   filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
-    <script src="static/js/lodash.js"></script>
-    <script src="static/js/backbone.js"></script>
-    <script src="static/js/backbone.marionette.js"></script>
-    {% block scripts %}
-    {% endblock scripts %}
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+      <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
+	<script src="static/js/lodash.js"></script>
+	<script src="static/js/backbone.js"></script>
+	<script src="static/js/backbone.marionette.js"></script>
+	<!--script>$(document).ready(function(){$(".button-collapse").sideNav();});</script-->
+	{% block scripts %}
+	{% endblock scripts %}
   </body>
 </html>
