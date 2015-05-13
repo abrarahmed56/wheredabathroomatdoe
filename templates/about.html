@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+{% block about_link %}
+<li class="active"><a href="{{ url_for('about') }}">About</a></li>
+{% endblock about_link %}
 {% block bodycontent %}
-This website was created by Abrar Ahmed, Eric Kolabjawo, Aaron Mortenson, and Chesley Tan in order to help people find public utilities. Whether you need water, a bench, or a bathroom, <b>wheredabathroomatdoe</b> will help you find it.
+<p>
+  This website was created by Abrar Ahmed, Eric Kolabjawo, Aaron Mortenson, and Chesley Tan in order to help people find public utilities. Whether you need water, a bench, or a bathroom, <b>wheredabathroomatdoe</b> will help you find it.
+</p>
+<script src="http://coindonationwidget.com/widget/coin.js"></script>
+<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+</script>
 {% endblock bodycontent %}

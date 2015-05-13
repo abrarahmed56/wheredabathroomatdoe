@@ -15,8 +15,12 @@
 	  <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
 	  <ul id="nav-mobile" class="right hide-on-med-and-down">
 	    {% block navbar_right %}
+	    {% block login_link %}
 	    <li><a href="{{ url_for('login') }}">Login</a></li>
+	    {% endblock login_link %}
+	    {% block about_link %}
 	    <li><a href="{{ url_for('about') }}">About</a></li>
+	    {% endblock about_link %}
 	    {% endblock navbar_right %}
 	  </ul>
 	  <ul class="side-nav" id="mobile-version">
@@ -33,13 +37,14 @@
 	{{ message }}
 	{% endfor %}
       </ul>
+
       {% endif %}
       {% endwith %}
     </div>	   
     <div class="container">
       <h1>wheredabathroomatdoe?!</h1>
-    {% block bodycontent %}
-    {% endblock bodycontent %}
+      {% block bodycontent %}
+      {% endblock bodycontent %}
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- If jQuery was not loaded from CDN, use the local version -->
@@ -47,10 +52,11 @@
 							   filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
       <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
-	<script src="static/js/lodash.js"></script>
+	<script src="static/js/lodash.js"></script><!--make url_for('static'...-->
 	<script src="static/js/backbone.js"></script>
 	<script src="static/js/backbone.marionette.js"></script>
-	<!--script>$(document).ready(function(){$(".button-collapse").sideNav();});</script-->
+	<script src="static/js/materialize.min.js"></script>
+	<script>$(document).ready(function(){$(".button-collapse").sideNav();});</script>
 	{% block scripts %}
 	{% endblock scripts %}
   </body>

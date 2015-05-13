@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+	    {% block login_link %}
+	    <li class="active"><a href="{{ url_for('login') }}">Login</a></li>
+	    {% endblock login_link %}
 {% block bodycontent %}
   <body>
     Enter your credentials here.
