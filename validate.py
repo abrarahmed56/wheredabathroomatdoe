@@ -1,8 +1,8 @@
 import string
 import re
 #from jeopardy.final_jeopardy import music as the_bae
-#from validate_email import validate_email
-#from werkzeug.security import generate_password_hash, check_password_hash
+from validate_email import validate_email
+from werkzeug.security import generate_password_hash, check_password_hash
 
 PASSWORD_VALID_CHARS = string.ascii_letters + string.digits + string.punctuation
 
