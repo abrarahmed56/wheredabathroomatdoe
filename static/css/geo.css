@@ -1,0 +1,14 @@
+body, html {
+    height: 100%;
+    margin: 0px;
+    padding: 0px
+}
+.container {
+    height: 100%;
+}
+#map-canvas {
+    height: 70%;
+    width: 100%;
+    margin: 0px;
+    padding: 0px
+}

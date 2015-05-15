@@ -1,21 +1,6 @@
 {% extends "base.html" %}
 {% block headcontent %}
-<style>
-  body, html {
-  height: 100%;
-  margin: 0px;
-  padding: 0px
-  }
-  .container {
-  height: 100%;
-  }
-  #map-canvas {
-  height: 70%;
-  width: 100%;
-  margin: 0px;
-  padding: 0px
-  }
-</style>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/geo.css') }}"/>
 {% endblock headcontent %}
 
 {% block bodycontent %}

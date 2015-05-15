@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from functools import wraps
-from validator import *
+from validate import *
 
 app = Flask(__name__)
 with open('key', 'r') as f:
