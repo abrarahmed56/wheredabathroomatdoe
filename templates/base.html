@@ -22,12 +22,12 @@
 	  <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
 	  <ul id="nav-mobile" class="right hide-on-med-and-down">
 	    {% block navbar_right %}
-	    {% block login_link %}
-	    <li><a href="{{ url_for('login') }}">Login</a></li>
-	    {% endblock login_link %}
 	    {% block about_link %}
 	    <li><a href="{{ url_for('about') }}">About</a></li>
 	    {% endblock about_link %}
+	    {% block login_link %}
+	    <li><a href="#login" class="modal-trigger">Login</a></li>
+	    {% endblock login_link %}
 	    {% endblock navbar_right %}
 	  </ul>
 	  <ul class="side-nav" id="mobile-version">
@@ -52,6 +52,41 @@
       {% block bodycontent %}
       {% endblock bodycontent %}
     </div>
+    <div id="login" class="modal">
+      <div class="modal-content">
+	<h4>Login</h4>
+	Need an account? register <a href="#register" class="modal-trigger">here.</a>
+	<form method="POST">
+	  <label class="active" for="email">Username</label>
+	  <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
+	  <br>
+	  <label class="active" for="password">Password</label>
+	  <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+	  <br>
+	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+	</form>
+      </div>
+    </div>
+
+    <div id="login" class="modal">
+      <div class="modal-content">
+	<h4>Register</h4>
+	Need an account? register <a href="#register" class="modal-trigger">here.</a>
+	<form method="POST">
+	  <label class="active" for="email1">Email</label>
+	  <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
+	  <br>
+	  <label class="active" for="email2">Confirm Email</label>
+	  <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
+	  <br>
+	  <label class="active" for="password">Password</label>
+	  <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+	  <br>
+	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+	</form>
+      </div>
+    </div>
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- If jQuery was not loaded from CDN, use the local version -->
     <script>window.jQuery || document.write("<script src=\"{{ url_for('static',
@@ -62,7 +97,12 @@
 	<script src="static/js/backbone.js"></script>
 	<script src="static/js/backbone.marionette.js"></script>
 	<script src="static/js/materialize.min.js"></script>
-	<script>$(document).ready(function(){$(".button-collapse").sideNav();});</script>
+	<script><!--make this a seperate file -->
+	  $(document).ready(function(){
+	  $(".button-collapse").sideNav();
+	  $(".modal-trigger").leanModal();
+	  });
+	</script>
 	{% block scripts %}
 	{% endblock scripts %}
   </body>

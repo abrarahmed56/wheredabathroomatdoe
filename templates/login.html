@@ -3,7 +3,6 @@
 	    <li class="active"><a href="{{ url_for('login') }}">Login</a></li>
 	    {% endblock login_link %}
 {% block bodycontent %}
-  <body>
     <p>Enter your credentials here</p>
     <form method="POST">
       <label class="active" for="email">Username</label>
@@ -15,5 +14,4 @@
       <br>
       <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
     </form>
-    <script></script>
 {% endblock bodycontent %}
