@@ -25,6 +25,9 @@
 	    {% block about_link %}
 	    <li><a href="{{ url_for('about') }}">About</a></li>
 	    {% endblock about_link %}
+	    {% block donate_link %}
+	    <li><a href="{{ url_for('donate') }}">Donate</a></li>
+	    {% endblock donate_link %}
 	    {% block login_link %}
 	    <li><a href="#login" class="modal-trigger">Login</a></li>
 	    {% endblock login_link %}
