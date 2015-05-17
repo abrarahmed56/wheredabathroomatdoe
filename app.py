@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from functools import wraps
 from validate import *
+import psycopg2
+import sys
 
 app = Flask(__name__)
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
+
+conn = psycopg2.connect("dbname='users' user='softdev'")
+c = conn.cursor()
 
 def redirect_if_not_logged_in(target):
     def wrap(func):
@@ -28,11 +33,47 @@ def index():
 @app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
     if request.method=="POST":
-        if request.form.has_key("login"):
-            flash("Login successful")
         if request.form.has_key("register"):
-            flash("Registration successful")
-        session['email'] = request.form["email"]
+            conn = None
+            try:
+                conn = psycopg2.connect("dbname='users' user='softdev'")
+                c = conn.cursor()
+                c.execute("SELECT * FROM Users")
+                email = request.form['email']
+                password = request.form['password']
+                c.execute("SELECT 1 FROM Users WHERE Email = '" + email + "'")
+                if c.fetchall() == []:
+                    c.execute("INSERT INTO Users VALUES('" + email + "', '" + password + "')")
+                    conn.commit()
+                    flash("Registration successful")
+                else:
+                   flash("Username is take")
+            except psycopg2.DatabaseError, e:
+                print 'Error %s' % e
+                sys.exit(1)
+            finally:
+                if conn:
+                    conn.close()
+        if request.form.has_key("login"):
+            conn = None
+            try:
+                conn = psycopg2.connect("dbname='users' user='softdev'")
+                c = conn.cursor()
+                c.execute("SELECT * FROM Users")
+                email = request.form['email']
+                password = request.form['password']
+                print c.execute("SELECT * FROM Users WHERE Email = '" + email + "' AND Password = '" + password + "'")
+                if c.fetchall() == []:
+                    flash("Incorrect login information")
+                else:
+                    flash("Login successful")
+                    session['email'] = request.form["email"]
+            except psycopg2.DatabaseError, e:
+                print 'Error %s' % e
+                sys.exit(1)
+            finally:
+                if conn:
+                    conn.close()
         return redirect(url_for("index"))
         #return "loggedin"
     #return "welcome"
@@ -45,7 +86,6 @@ def geo():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     session ['email'] = None
-    # TODO use POST for login
     if request.method=="POST" and request.form.has_key('password') \
       and request.form.has_key('email'):
        if not is_valid_email(request['email']):
