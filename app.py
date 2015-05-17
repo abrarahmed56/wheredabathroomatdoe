@@ -10,7 +10,7 @@ def redirect_if_not_logged_in(target):
     def wrap(func):
        @wraps(func)
        def inner(*args, **kwargs):
-          if not session.has_key('username') or session['username'] == None:
+          if not session.has_key('email') or session['email'] == None:
              flash ("You are not logged in!")
              session.clear()
              return redirect(url_for(target))
@@ -24,13 +24,20 @@ def redirect_if_not_logged_in(target):
 @redirect_if_not_logged_in("welcome")
 def index():
     return render_template('index.html')
-    #return "index"
 
-@app.route("/welcome")
+@app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
+    if request.method=="POST":
+        if request.form.has_key("login"):
+            flash("Login successful")
+        if request.form.has_key("register"):
+            flash("Registration successful")
+        session['email'] = request.form["email"]
+        return redirect(url_for("index"))
+        #return "loggedin"
     #return "welcome"
     return render_template('welcome.html')
-    
+
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
     return render_template('geo.html')
@@ -51,9 +58,14 @@ def login():
           flash("Bad job.")
     return render_template('login.html')
 
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
 @app.route('/about', methods=['GET', 'POST'])
 def about():
-   return render_template('about.html')
+    return render_template('about.html')
 
 if __name__ == '__main__':
     app.debug = True

@@ -1,0 +1,17 @@
+{% extends "base.html" }
+	    {% block login_link %}
+	    <li class="active"><a href="{{ url_for('login') }}">Login</a></li>
+	    {% endblock login_link %}
+{% block bodycontent %}
+    <p>Enter your credentials here</p>
+    <form method="POST">
+      <label class="active" for="email">Username</label>
+      <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
+      <br>
+      <label class="active" for="password">Password</label>
+      <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+      
+      <br>
+      <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+    </form>
+{% endblock bodycontent %}

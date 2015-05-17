@@ -57,17 +57,33 @@
 	<h4>Login</h4>
 	Need an account? register <a href="#register" class="modal-trigger">here.</a>
 	<form method="POST">
+	  <input type="hidden" name="login">
 	  <label class="active" for="email">Username</label>
-	  <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
+	  <input type="text" id="email" name="email" placeholder="your_awesome@email.com" class="white" required></input>
 	  <br>
 	  <label class="active" for="password">Password</label>
-	  <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+	  <input type="password" id="password" name="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
 	  <br>
 	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
 	</form>
       </div>
     </div>
-
+    <div id="register" class="modal">
+      <div class="modal-content">
+	<h4>Register</h4>
+	<form method="POST">
+	  <input type="hidden" name="register">
+	  <label class="active" for="email">Username</label>
+	  <input type="text" id="email" name="email" placeholder="your_awesome@email.com" class="white" required></input>
+	  <br>
+	  <label class="active" for="password">Password</label>
+	  <input type="password" id="password" name="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+	  <br>
+	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+	</form>
+      </div>
+    </div>
+    
     <div id="login" class="modal">
       <div class="modal-content">
 	<h4>Register</h4>
