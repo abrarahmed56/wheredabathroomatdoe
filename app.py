@@ -68,6 +68,10 @@ def logout():
 def about():
     return render_template('about.html')
 
+@app.route('/donate', methods=['GET', 'POST'])
+def donate():
+    return render_template('donate.html')
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
