@@ -28,16 +28,25 @@ def index():
 
 @app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
+    print "0"
     if request.method=="POST":
-        email = request.form['email']
+        print "other 1"
+        print request.form
+        email1 = request.form['email1']
+        email2 = request.form['email2']
+        if email1 != email2:
+            flash("Please enter the same email")
         password = request.form['password']
+        print "1"
         if request.form.has_key("register"):
-            dbhelper.auth("register", email, password)
+            dbhelper.auth("register", email1, password)
+            print "2"
         if request.form.has_key("login"):
-            dbhelper.auth("login", email, password)
+            dbhelper.auth("login", email2, password)
+            print "3"
         return redirect(url_for("index"))
         #return "loggedin"
-    #return "welcome"
+    print "4"
     return render_template('welcome.html')
 
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
