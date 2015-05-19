@@ -12,3 +12,6 @@ body, html {
     margin: 0px;
     padding: 0px
 }
+.select-dropdown {
+    text-indent: 10px
+}

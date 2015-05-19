@@ -2,12 +2,13 @@
 <html>
   <head>
     <style>
-    #logo {
-    padding-left: 10px;
+      #logo {
+    text-indent: 55px;
     font-weight: bold;
     padding-right: 10px;
+    padding-left: 10px
     }
-    </style>
+    </style><!--put this in a seperate stylesheet file-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/materialize.min.css') }}"></link>
     {% block headcontent %}
     {% endblock headcontent %}
