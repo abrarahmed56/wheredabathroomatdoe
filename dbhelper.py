@@ -30,3 +30,32 @@ def auth(type, email, password):
         if conn:
             conn.close()
 
+def addPlace(name, location):
+    conn = None
+    try:
+        conn = psycopg2.connect("dbname='users' user='softdev'")
+        c = conn.cursor()
+        c.execute("INSERT INTO Places VALUES('" + name + "', '" + location + "', 0)")
+        conn.commit()
+        flash("Location added to map")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+        sys.exit(1)
+    finally:
+        if conn:
+            conn.close()
+
+def removePlace(name, location):
+    conn = None
+    try:
+        conn = psycopg2.connect("dbname='users' user='softdev'")
+        c = conn.cursor()
+        c.execute("DELETE FROM Places WHERE Name = '" + name + "' AND Location = '" + location + "'")
+        conn.commit()
+        flash("Location added to map")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+        sys.exit(1)
+    finally:
+        if conn:
+            conn.close()
