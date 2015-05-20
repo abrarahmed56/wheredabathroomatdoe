@@ -14,5 +14,6 @@ The PostgreSQL client by default tries to connect to a database with the same  n
 `sudo -u postgres createdb $USER`  
 Now we can connect to the database with: `psql` and create a new database: `create database userdb;`  
 
-#Install validate_email Python package
+#Install required Python packages
 `pip install validate_email`  
+`pip install psycopg2`
