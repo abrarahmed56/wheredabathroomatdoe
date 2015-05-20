@@ -30,7 +30,18 @@ if ("places",) in tables_list:
     except:
         print "fail"
 
+if ("reviews",) in tables_list:
+    try:
+        #next two lines show previous contents in table Places
+        c.execute("SELECT * FROM Reviews")
+        print c.fetchall()
+        #delete everything in Places table
+        c.execute("DROP TABLE Reviews")
+    except:
+        print "fail"
+
 #create new Users and Places table
 c.execute("CREATE TABLE Users (Email TEXT, Password TEXT)")
-c.execute("CREATE TABLE Places (Name TEXT, Location TEXT, Favorites INT)")
+c.execute("CREATE TABLE Places (ID INT, Name TEXT, LocationX DOUBLE PRECISION, LocationY DOUBLE PRECISION, Favorites INT)")
+c.execute("CREATE TABLE Reviews (ID INT, Username TEXT, Rating INT, Review TEXT)")
 conn.commit()

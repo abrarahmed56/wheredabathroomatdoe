@@ -32,10 +32,7 @@ def welcome():
     if request.method=="POST":
         print "other 1"
         print request.form
-        email1 = request.form['email1']
-        email2 = request.form['email2']
-        if email1 != email2:
-            flash("Please enter the same email")
+        email = request.form['email']
         password = request.form['password']
         print "1"
         if request.form.has_key("register"):

@@ -81,7 +81,7 @@
 	  <input type="text" id="email1" name="email1" placeholder="your_awesome@email.com" class="white" required></input>
 	  <br>
 	  <label class="active" for="email2">Confirm Email</label>
-	  <input type="text" id="email2" name="email2" placeholder="your_awesome@email.com" class="white" required></input>
+	  <input type="text" id="email2" name="email2" placeholder="your_awesome@email.com" class="white" onblur="matchEmails()" required></input>
 	  <br>
 	  <label class="active" for="password">Password</label>
 	  <input type="password" id="password" name="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
@@ -117,6 +117,7 @@
 	<script src="static/js/backbone.js"></script>
 	<script src="static/js/backbone.marionette.js"></script>
 	<script src="static/js/materialize.min.js"></script>
+	<script src="static/js/script.js"></script>
 	<script><!--make this a seperate file -->
 	  $(document).ready(function(){
 	  $(".button-collapse").sideNav();
