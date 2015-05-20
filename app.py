@@ -12,8 +12,8 @@ def redirect_if_not_logged_in(target):
        @wraps(func)
        def inner(*args, **kwargs):
           if not session.has_key('email') or session['email'] == None:
-             flash ("You are not logged in!")
-             session.clear()
+             #flash ("You are not logged in!")
+             #session.clear()
              return redirect(url_for(target))
           else:
              pass
@@ -32,14 +32,16 @@ def welcome():
     if request.method=="POST":
         print "other 1"
         print request.form
-        email = request.form['email']
-        password = request.form['password']
         print "1"
         if request.form.has_key("register"):
-            dbhelper.auth("register", email1, password)
+            email = request.form['registerEmail1']
+            password = request.form['registerPassword']
+            dbhelper.auth("register", email, password)
             print "2"
         if request.form.has_key("login"):
-            dbhelper.auth("login", email2, password)
+            email = request.form['loginEmail']
+            password = request.form['loginPassword']
+            dbhelper.auth("login", email, password)
             print "3"
         return redirect(url_for("index"))
         #return "loggedin"

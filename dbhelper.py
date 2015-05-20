@@ -13,14 +13,18 @@ def auth(type, email, password):
             if c.fetchall() == []:
                 c.execute("INSERT INTO Users VALUES('" + email + "', '" + password + "')")
                 conn.commit()
+                print "Registration successful"
                 flash("Registration successful")
             else:
+                print "Username is take"
                 flash("Username is take")
         elif type=="login":
             print c.execute("SELECT * FROM Users WHERE Email = '" + email + "' AND Password = '" + password + "'")
             if c.fetchall() == []:
+                print "Incorrect login information"
                 flash("Incorrect login information")
             else:
+                print "Login successful"
                 flash("Login successful")
                 session['email'] = email
     except psycopg2.DatabaseError, e:
@@ -37,6 +41,7 @@ def addPlace(name, location):
         c = conn.cursor()
         c.execute("INSERT INTO Places VALUES('" + name + "', '" + location + "', 0)")
         conn.commit()
+        print "Location added to map"
         flash("Location added to map")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -52,7 +57,8 @@ def removePlace(name, location):
         c = conn.cursor()
         c.execute("DELETE FROM Places WHERE Name = '" + name + "' AND Location = '" + location + "'")
         conn.commit()
-        flash("Location added to map")
+        print "Location removed from map"
+        flash("Location removed from map")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
         sys.exit(1)
