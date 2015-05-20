@@ -1,8 +1,15 @@
 {% extends "base.html" %}
+{% block navbar_right %}
+    {% include 'about_link.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'login_link.html' %}
+{% endblock navbar_right %}
 {% block bodycontent %}
-<h1>wheredabathroomatdoe?!</h1><!--make register page work-->
-<h4><a href="#register" class="modal-trigger">Register now.</a></h4>
-<div>You gotta go when you gotta go.</div>
+{% include 'login.html' %}
+{% include 'register.html' %}
+<h1 class="center-text">wheredabathroomatdoe?!</h1>
+<h6 class="center-text">You gotta go when you gotta go.</h6>
+<h4 class="center-text"><a href="#register" class="modal-trigger">Register now.</a></h4>
 {% block scripts %}
 {% endblock scripts %}
 {% endblock bodycontent %}

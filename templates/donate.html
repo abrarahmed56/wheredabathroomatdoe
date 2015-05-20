@@ -1,94 +1,99 @@
 {% extends "base.html" %}
-{% block donate_link %}
-<li class="active"><a href="{{ url_for('donate') }}">Donate</a></li>
-{% endblock donate_link %}
+{% block navbar_right %}
+    {% include 'about_link.html' %}
+    {% include 'donate_link_active.html' %}
+    {% include 'login_link.html' %}
+{% endblock navbar_right %}
 {% block bodycontent %}
+{% include 'login.html' %}
+{% include 'register.html' %}
 <h2>GOODNITE SWEET PRINSE</h2>
+<!-- TODO FIXME this page breaks the modal for login/register -->
 <table>
-<tr>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-</tr>
-<tr>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-</tr>
-<tr>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-</tr>
-<tr>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-</tr>
-<tr>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-<td><script src="http://coindonationwidget.com/widget/coin.js"></script>
-<script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
-</script></td>
-</tr>
+    <tr>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+    </tr>
+    <tr>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+    </tr>
+    <tr>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+    </tr>
+    <tr>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+    </tr>
+    <tr>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+        <td><script src="http://coindonationwidget.com/widget/coin.js"></script>
+            <script>CoinWidgetCom.go({wallet_address:"9vzJXw2zmKrJvDWvsNZdFPmgY6x2n5ySUr",currency:"dogecoin",counter:"amount",language:"en",decimals:2,lbl_amount:"DOGE"});
+        </script></td>
+    </tr>
 </table>
 {% endblock bodycontent %}

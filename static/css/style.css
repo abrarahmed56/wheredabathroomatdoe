@@ -1,0 +1,20 @@
+#logo {
+    text-indent: 55px;
+    font-weight: bold;
+    padding-right: 10px;
+    padding-left: 10px
+}
+.center-text {
+    text-align: center;
+}
+
+.center-all {
+    margin: 0 auto;
+    text-align: center;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    padding-left: 10px;
+}

@@ -1,8 +1,12 @@
 {% extends "base.html" %}
-{% block about_link %}
-<li class="active"><a href="{{ url_for('about') }}">About</a></li>
-{% endblock about_link %}
+{% block navbar_right %}
+    {% include 'about_link_active.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'login_link.html' %}
+{% endblock navbar_right %}
 {% block bodycontent %}
+{% include 'login.html' %}
+{% include 'register.html' %}
 <h1>wheredabathroomatdoe?!</h1>
 <p>
   This website was created by Abrar Ahmed, Eric Kolabjawo, Aaron Mortenson, and Chesley Tan in order to help people find public utilities. Whether you need water, a bench, or a bathroom, <b>wheredabathroomatdoe</b> will help you find it.

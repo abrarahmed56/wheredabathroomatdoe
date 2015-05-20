@@ -1,130 +1,63 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      #logo {
-    text-indent: 55px;
-    font-weight: bold;
-    padding-right: 10px;
-    padding-left: 10px
-    }
-    </style><!--put this in a seperate stylesheet file-->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/materialize.min.css') }}"></link>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}"></link>
     {% block headcontent %}
     {% endblock headcontent %}
   </head>
   <body class="blue-grey lighten-4">
     <div>
-      <nav>
-	<div class="nav-wrapper green z-depth-1">
-	  {% block navbar_left %}
-	  <a href="{{ url_for('index') }}" class="brand-logo" id="logo">WhereDaBathroomAtDoe?!</a>
-	  {% endblock navbar_left %}
-	  <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-	  <ul id="nav-mobile" class="right hide-on-med-and-down">
-	    {% block navbar_right %}
-	    {% block about_link %}
-	    <li><a href="{{ url_for('about') }}">About</a></li>
-	    {% endblock about_link %}
-	    {% block donate_link %}
-	    <li><a href="{{ url_for('donate') }}">Donate</a></li>
-	    {% endblock donate_link %}
-	    {% block login_link %}
-	    <li><a href="#login" class="modal-trigger">Login</a></li>
-	    {% endblock login_link %}
-	    {% endblock navbar_right %}
-	  </ul>
-	  <ul class="side-nav" id="mobile-version">
-	    {{ self.navbar_right() }}
-	  </ul>
-	</div>
-      </nav>
+        <nav>
+            <div class="nav-wrapper green z-depth-1">
+                {% block navbar_left %}
+                <a href="{{ url_for('index') }}" class="brand-logo" id="logo">WhereDaBathroomAtDoe?!</a>
+                {% endblock navbar_left %}
+                <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+                <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    {% block navbar_right %}
+                    {% endblock navbar_right %}
+                </ul>
+                <ul class="side-nav" id="mobile-version">
+                    {{ self.navbar_right() }}
+                </ul>
+            </div>
+        </nav>
     </div>
     <div id="flashed_messages">
       {% with messages = get_flashed_messages() %}
-      {% if messages %}
-      <ul class=flashes>
-	{% for message in messages %}
-	{{ message }}
-	{% endfor %}
-      </ul>
-
-      {% endif %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </ul>
+        {% endif %}
       {% endwith %}
-    </div>	   
+    </div>
     <div class="container">
       {% block bodycontent %}
       {% endblock bodycontent %}
     </div>
-    <div id="login" class="modal">
-      <div class="modal-content">
-	<h4>Login</h4>
-	Need an account? register <a href="#register" class="modal-trigger">here.</a>
-	<form method="POST">
-	  <input type="hidden" name="login">
-	  <label class="active" for="email">Username</label>
-	  <input type="text" id="loginEmail" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
-	  <br>
-	  <label class="active" for="password">Password</label>
-	  <input type="password" id="loginPassword" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
-	  <br>
-	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
-	</form>
-      </div>
-    </div>
-    <div id="register" class="modal">
-      <div class="modal-content">
-	<h4>Register</h4>
-	<form method="POST" onsubmit="return matchEmails()">
-	  <input type="hidden" name="register">
-	  <label class="active" for="email1">Email</label>
-	  <input type="text" id="registerEmail1" name="registerEmail1" placeholder="your_awesome@email.com" class="white" required></input>
-	  <br>
-	  <label class="active" for="email2">Confirm Email</label>
-	  <input type="text" id="registerEmail2" name="registerEmail2" placeholder="your_awesome@email.com" class="white" required></input>
-	  <br>
-	  <label class="active" for="password">Password</label>
-	  <input type="password" id="registerPassword" name="registerPassword" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
-	  <br>
-	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
-	</form>
-      </div>
-    </div>
-    
-    <div id="login" class="modal">
-      <div class="modal-content">
-	<h4>Login</h4>
-	Need an account? register <a href="#register" class="modal-trigger">here.</a>
-	<form method="POST">
-	  <label class="active" for="email">Email</label>
-	  <input type="text" id="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
-	  <br>
-	  <label class="active" for="password">Password</label>
-	  <input type="password" id="loginPassword" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
-	  <br>
-	  <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
-	</form>
-      </div>
-    </div>
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- If jQuery was not loaded from CDN, use the local version -->
     <script>window.jQuery || document.write("<script src=\"{{ url_for('static',
-							   filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
-      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-      <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
-	<script src="static/js/lodash.js"></script><!--make url_for('static'...-->
-	<script src="static/js/backbone.js"></script>
-	<script src="static/js/backbone.marionette.js"></script>
-	<script src="static/js/materialize.min.js"></script>
-	<script src="static/js/script.js"></script>
-	<script><!--make this a seperate file -->
-	  $(document).ready(function(){
-	  $(".button-collapse").sideNav();
-	  $(".modal-trigger").leanModal();
-	  });
-	</script>
-	{% block scripts %}
-	{% endblock scripts %}
+filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
+    <script src="static/js/lodash.js"></script><!--make url_for('static'...-->
+    <script src="static/js/backbone.js"></script>
+    <script src="static/js/backbone.marionette.js"></script>
+    <script src="static/js/materialize.min.js"></script>
+    <script src="static/js/script.js"></script>
+    <script><!--make this a seperate file -->
+      $(document).ready(function(){
+      $(".button-collapse").sideNav();
+      $(".modal-trigger").leanModal();
+      });
+    </script>
+    {% block scripts %}
+    {% endblock scripts %}
   </body>
 </html>

@@ -1,17 +1,16 @@
-{% extends "base.html" %}
-	    {% block login_link %}
-	    <li class="active"><a href="{{ url_for('login') }}">Login</a></li>
-	    {% endblock login_link %}
-{% block bodycontent %}
-    <p>Enter your credentials here</p>
-    <form method="POST">
-      <label class="active" for="email">Username</label>
-      <input type="text" id="email" placeholder="your_awesome@email.com" class="white" required></input>
-      <br>
-      <label class="active" for="password">Password</label>
-      <input type="password" id="password" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
-      
-      <br>
-      <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
-    </form>
-{% endblock bodycontent %}
+<div id="login" class="modal">
+    <div class="modal-content">
+        <h4>Login</h4>
+        Need an account? Register <a href="#register" class="modal-trigger">here.</a>
+        <form method="POST">
+            <input type="hidden" name="login">
+            <label class="active" for="email">Username</label>
+            <input type="text" id="loginEmail" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
+            <br>
+            <label class="active" for="password">Password</label>
+            <input type="password" id="loginPassword" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{6,50}" class="white" required></input>
+            <br>
+            <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+        </form>
+    </div>
+</div>
