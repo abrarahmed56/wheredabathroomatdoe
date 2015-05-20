@@ -7,3 +7,15 @@ var matchEmails = function() {
     }
     return true;
 }
+
+var showFlashes = function() {
+    for (var i = 0; i < flashed_messages.length; ++i) {
+	Materialize.toast(flashed_messages[i], 4000);
+    }
+}
+
+$(document).ready(function() {
+    $(".button-collapse").sideNav();
+    $(".modal-trigger").leanModal();
+    showFlashes();
+});

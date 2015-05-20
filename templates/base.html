@@ -27,11 +27,12 @@
     <div id="flashed_messages">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class=flashes>
-                {% for message in messages %}
-                {{ message }}
-                {% endfor %}
-            </ul>
+          <script>
+	    var flashed_messages = [];
+            {% for message in messages %}
+            flashed_messages.push("{{ message }}");
+            {% endfor %}
+          </script>
         {% endif %}
       {% endwith %}
     </div>
@@ -51,12 +52,6 @@ filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
     <script src="static/js/backbone.marionette.js"></script>
     <script src="static/js/materialize.min.js"></script>
     <script src="static/js/script.js"></script>
-    <script><!--make this a seperate file -->
-      $(document).ready(function(){
-      $(".button-collapse").sideNav();
-      $(".modal-trigger").leanModal();
-      });
-    </script>
     {% block scripts %}
     {% endblock scripts %}
   </body>
