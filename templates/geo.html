@@ -2,8 +2,15 @@
 {% block headcontent %}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/geo.css') }}"/>
 {% endblock headcontent %}
-
+{% block navbar_right %}
+    {% include 'geo_link_active.html' %}
+    {% include 'about_link.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'login_link.html' %}
+{% endblock navbar_right %}
 {% block bodycontent %}
+{% include 'login.html' %}
+{% include 'register.html' %}
 <div class="row">
   <form>
     <div class="input-field col s6">

@@ -2,7 +2,9 @@
 {% block navbar_left %}
 {% endblock navbar_left %}
 {% block navbar_right %}
-{% include 'logout_link.html' %}
+    {% include 'geo_link.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'logout_link.html' %}
 {% endblock navbar_right %}
 {% block bodycontent %}
 {% include 'logout.html' %}
