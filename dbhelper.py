@@ -2,7 +2,7 @@ import psycopg2
 import sys
 from flask import flash, session
 
-def auth(type, email, password):
+def auth(type, email, password, phone=None):
     conn = None
     try:
         conn = psycopg2.connect("dbname='users' user='softdev'")
@@ -11,7 +11,7 @@ def auth(type, email, password):
         if type=="register":
             c.execute("SELECT 1 FROM Users WHERE Email = '" + email + "'")
             if c.fetchall() == []:
-                c.execute("INSERT INTO Users VALUES('" + email + "', '" + password + "')")
+                c.execute("INSERT INTO Users VALUES('" + email + "', '" + password + "', '" + phone + "')")
                 conn.commit()
                 print "Registration successful"
                 flash("Registration successful")

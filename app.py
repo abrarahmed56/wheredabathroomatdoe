@@ -38,7 +38,8 @@ def welcome():
         if request.form.has_key("register"):
             email = request.form['registerEmail1']
             password = request.form['registerPassword']
-            dbhelper.auth("register", email, password)
+            phone = request.form['registerPhone']
+            dbhelper.auth("register", email, password, phone)
             print "2"
         if request.form.has_key("login"):
             email = request.form['loginEmail']
