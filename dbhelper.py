@@ -29,7 +29,6 @@ def auth(type, email, password, phone=None):
                 session['email'] = email
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
-        sys.exit(1)
     finally:
         if conn:
             conn.close()
@@ -45,7 +44,6 @@ def addPlace(name, location):
         flash("Location added to map")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
-        sys.exit(1)
     finally:
         if conn:
             conn.close()
@@ -61,7 +59,6 @@ def removePlace(name, location):
         flash("Location removed from map")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
-        sys.exit(1)
     finally:
         if conn:
             conn.close()
