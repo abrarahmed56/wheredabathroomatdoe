@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from functools import wraps
 from validate import *
-#import dbhelper
+import dbhelper
 
 app = Flask(__name__)
 with open('key', 'r') as f:
@@ -24,10 +24,12 @@ def redirect_if_not_logged_in(target):
 @app.route("/")
 @redirect_if_not_logged_in("welcome")
 def index():
-    return render_template('index.html')
+    loggedin = session.has_key("email")
+    return render_template('index.html', loggedin=True)
 
 @app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
+    loggedin = session.has_key("email")
     print "0"
     if request.method=="POST":
         print "other 1"
@@ -46,14 +48,16 @@ def welcome():
         return redirect(url_for("index"))
         #return "loggedin"
     print "4"
-    return render_template('welcome.html')
+    return render_template('welcome.html', loggedin=loggedin)
 
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
-    return render_template('geo.html')
+    loggedin = session.has_key("email")
+    return render_template('geo.html', loggedin)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    loggedin = session.has_key("email")
     session ['email'] = None
     if request.method=="POST" and request.form.has_key('password') \
       and request.form.has_key('email'):
@@ -65,7 +69,7 @@ def login():
           flash("Good job.")
        else:
           flash("Bad job.")
-    return render_template('login.html')
+    return render_template('login.html', loggedin=loggedin)
 
 @app.route('/logout')
 def logout():
@@ -74,11 +78,13 @@ def logout():
 
 @app.route('/about', methods=['GET', 'POST'])
 def about():
-    return render_template('about.html')
+    loggedin = session.has_key("email")
+    return render_template('about.html', loggedin=loggedin)
 
 @app.route('/donate', methods=['GET', 'POST'])
 def donate():
-    return render_template('donate.html')
+    loggedin = session.has_key("email")
+    return render_template('donate.html', loggedin=loggedin)
 
 if __name__ == '__main__':
     app.debug = True
