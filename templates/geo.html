@@ -3,14 +3,21 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/geo.css') }}"/>
 {% endblock headcontent %}
 {% block navbar_right %}
-    {% include 'geo_link_active.html' %}
-    {% include 'about_link.html' %}
-    {% include 'donate_link.html' %}
-    {% include 'login_link.html' %}
+    {% if loggedin %}
+        {% include 'geo_link_active.html' %}
+        {% include 'donate_link.html' %}
+        {% include 'logout_link.html' %}
+    {% else %}
+        {% include 'geo_link_active.html' %}
+        {% include 'about_link.html' %}
+        {% include 'donate_link.html' %}
+        {% include 'login_link.html' %}
+   {% endif %}
 {% endblock navbar_right %}
 {% block bodycontent %}
 {% include 'login.html' %}
 {% include 'register.html' %}
+{% if loggedin %}
 <div class="row">
   <form>
     <div class="input-field col s6">
@@ -26,6 +33,7 @@
     </div>
   </form>
 </div>
+{% endif %}
 <div id="map-canvas"></div>
 {% endblock bodycontent %}
 {% block scripts %}

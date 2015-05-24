@@ -21,8 +21,7 @@ function getPosition(show) {
                 }
                 map = new google.maps.Map($('#map-canvas')[0], mapOptions);
 		getNearbyUtils();
-            }, showError);
-	    
+            }, showError);	    
         }
         else {
             console.log("button pressed");

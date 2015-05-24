@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 {% block navbar_right %}
-    {% include 'geo_link.html' %}
-    {% include 'about_link_active.html' %}
-    {% include 'donate_link.html' %}
-    {% include 'login_link.html' %}
+    {% if loggedin %}
+        {% include 'geo_link.html' %}
+        {% include 'donate_link.html' %}
+        {% include 'logout_link.html' %}
+    {% else %}
+        {% include 'geo_link_.html' %}
+        {% include 'about_link_active.html' %}
+        {% include 'donate_link.html' %}
+        {% include 'login_link.html' %}
+   {% endif %}
 {% endblock navbar_right %}
 {% block bodycontent %}
 {% include 'login.html' %}
