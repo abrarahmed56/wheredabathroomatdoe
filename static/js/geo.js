@@ -14,7 +14,7 @@ function getPosition(show) {
         if (show) {
             console.log("page loaded");
             navigator.geolocation.getCurrentPosition(function(position) {
-                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
+                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
                 var mapOptions = {
                     zoom: 15,
                     center: myLatlng
@@ -26,7 +26,7 @@ function getPosition(show) {
         else {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
-                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.latitude);
+                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
 		var img = document.getElementById('utilType').value;
 		if (img != 'NONE') {
                     var marker = new google.maps.Marker({
