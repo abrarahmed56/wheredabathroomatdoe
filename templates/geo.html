@@ -17,8 +17,8 @@
 {% block bodycontent %}
 {% include 'login.html' %}
 {% include 'register.html' %}
-{% if loggedin %}
 <div class="row">
+{% if loggedin %}
   <form>
     <div class="input-field col s6">
       <select name="utils" id="utilType" class="white">
@@ -32,8 +32,8 @@
       <input type="button" id="b" value="Utility Spotted" onclick="getPosition(MARK);" class="btn green darken-3"/>
     </div>
   </form>
-</div>
 {% endif %}
+</div>
 <div id="map-canvas"></div>
 {% endblock bodycontent %}
 {% block scripts %}

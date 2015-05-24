@@ -54,7 +54,7 @@ def welcome():
 @app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
 def geo():
     loggedin = session.has_key("email")
-    return render_template('geo.html', loggedin)
+    return render_template('geo.html', loggedin=loggedin)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
