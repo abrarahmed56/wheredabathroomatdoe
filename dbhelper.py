@@ -33,12 +33,12 @@ def auth(type, email, password, phone=None):
         if conn:
             conn.close()
 
-def addPlace(name, location):
+def addPlace(name, locationX, locationY):
     conn = None
     try:
         conn = psycopg2.connect("dbname='users' user='softdev'")
         c = conn.cursor()
-        c.execute("INSERT INTO Places VALUES('" + name + "', '" + location + "', 0)")
+        c.execute("INSERT INTO Places VALUES('" + name + "', '" + locationX + "', '" + locationY + "', 0)")
         conn.commit()
         print "Location added to map"
         flash("Location added to map")
@@ -48,15 +48,28 @@ def addPlace(name, location):
         if conn:
             conn.close()
 
-def removePlace(name, location):
+def removePlace(name, locationX, locationY):
     conn = None
     try:
         conn = psycopg2.connect("dbname='users' user='softdev'")
         c = conn.cursor()
-        c.execute("DELETE FROM Places WHERE Name = '" + name + "' AND Location = '" + location + "'")
+        c.execute("DELETE FROM Places WHERE Name = '" + name + "' AND LocationX = '" + locationX + "' AND LocationY = '" + locationY + "'")
         conn.commit()
         print "Location removed from map"
         flash("Location removed from map")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def getPlaces():
+    conn = None
+    try:
+        conn = psycopg2.connect("dbname='users' user='softdev'")
+        c = conn.curson()
+        c.execute("SELECT * FROM PLACES")
+        return c.fetchall()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
