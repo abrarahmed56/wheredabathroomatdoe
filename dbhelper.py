@@ -25,8 +25,6 @@ def auth(type, email, password, phone=None):
             print c.execute("""SELECT * FROM Users WHERE Email = %s""",
                             (email,))
             results = c.fetchall()
-            print "Results: "
-            print results
             success = False
             if results != []:
                 if validate.check_password(results[0][1], password):

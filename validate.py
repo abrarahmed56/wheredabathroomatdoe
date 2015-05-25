@@ -31,6 +31,5 @@ def hash_password(s):
     return generate_password_hash(s)
 
 def check_password(hashed_password, try_password):
-    print hashed_password, try_password
     return check_password_hash(hashed_password, try_password)
 
