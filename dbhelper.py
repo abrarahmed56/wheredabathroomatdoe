@@ -2,18 +2,19 @@ import psycopg2
 import sys
 from flask import flash, session
 from constants import *
+import validate
 
 def auth(type, email, password, phone=None):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
-        c.execute("SELECT * FROM Users")
         if type=="register":
             c.execute("SELECT 1 FROM Users WHERE Email = %s", (email,))
             if c.fetchall() == []:
                 c.execute("INSERT INTO Users VALUES(%s, %s, %s)",
-                          (email, password, phone))
+                          (email, validate.generate_password_hash(password),
+                           phone))
                 conn.commit()
                 print "Registration successful"
                 flash("Registration successful")
@@ -21,16 +22,21 @@ def auth(type, email, password, phone=None):
                 print "Username is taken"
                 flash("Username is taken")
         elif type=="login":
-            print c.execute("""SELECT * FROM Users WHERE Email = %s AND
-                            Password = %s""",
-                            (email, password))
-            if c.fetchall() == []:
+            print c.execute("""SELECT * FROM Users WHERE Email = %s""",
+                            (email,))
+            results = c.fetchall()
+            print "Results: "
+            print results
+            success = False
+            if results != []:
+                if validate.check_password(results[0][1], password):
+                    print "Login successful"
+                    flash("Login successful")
+                    session['email'] = email
+                    success = True
+            if not success:
                 print "Incorrect login information"
                 flash("Incorrect login information")
-            else:
-                print "Login successful"
-                flash("Login successful")
-                session['email'] = email
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

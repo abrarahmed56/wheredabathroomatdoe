@@ -34,24 +34,19 @@ def welcome():
     if request.method=="POST":
         print "other 1"
         print request.form
-        print "1"
         if request.form.has_key("register"):
             email = request.form['registerEmail1']
             password = request.form['registerPassword']
             phone = request.form['registerPhone']
             dbhelper.auth("register", email, password, phone)
-            print "2"
         if request.form.has_key("login"):
             email = request.form['loginEmail']
             password = request.form['loginPassword']
             dbhelper.auth("login", email, password)
-            print "3"
         return redirect(url_for("index"))
-        #return "loggedin"
-    print "4"
     return render_template('welcome.html', loggedin=loggedin)
 
-@app.route("/geo", methods=["GET", "POST"])#geolocation almost not broken lmoa
+@app.route("/geo", methods=["GET", "POST"])
 def geo():
     loggedin = session.has_key("email")
     return render_template('geo.html', loggedin=loggedin)
@@ -72,7 +67,7 @@ def login():
           flash("Bad job.")
     return render_template('login.html', loggedin=loggedin)
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     return redirect(url_for("index"))
