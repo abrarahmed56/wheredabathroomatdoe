@@ -2,6 +2,15 @@ var map, err, button, utilList;
 
 var SHOW = true;
 var MARK = false;
+var UTILITY_TYPES = {
+    "fountain" : "/static/img/fountain.gif",
+    "bathroom" : "/static/img/bathroom.gif",
+    "bench"    : "/static/img/bench.gif"
+}
+
+function getUtilityName(name) {
+    return (_.invert(UTILITY_TYPES))[name];
+}
 
 function initialize() {
     err = $('flashed_messages');
@@ -35,7 +44,7 @@ function getPosition(show) {
               map: map,
               icon: img
               });*/
-            $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
+            $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : getUtilityName(img)})
                      .done(function(data) {
                         alert(data);
              });
@@ -62,7 +71,7 @@ function markUtil(util) {
     var marker = new google.maps.Marker({
     position: latlng,
     map: map,
-    icon:"static/img/"+util['type']+".gif"});
+    icon: UTILITY_TYPES[util['type']]});
 }
 
 function showError(error) {
