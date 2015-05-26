@@ -88,6 +88,12 @@ def donate():
     loggedin = session.has_key("email")
     return render_template('donate.html', loggedin=loggedin)
 
+ @app.route('/api/add', methods=['POST'])
+ def add():
+    print session
+    print request.form
+    return 'swag'
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
