@@ -88,8 +88,8 @@ def donate():
     loggedin = session.has_key("email")
     return render_template('donate.html', loggedin=loggedin)
 
- @app.route('/api/add', methods=['POST'])
- def add():
+@app.route('/api/add', methods=['POST'])
+def add():
     print session
     print request.form
     return 'swag'
