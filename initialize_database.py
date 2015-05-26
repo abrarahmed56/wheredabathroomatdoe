@@ -55,6 +55,6 @@ if ("reviews",) in tables_list:
 # Create new Users, Places, and Reviews tables
 c.execute("CREATE TABLE Users (Email TEXT, Password TEXT, Phone TEXT)")
 c.execute("""CREATE TABLE Places (ID INT, Name TEXT, LocationX DOUBLE PRECISION,
-          LocationY DOUBLE PRECISION, Favorites INT)""")
+          LocationY DOUBLE PRECISION, Favorites INT, Finder TEXT)""")
 c.execute("CREATE TABLE Reviews (ID INT, Username TEXT, Rating INT, Review TEXT)")
 conn.commit()

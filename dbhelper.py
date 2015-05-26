@@ -41,13 +41,14 @@ def auth(type, email, password, phone=None):
         if conn:
             conn.close()
 
-def addPlace(name, locationX, locationY):
+def addPlace(name, locationX, locationY, finder):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
-        c.execute("INSERT INTO Places VALUES(%s, %s, %s, 0)",
-                  (name, locationX, locationY))
+        #remember to change the first 0 into a random int
+        c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
+                  (0, name, locationX, locationY, finder))
         conn.commit()
         print "Location added to map"
         flash("Location added to map")
@@ -77,9 +78,26 @@ def getPlaces():
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
-        c = conn.curson()
+        c = conn.cursor()
         c.execute("SELECT * FROM PLACES")
-        return c.fetchall()
+        return dictionarify(c.fetchall())
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def dictionarify(placesList):
+    print placesList
+    return placesList
+
+def getLocalPlaces(locationX, locationY, radius):
+    conn = None
+    try:
+        conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
+        c = conn.cursor()
+        c.execute("SELECT * FROM PLACES WHERE LocationX-'%s'<='%s' AND \
+        LocationY-'%s'<='%s'" % (locationX, radius, locationY, radius))
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
