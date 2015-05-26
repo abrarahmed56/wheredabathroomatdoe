@@ -29,11 +29,28 @@ function getPosition(show) {
                 var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
 		var img = document.getElementById('utilType').value;
 		if (img != 'NONE') {
-                    var marker = new google.maps.Marker({
-			position: myLatlng,
-			map: map,
-			icon: img
-                    });
+		    //addPlace(name, locationX, locationY)
+                    /*var marker = new google.maps.Marker({
+		      position: myLatlng,
+		      map: map,
+		      icon: img
+		      });*/
+		    //thank you Ryan Delucchi on stackoverflow
+		    var post = function(parameters) {
+			var form = $('<form></form>');
+			form.attr("method", "post");
+			form.attr("action", "/georedirect");
+			$.each(parameters, function(key, value) {
+			    var field = $('<input></input>');
+			    field.attr("type", "hidden");
+			    field.attr("name", key);
+			    field.attr("value", value);
+			    form.append(field);
+			});
+			$(document.body).append(form);
+			form.submit();
+		    }
+		    post({"type":img,"Latlng":Latlng});
 		}
             }, showError);
         }
@@ -43,9 +60,9 @@ function getPosition(show) {
     }
 }
 
-function getNearbyUtils() {
+function getNearbyUtils(utilList) {
     //gets data of format: {1:["bench", 40.324342, 29.432423], 2: ["bathroom", 40.324564, 29.432948], etc...} and marks them
-    utilList = {1:{type:"bench", position:[40.334, 29.432]}, 2: {type:"bathroom", position:[40.324, 29.412]}, 3:{type:"fountain", position:[40.365, 29.468]}}
+    //UNSURE OF FORMAT RETURNED BY DB QUERY
     for (util in utilList) {
 	markUtil(utilList[util]);
     }

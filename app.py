@@ -49,7 +49,13 @@ def welcome():
 @app.route("/geo", methods=["GET", "POST"])
 def geo():
     loggedin = session.has_key("email")
-    return render_template('geo.html', loggedin=loggedin)
+    return render_template('geo.html', loggedin=loggedin, places=getPlaces())
+
+@app.route("/georedirect", methods=["POST"])
+def georedirect():
+    if request.form.has_key('type') and request.form.has_key('Latlng'):
+        addPlace(request['type'], request['Latlng'][0], request['Latlng'][1])
+    return redirect(url_for("geo"))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
