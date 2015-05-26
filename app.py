@@ -91,8 +91,8 @@ def get():#eventually will get nearby places
 def page_not_found(error):
     return redirect(url_for('index')), 404
 
- @app.route('/api/add', methods=['POST'])
- def add():
+@app.route('/api/add', methods=['POST'])
+def add():
     print session
     print request.form
     return 'swag'
