@@ -38,11 +38,11 @@ def welcome():
             email = request.form['registerEmail1']
             password = request.form['registerPassword']
             phone = request.form['registerPhone']
-            dbhelper.auth("register", email, password, phone)
+            auth("register", email, password, phone)
         if request.form.has_key("login"):
             email = request.form['loginEmail']
             password = request.form['loginPassword']
-            dbhelper.auth("login", email, password)
+            auth("login", email, password)
         return redirect(url_for("index"))
     return render_template('welcome.html', loggedin=loggedin)
 
@@ -90,9 +90,12 @@ def donate():
 
 @app.route('/api/add', methods=['POST'])
 def add():
-    print session
-    print request.form
-    return 'swag'
+    uemail = session['email']
+    lati = float(request.form['latitude'])
+    longi = float(request.form['longitude'])
+    utype = request.form['type']
+    addPlace(utype, longi, lati, uemail)
+    return 'Utility marked!'
 
 if __name__ == '__main__':
     app.debug = True

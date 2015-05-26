@@ -3,9 +3,9 @@ var map, err, button, utilList;
 var SHOW = true;
 var MARK = false;
 var UTILITY_TYPES = {
-    "fountain" : "/static/img/fountain.gif",
-    "bathroom" : "/static/img/bathroom.gif",
-    "bench"    : "/static/img/bench.gif"
+    "fountain" : "static/img/fountain.gif",
+    "bathroom" : "static/img/bathroom.gif",
+    "bench"    : "static/img/bench.gif"
 }
 
 function getUtilityName(name) {
@@ -16,6 +16,7 @@ function initialize() {
     err = $('flashed_messages');
     $('select').material_select();
     getPosition(SHOW);
+    getNearbyUtils(places);
 }
 
 function getPosition(show) {
@@ -44,7 +45,7 @@ function getPosition(show) {
               map: map,
               icon: img
               });*/
-            $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : getUtilityName(img)})
+            $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
                      .done(function(data) {
                         alert(data);
              });
@@ -67,6 +68,7 @@ function getNearbyUtils(utilList) {
 
 function markUtil(util) {
     //marks utility. format of util: {type:"bench", position:[40.324342, 29.432423]}
+    console.log(util);
     var latlng = new google.maps.LatLng(util['position'][0], util['position'][1]);
     var marker = new google.maps.Marker({
     position: latlng,

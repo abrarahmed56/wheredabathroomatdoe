@@ -23,9 +23,9 @@
     <div class="input-field col s6">
       <select name="utils" id="utilType" class="white">
 	<option value="NONE" disabled selected>Select Utility Type</option>
-	<option value="static/img/bench.gif">Bench</option>
-	<option value="static/img/fountain.gif">Water Fountain</option>
-	<option value="static/img/bathroom.gif">Bathroom</option>
+	<option value="bench">Bench</option>
+	<option value="fountain">Water Fountain</option>
+	<option value="bathroom">Bathroom</option>
       </select>
     </div>
     <div class="input-field col s6">
@@ -39,11 +39,10 @@
 {% block scripts %}
 <!-- TODO: load locally with slow connections -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
-<script src="static/js/geo.js"></script>
 <script>
-  var places = {{ places }}
-  getNearbyUtils(places);
+  var places = {{ places }};
 </script>
+<script src="static/js/geo.js"></script>
 {% endblock scripts %}
 
 
