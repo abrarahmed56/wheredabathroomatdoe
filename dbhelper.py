@@ -96,8 +96,8 @@ def getLocalPlaces(locationX, locationY, radius):
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
-        c.execute("SELECT * FROM PLACES WHERE LocationX-'%s'<='%s' AND \
-        LocationY-'%s'<='%s'" % (locationX, radius, locationY, radius))
+        c.execute("""SELECT * FROM PLACES WHERE LocationX-%s <= %s AND
+                  LocationY-%s <= %s""" % (locationX, radius, locationY, radius))
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
