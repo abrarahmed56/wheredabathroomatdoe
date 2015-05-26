@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from functools import wraps
 from validate import *
-import dbhelper
+from dbhelper import *
 
 app = Flask(__name__)
 with open('key', 'r') as f:
@@ -87,6 +87,12 @@ def about():
 def donate():
     loggedin = session.has_key("email")
     return render_template('donate.html', loggedin=loggedin)
+
+@app.route('/api/add', methods=['POST'])
+def add():
+    print session
+    print request.form
+    return 'swag'
 
 if __name__ == '__main__':
     app.debug = True
