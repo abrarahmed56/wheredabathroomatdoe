@@ -77,7 +77,7 @@ def getPlaces():
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
-        c = conn.curson()
+        c = conn.cursor()
         c.execute("SELECT * FROM PLACES")
         return c.fetchall()
     except psycopg2.DatabaseError, e:
