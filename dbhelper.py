@@ -47,11 +47,17 @@ def addPlace(name, locationX, locationY, finder):
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         #remember to change the first 0 into a random int
-        c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
+        c.execute("SELECT * FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s", (name, locationX, locationY))
+        exists = c.fetchall()
+        if exists != []:
+            c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
                   (0, name, locationX, locationY, finder))
+            print "Location added to map"
+            flash("Location added to map")
+        else:
+            print "Location already exists"
+            flash ("Location already exists")
         conn.commit()
-        print "Location added to map"
-        flash("Location added to map")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -88,8 +94,16 @@ def getPlaces():
             conn.close()
 
 def dictionarify(placesList):
-    print placesList
-    return placesList
+    print "placeslist: " + str(placesList)
+    ans = []
+    for place in placesList:
+        placeID = place[0]
+        placeType = place[1]
+        print "placeType: " + str(placeType)
+        placePosition = [place[2], place[3]]
+        print "placePosition: " + str(placePosition)
+        placeFinder = place[4]
+    return ans
 
 def getLocalPlaces(locationX, locationY, radius):
     conn = None
