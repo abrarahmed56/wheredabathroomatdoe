@@ -49,7 +49,7 @@ def addPlace(name, locationX, locationY, finder):
         #remember to change the first 0 into a random int
         c.execute("SELECT * FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s", (name, locationX, locationY))
         exists = c.fetchall()
-        if exists != []:
+        if exists == []:
             c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
                   (0, name, locationX, locationY, finder))
             print "Location added to map"
