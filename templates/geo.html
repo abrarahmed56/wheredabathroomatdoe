@@ -17,6 +17,7 @@
 {% block bodycontent %}
 {% include 'login.html' %}
 {% include 'register.html' %}
+{% include 'logout.html' %}
 <div class="row">
 {% if loggedin %}
   <form>
@@ -39,9 +40,6 @@
 {% block scripts %}
 <!-- TODO: load locally with slow connections -->
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
-<script>
-  var places = {{ places }};
-</script>
 <script src="static/js/geo.js"></script>
 {% endblock scripts %}
 

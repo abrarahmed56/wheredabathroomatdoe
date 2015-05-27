@@ -16,7 +16,7 @@ function initialize() {
     err = $('flashed_messages');
     $('select').material_select();
     getPosition(SHOW);
-    getNearbyUtils(places);
+    getNearbyUtils();
 }
 
 function getPosition(show) {
@@ -37,19 +37,18 @@ function getPosition(show) {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
                 var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-        var img = document.getElementById('utilType').value;
-        if (img != 'NONE') {
+	        var img = document.getElementById('utilType').value;
+        	if (img != 'NONE') {
             //addPlace(name, locationX, locationY)
                     /*var marker = new google.maps.Marker({
-              position: myLatlng,
               map: map,
               icon: img
               });*/
-            $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
-                     .done(function(data) {
-                        alert(data);
-             });
-        }
+		    $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
+			.done(function(data) {
+                            //alert(data);//flash data
+			});
+		}
             }, showError);
         }
     }
@@ -58,11 +57,20 @@ function getPosition(show) {
     }
 }
 
-function getNearbyUtils(utilList) {
+function getNearbyUtils() {
     //gets data of format: {1:["bench", 40.324342, 29.432423], 2: ["bathroom", 40.324564, 29.432948], etc...} and marks them
     //UNSURE OF FORMAT RETURNED BY DB QUERY
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+	$.post("/api/get", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude})
+            .done(function(data) {
+                //alert(data);
+		utilList = data;
+	    });
+    })
     for (util in utilList) {
-    markUtil(utilList[util]);
+	console.log(util)
+	markUtil(utilList[util]);
     }
 }
 

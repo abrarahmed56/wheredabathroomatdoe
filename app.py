@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from functools import wraps
 from validate import *
 from dbhelper import *
+import json
 
 app = Flask(__name__)
 with open('key', 'r') as f:
@@ -49,13 +50,7 @@ def welcome():
 @app.route("/geo", methods=["GET", "POST"])
 def geo():
     loggedin = session.has_key("email")
-    return render_template('geo.html', loggedin=loggedin, places=getPlaces())
-
-@app.route("/georedirect", methods=["POST"])
-def georedirect():
-    if request.form.has_key('type') and request.form.has_key('Latlng'):
-        addPlace(request['type'], request['Latlng'][0], request['Latlng'][1])
-    return redirect(url_for("geo"))
+    return render_template('geo.html', loggedin=loggedin)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -90,12 +85,17 @@ def donate():
 
 @app.route('/api/add', methods=['POST'])
 def add():
+    print 'hey its works bub'
     uemail = session['email']
     lati = float(request.form['latitude'])
     longi = float(request.form['longitude'])
     utype = request.form['type']
     addPlace(utype, longi, lati, uemail)
     return 'Utility marked!'
+
+@app.route('/api/get', methods=['POST'])
+def get():#eventually will get nearby places
+    return json.dumps(getPlaces())    
 
 if __name__ == '__main__':
     app.debug = True
