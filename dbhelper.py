@@ -103,6 +103,13 @@ def dictionarify(placesList):
         placePosition = [place[2], place[3]]
         print "placePosition: " + str(placePosition)
         placeFinder = place[4]
+        placeDict = {
+            "ID": placeID,
+            "type": placeType,
+            "position": placePosition,
+            "finder": placeFinder
+        }
+        ans.append(placeDict)
     return ans
 
 def getLocalPlaces(locationX, locationY, radius):
