@@ -16,11 +16,9 @@ def auth(type, email, password, phone=None):
                           (email, validate.generate_password_hash(password),
                            phone))
                 conn.commit()
-                print "Registration successful"
-                flash("Registration successful")
+                return "Registration successful"
             else:
-                print "Username is taken"
-                flash("Username is taken")
+                return "Username is taken"
         elif type=="login":
             print c.execute("""SELECT * FROM Users WHERE Email = %s""",
                             (email,))
@@ -28,13 +26,11 @@ def auth(type, email, password, phone=None):
             success = False
             if results != []:
                 if validate.check_password(results[0][1], password):
-                    print "Login successful"
-                    flash("Login successful")
                     session['email'] = email
                     success = True
+                    return "Login successful"
             if not success:
-                print "Incorrect login information"
-                flash("Incorrect login information")
+                return "Incorrect login information"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -52,12 +48,10 @@ def addPlace(name, locationX, locationY, finder):
         if exists == []:
             c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
                   (0, name, locationX, locationY, finder))
-            print "Location added to map"
-            flash("Location added to map")
+            conn.commit()
+            return "Location added to map"
         else:
-            print "Location already exists"
-            flash ("Location already exists")
-        conn.commit()
+            return "Location already exists"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -69,11 +63,10 @@ def removePlace(name, locationX, locationY):
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
-        c.execute("""DELETE FROM Places WHERE Name = '%s' AND LocationX = %s AND
+        c.execute("""DELETE FROM Places WHERE Name = %s AND LocationX = %s AND
                   LocationY = %s""", (name, locationX, locationY))
         conn.commit()
-        print "Location removed from map"
-        flash("Location removed from map")
+        return "Location removed from map"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -86,6 +79,7 @@ def getPlaces():
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         c.execute("SELECT * FROM PLACES")
+        conn.commit()
         return dictionarify(c.fetchall())
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -94,20 +88,13 @@ def getPlaces():
             conn.close()
 
 def dictionarify(placesList):
-    print "placeslist: " + str(placesList)
     ans = []
     for place in placesList:
-        placeID = place[0]
-        placeType = place[1]
-        print "placeType: " + str(placeType)
-        placePosition = [place[2], place[3]]
-        print "placePosition: " + str(placePosition)
-        placeFinder = place[4]
         placeDict = {
-            "ID": placeID,
-            "type": placeType,
-            "position": placePosition,
-            "finder": placeFinder
+            "ID": place[0],
+            "type": place[1],
+            "position": [place[2], place[3]],
+            "finder": place[4]
         }
         ans.append(placeDict)
     return ans
@@ -117,8 +104,11 @@ def getLocalPlaces(locationX, locationY, radius):
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
-        c.execute("""SELECT * FROM PLACES WHERE LocationX-%s <= %s AND
-                  LocationY-%s <= %s""" % (locationX, radius, locationY, radius))
+        c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= %s AND
+        abs(LocationY-%s) <= %s""" % (locationX, radius, locationY, radius))
+        #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""" % ('3', '3'))
+        conn.commit()
+        return dictionarify(c.fetchall())
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
