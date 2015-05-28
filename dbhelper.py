@@ -105,10 +105,24 @@ def getLocalPlaces(locationX, locationY, radius):
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= %s AND
-        abs(LocationY-%s) <= %s""" % (locationX, radius, locationY, radius))
-        #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""" % ('3', '3'))
+        abs(LocationY-%s) <= %s""", (locationX, radius, locationY, radius))
+        #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""", ('3', '3'))
         conn.commit()
         return dictionarify(c.fetchall())
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def emailExists(email):
+    conn = None
+    try:
+        conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
+        c = conn.cursor()
+        c.execute("""SELECT 1 FROM Users WHERE Email = %s""", (email,))
+        conn.commit()
+        return len(c.fetchall()) > 0
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
