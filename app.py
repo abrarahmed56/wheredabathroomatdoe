@@ -97,6 +97,10 @@ def add():
     print request.form
     return 'swag'
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return redirect(url_for('index')), 404
+
 if __name__ == '__main__':
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
