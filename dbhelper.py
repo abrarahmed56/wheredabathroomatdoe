@@ -37,17 +37,17 @@ def auth(type, email, password, phone=None):
         if conn:
             conn.close()
 
-def addPlace(name, locationX, locationY, finder):
+def add_place(name, location_x, location_y, finder):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         #remember to change the first 0 into a random int
-        c.execute("SELECT * FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s", (name, locationX, locationY))
+        c.execute("SELECT * FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s", (name, location_x, location_y))
         exists = c.fetchall()
         if exists == []:
             c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
-                  (0, name, locationX, locationY, finder))
+                  (0, name, location_x, location_y, finder))
             conn.commit()
             return "Location added to map"
         else:
@@ -58,13 +58,13 @@ def addPlace(name, locationX, locationY, finder):
         if conn:
             conn.close()
 
-def removePlace(name, locationX, locationY):
+def remove_place(name, location_x, location_y):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         c.execute("""DELETE FROM Places WHERE Name = %s AND LocationX = %s AND
-                  LocationY = %s""", (name, locationX, locationY))
+                  LocationY = %s""", (name, location_x, location_y))
         conn.commit()
         return "Location removed from map"
     except psycopg2.DatabaseError, e:
@@ -73,7 +73,7 @@ def removePlace(name, locationX, locationY):
         if conn:
             conn.close()
 
-def getPlaces():
+def get_places():
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
@@ -87,25 +87,25 @@ def getPlaces():
         if conn:
             conn.close()
 
-def dictionarify(placesList):
+def dictionarify(places_list):
     ans = []
-    for place in placesList:
-        placeDict = {
+    for place in places_list:
+        place_dict = {
             "ID": place[0],
             "type": place[1],
             "position": [place[2], place[3]],
             "finder": place[4]
         }
-        ans.append(placeDict)
+        ans.append(place_dict)
     return ans
 
-def getLocalPlaces(locationX, locationY, radius):
+def get_local_places(location_x, location_y, radius):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
         c = conn.cursor()
         c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= %s AND
-        abs(LocationY-%s) <= %s""", (locationX, radius, locationY, radius))
+        abs(LocationY-%s) <= %s""", (location_x, radius, location_y, radius))
         #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""", ('3', '3'))
         conn.commit()
         return dictionarify(c.fetchall())
@@ -115,7 +115,7 @@ def getLocalPlaces(locationX, locationY, radius):
         if conn:
             conn.close()
 
-def emailExists(email):
+def email_exists(email):
     conn = None
     try:
         conn = psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))

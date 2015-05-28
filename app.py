@@ -77,15 +77,15 @@ def donate():
 def add():
     print 'hey its works bub'
     uemail = session['email']
-    lati = float(request.form['latitude'])
-    longi = float(request.form['longitude'])
+    latter = float(request.form['latitude'])
+    longter = float(request.form['longitude'])
     utype = request.form['type']
-    addPlace(utype, longi, lati, uemail)
+    addPlace(utype, longter, latter, uemail)
     return 'Utility marked!'
 
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
-    return json.dumps(getPlaces())    
+    return json.dumps(get_places())    
 
 @app.errorhandler(404)
 def page_not_found(error):
