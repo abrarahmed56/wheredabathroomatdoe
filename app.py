@@ -25,15 +25,11 @@ def redirect_if_not_logged_in(target):
 @app.route("/")
 @redirect_if_not_logged_in("welcome")
 def index():
-    loggedin = session.has_key("email")
-    return render_template('index.html', loggedin=True)
+    return render_template('index.html', loggedin=session.has_key("email"))
 
 @app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
-    loggedin = session.has_key("email")
-    print "0"
     if request.method=="POST":
-        print "other 1"
         print request.form
         if request.form.has_key("register"):
             email = request.form['registerEmail1']
@@ -45,43 +41,37 @@ def welcome():
             password = request.form['loginPassword']
             auth("login", email, password)
         return redirect(url_for("index"))
-    return render_template('welcome.html', loggedin=loggedin)
+    else:
+        return render_template('welcome.html', loggedin=session.has_key("email"))
 
 @app.route("/geo", methods=["GET", "POST"])
 def geo():
-    loggedin = session.has_key("email")
-    return render_template('geo.html', loggedin=loggedin)
+    return render_template('geo.html', loggedin=session.has_key("email"))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    loggedin = session.has_key("email")
-    session ['email'] = None
     if request.method=="POST" and request.form.has_key('password') \
       and request.form.has_key('email'):
-       if not is_valid_email(request['email']):
-          flash("Good job.")
-       else:
-          flash("Bad job.")
-       if not is_valid_password(request['password']):
-          flash("Good job.")
-       else:
-          flash("Bad job.")
-    return render_template('login.html', loggedin=loggedin)
+        session ['email'] = None
+        if is_valid_email(request['email']) and\
+          is_valid_password(request['password']):
+            flash("Good job.")
+        else:
+            flash("Bad job.")
+    return render_template('login.html', loggedin=session.has_key("email"))
 
 @app.route('/logout', methods=['POST'])
 def logout():
     session.clear()
     return redirect(url_for("index"))
 
-@app.route('/about', methods=['GET', 'POST'])
+@app.route('/about', methods=['GET'])
 def about():
-    loggedin = session.has_key("email")
-    return render_template('about.html', loggedin=loggedin)
+    return render_template('about.html', loggedin=session.has_key("email"))
 
-@app.route('/donate', methods=['GET', 'POST'])
+@app.route('/donate', methods=['GET'])
 def donate():
-    loggedin = session.has_key("email")
-    return render_template('donate.html', loggedin=loggedin)
+    return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/api/add', methods=['POST'])
 def add():
@@ -96,6 +86,10 @@ def add():
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
     return json.dumps(getPlaces())    
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return redirect(url_for('index')), 404
 
 if __name__ == '__main__':
     app.debug = True
