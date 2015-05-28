@@ -16,7 +16,6 @@ function initialize() {
     err = $('flashed_messages');
     $('select').material_select();
     getPosition(SHOW);
-    getNearbyUtils();
 }
 
 function getPosition(show) {
@@ -30,14 +29,13 @@ function getPosition(show) {
                     center: myLatlng
                 }
                 map = new google.maps.Map($('#map-canvas')[0], mapOptions);
-        getNearbyUtils();
+		getNearbyUtils(position.coords.latitude,position.coords.longitude);
             }, showError);
         }
         else {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
-                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-	        var img = document.getElementById('utilType').value;
+                var img = document.getElementById('utilType').value;
         	if (img != 'NONE') {
             //addPlace(name, locationX, locationY)
                     /*var marker = new google.maps.Marker({
@@ -46,7 +44,7 @@ function getPosition(show) {
               });*/
 		    $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
 			.done(function(data) {
-                            //alert(data);//flash data
+                            alert(data);//flash data
 			});
 		}
             }, showError);
@@ -57,31 +55,27 @@ function getPosition(show) {
     }
 }
 
-function getNearbyUtils() {
+function getNearbyUtils(lati,longi) {
+    console.log("getting utilities");
     //gets data of format: {1:["bench", 40.324342, 29.432423], 2: ["bathroom", 40.324564, 29.432948], etc...} and marks them
     //UNSURE OF FORMAT RETURNED BY DB QUERY
-    navigator.geolocation.getCurrentPosition(function(position) {
-        var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-	$.post("/api/get", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude})
-            .done(function(data) {
-                //alert(data);
-		utilList = data;
-	    });
-    })
-    for (util in utilList) {
-	console.log(util)
-	markUtil(utilList[util]);
-    }
+    $.post("/api/get", {"longitude" : longi, "latitude" : lati})
+        .done(function(data) {
+	    utilList = eval(data); // TODO Should be JSON data
+            console.log(data);
+	    for (var i = 0; i < utilList.length; ++i) {markUtil(utilList[i]);};
+	});
 }
 
 function markUtil(util) {
     //marks utility. format of util: {type:"bench", position:[40.324342, 29.432423]}
-    console.log(util);
-    var latlng = new google.maps.LatLng(util['position'][0], util['position'][1]);
+    var latlng = new google.maps.LatLng(util['position'][1], util['position'][0]);
+    var img = UTILITY_TYPES[util['type']];
     var marker = new google.maps.Marker({
-    position: latlng,
-    map: map,
-    icon: UTILITY_TYPES[util['type']]});
+	position: latlng,
+	map: map,
+	icon: img});
+    console.log('UTILITY MARKED');
 }
 
 function showError(error) {
