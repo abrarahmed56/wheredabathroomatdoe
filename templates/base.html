@@ -37,6 +37,12 @@
       {% endwith %}
     </div>
     <div class="container">
+      {% if loggedin %}
+      {% include 'logout.html' %}
+      {% else %}
+      {% include 'login.html' %}
+      {% include 'register.html' %}
+      {% endif %}
       {% block bodycontent %}
       {% endblock bodycontent %}
     </div>
