@@ -35,11 +35,11 @@ def welcome():
             email = request.form['registerEmail1']
             password = request.form['registerPassword']
             phone = request.form['registerPhone']
-            auth("register", email, password, phone)
+            flash(auth("register", email, password, phone))
         if request.form.has_key("login"):
             email = request.form['loginEmail']
             password = request.form['loginPassword']
-            auth("login", email, password)
+            flash(auth("login", email, password))
         return redirect(url_for("index"))
     else:
         return render_template('welcome.html', loggedin=session.has_key("email"))
