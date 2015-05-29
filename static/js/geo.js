@@ -1,5 +1,5 @@
-var map, err, button, utilList;
-
+var map, err, button, utilList, activeType;
+var activeMarker = false;
 var SHOW = true;
 var MARK = false;
 var UTILITY_TYPES = {
@@ -32,20 +32,23 @@ function getPosition(show) {
 		getNearbyUtils(position.coords.latitude,position.coords.longitude);
             }, showError);
         }
-        else {
+        else if (activeMarker) {
+	    markutil();
+	}
+	else {
             console.log("button pressed");
             navigator.geolocation.getCurrentPosition(function(position) {
-                var img = document.getElementById('utilType').value;
-        	if (img != 'NONE') {
-            //addPlace(name, locationX, locationY)
-                    /*var marker = new google.maps.Marker({
-              map: map,
-              icon: img
-              });*/
-		    $.post("/api/add", {"longitude" : position.coords.longitude, "latitude" : position.coords.latitude, "type" : img})
-			.done(function(data) {
-                            alert(data);//flash data
-			});
+                activeType = $('#utilType')[0].value;
+		if (activeType != 'NONE') {
+		    Materialize.toast('Drag icon to confirm location', 4000);
+		    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    activeMarker = new google.maps.Marker({
+			position: latlng,
+			map: map,
+			icon: UTILITY_TYPES[activeType],//change color
+			draggable: true
+		    });
+		    $('input[type="button"]')[0].value = 'Mark Location';
 		}
             }, showError);
         }
@@ -53,6 +56,14 @@ function getPosition(show) {
     else {
         err.innerHTML = "Geolocation is not supported by this browser.";
     }
+}
+
+function markutil() {
+    console.log('swagg')
+    $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})                                  
+        .done(function(data) {                                                                                                                            
+            alert(data);//flash data                                                                                                                    
+        });
 }
 
 function getNearbyUtils(lati,longi) {

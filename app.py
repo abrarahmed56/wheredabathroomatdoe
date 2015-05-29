@@ -80,7 +80,7 @@ def add():
     latter = float(request.form['latitude'])
     longter = float(request.form['longitude'])
     utype = request.form['type']
-    addPlace(utype, longter, latter, uemail)
+    add_place(utype, longter, latter, uemail)
     return 'Utility marked!'
 
 @app.route('/api/get', methods=['POST'])
