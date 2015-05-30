@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, flash, redirect, url
 from functools import wraps
 from validate import *
 from dbhelper import *
+from constants import *
 import json
 
 app = Flask(__name__)
@@ -32,14 +33,27 @@ def welcome():
     if request.method=="POST":
         print request.form
         if request.form.has_key("register"):
-            email = request.form['registerEmail1']
-            password = request.form['registerPassword']
-            phone = request.form['registerPhone']
-            flash(auth("register", email, password, phone))
-        if request.form.has_key("login"):
-            email = request.form['loginEmail']
-            password = request.form['loginPassword']
-            flash(auth("login", email, password))
+            required_keys = [ 'registerEmail1'
+                            , 'registerPassword'
+                            , 'registerPhone'
+                            ]
+            if is_valid_request(request.form, required_keys):
+                email = request.form['registerEmail1']
+                password = request.form['registerPassword']
+                phone = request.form['registerPhone']
+                flash(auth(AUTH_REGISTER, email, password, phone))
+            else:
+                flash("Malformed request")
+        elif request.form.has_key("login"):
+            required_keys = [ 'loginEmail'
+                            , 'loginPassword'
+                            ]
+            if is_valid_request(request.form, required_keys):
+                email = request.form['loginEmail']
+                password = request.form['loginPassword']
+                flash(auth(AUTH_LOGIN, email, password))
+            else:
+                flash("Malformed request")
         return redirect(url_for("index"))
     else:
         return render_template('welcome.html', loggedin=session.has_key("email"))
@@ -48,21 +62,10 @@ def welcome():
 def geo():
     return render_template('geo.html', loggedin=session.has_key("email"))
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method=="POST" and request.form.has_key('password') \
-      and request.form.has_key('email'):
-        session ['email'] = None
-        if is_valid_email(request['email']) and\
-          is_valid_password(request['password']):
-            flash("Good job.")
-        else:
-            flash("Bad job.")
-    return render_template('login.html', loggedin=session.has_key("email"))
-
 @app.route('/logout', methods=['POST'])
 def logout():
     session.clear()
+    flash("Logout successful")
     return redirect(url_for("index"))
 
 @app.route('/about', methods=['GET'])
@@ -86,20 +89,17 @@ def add():
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
     return json.dumps(get_places())    
+    #return json.dumps(get_local_places(location_x, location_y, radius))
 
 @app.errorhandler(404)
 def page_not_found(error):
     return redirect(url_for('index')), 404
 
-@app.route('/api/add', methods=['POST'])
-def add():
-    print session
-    print request.form
-    return 'swag'
-
-@app.errorhandler(404)
-def page_not_found(error):
-    return redirect(url_for('index')), 404
+def is_valid_request(form, required_keys):
+    for key in required_keys:
+        if not form.has_key(key):
+            return False
+    return True
 
 if __name__ == '__main__':
     app.debug = True
