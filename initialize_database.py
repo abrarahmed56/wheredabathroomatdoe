@@ -53,8 +53,8 @@ if ("reviews",) in tables_list:
         print "Error displaying contents of Reviews database: %s" % e
 
 # Create new Users, Places, and Reviews tables
-c.execute("CREATE TABLE Users (ID uuid primary key, Email TEXT, Password TEXT, Phone TEXT)")
-c.execute("""CREATE TABLE Places (ID uuid primary key, Name TEXT, LocationX DOUBLE PRECISION,
+c.execute("CREATE TABLE Users (ID UUID PRIMARY KEY, Email TEXT, Password TEXT, Phone TEXT)")
+c.execute("""CREATE TABLE Places (ID UUID PRIMARY KEY, Name TEXT, LocationX DOUBLE PRECISION,
           LocationY DOUBLE PRECISION, Favorites INT, Finder TEXT)""")
-c.execute("CREATE TABLE Reviews (ID uuid primary key, Username TEXT, Rating INT, Review TEXT)")
+c.execute("CREATE TABLE Reviews (ID UUID PRIMARY KEY, Username TEXT, Rating INT, Review TEXT)")
 conn.commit()

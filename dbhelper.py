@@ -188,3 +188,21 @@ def generate_id(datatype):
         if conn:
             conn.close()
     return (True, u)
+
+def add_review(placeID, user, rating, review):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        uuid = generate_id(ID_REVIEW)
+        if not uuid[0]:
+            return "UUID error"
+        c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s)",
+                      (uuid[1], user, rating, review))
+        conn.commit()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
