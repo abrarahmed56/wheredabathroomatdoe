@@ -32,30 +32,56 @@ def auth(type, email, password, phone=None):
                 uuid = generate_id(ID_USER)
                 if not uuid[0]:
                     return "UUID error"
-                c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s)",
-                          (uuid[1], email, validate.generate_password_hash(password),
-                           phone))
-                conn.commit()
+                add_user(uuid[1], email, password, phone)
                 return "Registration successful"
             else:
                 return "A user with that email already exists"
-        elif type == AUTH_LOGIN:
-            print c.execute("""SELECT Password FROM Users WHERE Email = %s""",
-                            (email,))
-            results = c.fetchall()
+        elif type == AUTH_LOGIN or type == AUTH_VERIFY:
+            stored_pass = get_user_password(email=email)
             success = False
-            if results != []:
-                if validate.check_password(results[0][0], password):
-                    session['email'] = email
-                    success = True
-                    return "Login successful"
+            if stored_pass != ():
+                if validate.check_password(stored_pass, password):
+                    if type == AUTH_LOGIN:
+                        session['email'] = email
+                        success = True
+                        return "Login successful"
+                    elif type == AUTH_VERIFY:
+                        success = True
+                        return "Verification successful"
             if not success:
-                return "Incorrect login information"
+                return "Incorrect credentials"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
         if conn:
             conn.close()
+
+def add_user(uid, email, password, phone):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s)",
+                (uid, email, validate.generate_password_hash(password), phone))
+        conn.commit()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_password(uid=None, email=None):
+    results = ()
+    if uid:
+        c.execute("""SELECT Password FROM Users WHERE ID = %s LIMIT ONE""",
+                        (uid,))
+        results = c.fetchone()
+    elif email:
+        c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT ONE""",
+                        (email,))
+        results = c.fetchone()
+    return results[0]
 
 def add_place(name, location_x, location_y, finder):
     global ID_PLACE
@@ -64,13 +90,13 @@ def add_place(name, location_x, location_y, finder):
         return "Database Error"
     c = conn.cursor()
     try:
-        #remember to change the first 0 into a random int
-        c.execute("SELECT 1 FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s", (name, location_x, location_y))
+        c.execute("SELECT 1 FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s LIMIT ONE",
+                 (name, location_x, location_y))
         exists = c.fetchall()
         if exists == []:
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
-                return "UUID error"
+                return uuid[1]
             c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
                       (uuid[1], name, location_x, location_y, finder))
             conn.commit()
@@ -172,7 +198,7 @@ def generate_id(datatype):
     u = uuid.uuid4()
     conn = connect()
     if conn == None:
-        return (False, "Database Error")
+        return (False, "Database Error when Generating UUID")
     c = conn.cursor()
     try:
         while not success:
@@ -197,7 +223,7 @@ def add_review(placeID, user, rating, review):
     try:
         uuid = generate_id(ID_REVIEW)
         if not uuid[0]:
-            return "UUID error"
+            return uuid[1]
         c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s)",
                       (uuid[1], user, rating, review))
         conn.commit()
