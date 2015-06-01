@@ -93,10 +93,14 @@ def get_user_password(uid=None, email=None):
         if conn:
             conn.close()
 
-def update_user_password(uid, verify_old_password, new_password):
-    old_password = get_user_password(uid=uid)
-    if not validate.check_password(old_password, verify_old_password):
-        return (False, "Invalid verification credentials")
+def update_user_password(uid, verify_old_password=None, new_password):
+    # NOTE: Make sure password is verified before calling this method
+    # Verification of the old password can be skipped by setting
+    # verify_old_password to None
+    if verify_old_password:
+        old_password = get_user_password(uid=uid)
+        if not validate.check_password(old_password, verify_old_password):
+            return (False, "Invalid verification credentials")
     conn = connect()
     if conn == None:
         return "Database Error"
@@ -112,6 +116,28 @@ def update_user_password(uid, verify_old_password, new_password):
         if conn:
             conn.close()
 
+def update_user_email(uid, verify_password=None, new_email):
+    # NOTE: Make sure email is verified before calling this method
+    # Verification of the old password can be skipped by setting
+    # verify_password to None
+    if verify_password:
+        old_password = get_user_password(uid=uid)
+        if not validate.check_password(old_password, verify_password):
+            return (False, "Invalid verification credentials")
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET Email = %s WHERE ID = %s",
+                 (new_email, uid))
+        c.commit()
+        return (True, "Successfully updated email")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
 
 def add_place(name, location_x, location_y, finder):
     global ID_PLACE
