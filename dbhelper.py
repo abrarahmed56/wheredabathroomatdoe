@@ -39,8 +39,8 @@ def auth(type, email, password, phone=None):
         elif type == AUTH_LOGIN or type == AUTH_VERIFY:
             stored_pass = get_user_password(email=email)
             success = False
-            if stored_pass != ():
-                if validate.check_password(stored_pass[0], password):
+            if stored_pass:
+                if validate.check_password(stored_pass, password):
                     if type == AUTH_LOGIN:
                         session['email'] = email
                         success = True
@@ -99,8 +99,8 @@ def update_user_password(uid, new_password, verify_old_password=None):
     # verify_old_password to None
     if verify_old_password:
         old_password = get_user_password(uid=uid)
-        if old_password != ():
-            if not validate.check_password(old_password[0], verify_old_password):
+        if old_password:
+            if not validate.check_password(old_password, verify_old_password):
                 return (False, "Invalid verification credentials")
     conn = connect()
     if conn == None:
@@ -123,8 +123,8 @@ def update_user_email(uid, new_email, verify_password=None):
     # verify_password to None
     if verify_password:
         old_password = get_user_password(uid=uid)
-        if old_password != ():
-            if not validate.check_password(old_password[0], verify_password):
+        if old_password:
+            if not validate.check_password(old_password, verify_password):
                 return (False, "Invalid verification credentials")
     conn = connect()
     if conn == None:
@@ -147,8 +147,8 @@ def update_user_phone(uid, new_phone, verify_password=None):
     # verify_password to None
     if verify_password:
         old_password = get_user_password(uid=uid)
-        if old_password != ():
-            if not validate.check_password(old_password[0], verify_password):
+        if old_password:
+            if not validate.check_password(old_password, verify_password):
                 return (False, "Invalid verification credentials")
     conn = connect()
     if conn == None:
