@@ -226,7 +226,7 @@ def dictionarify(places_list):
     ans = []
     for place in places_list:
         place_dict = {
-            "ID": place[0],
+            "ID": str(place[0]),
             "type": place[1],
             "position": [place[2], place[3]],
             "finder": place[4]
