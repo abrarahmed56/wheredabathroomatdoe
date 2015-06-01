@@ -79,11 +79,11 @@ def get_user_password(uid=None, email=None):
     try:
         results = ()
         if uid:
-            c.execute("""SELECT Password FROM Users WHERE ID = %s LIMIT ONE""",
+            c.execute("""SELECT Password FROM Users WHERE ID = %s LIMIT 1""",
                             (uid,))
             results = c.fetchone()
         elif email:
-            c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT ONE""",
+            c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
         return results[0]
@@ -172,7 +172,7 @@ def add_place(place_type, location_x, location_y, finder):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT ONE",
+        c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT 1",
                  (place_type, location_x, location_y))
         exists = c.fetchall()
         if exists == []:
@@ -198,7 +198,7 @@ def remove_place(place_type, location_x, location_y):
     c = conn.cursor()
     try:
         c.execute("""DELETE FROM Places WHERE PlaceType = %s AND LocationX = %s AND
-                  LocationY = %s LIMIT ONE""", (place_type, location_x, location_y))
+                  LocationY = %s LIMIT 1""", (place_type, location_x, location_y))
         conn.commit()
         return "Location removed from map"
     except psycopg2.DatabaseError, e:
