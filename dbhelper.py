@@ -63,7 +63,7 @@ def add_user(uid, email, password, phone):
     c = conn.cursor()
     try:
         c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s)",
-                (uid, email, validate.generate_password_hash(password), phone))
+                (uid, email, validate.hash_password(password), phone))
         conn.commit()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -72,16 +72,46 @@ def add_user(uid, email, password, phone):
             conn.close()
 
 def get_user_password(uid=None, email=None):
-    results = ()
-    if uid:
-        c.execute("""SELECT Password FROM Users WHERE ID = %s LIMIT ONE""",
-                        (uid,))
-        results = c.fetchone()
-    elif email:
-        c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT ONE""",
-                        (email,))
-        results = c.fetchone()
-    return results[0]
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        results = ()
+        if uid:
+            c.execute("""SELECT Password FROM Users WHERE ID = %s LIMIT ONE""",
+                            (uid,))
+            results = c.fetchone()
+        elif email:
+            c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT ONE""",
+                            (email,))
+            results = c.fetchone()
+        return results[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_user_password(uid, verify_old_password, new_password):
+    old_password = get_user_password(uid=uid)
+    if not validate.check_password(old_password, verify_old_password):
+        return (False, "Invalid verification credentials")
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET Password = %s WHERE ID = %s",
+                 (validate.hash_password(new_password), uid))
+        c.commit()
+        return (True, "Successfully updated password")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 
 def add_place(name, location_x, location_y, finder):
     global ID_PLACE
