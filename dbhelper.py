@@ -174,8 +174,8 @@ def add_place(place_type, location_x, location_y, finder):
     try:
         c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT 1",
                  (place_type, location_x, location_y))
-        exists = c.fetchall()
-        if exists == []:
+        exists = c.fetchone()
+        if exists == ():
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
                 return uuid[1]
