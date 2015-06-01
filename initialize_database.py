@@ -54,7 +54,7 @@ if ("reviews",) in tables_list:
 
 # Create new Users, Places, and Reviews tables
 c.execute("CREATE TABLE Users (ID UUID PRIMARY KEY, Email TEXT, Password TEXT, Phone TEXT)")
-c.execute("""CREATE TABLE Places (ID UUID PRIMARY KEY, Name TEXT, LocationX DOUBLE PRECISION,
+c.execute("""CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceType TEXT, LocationX DOUBLE PRECISION,
           LocationY DOUBLE PRECISION, Favorites INT, Finder TEXT)""")
 c.execute("CREATE TABLE Reviews (ID UUID PRIMARY KEY, Username TEXT, Rating INT, Review TEXT)")
 conn.commit()

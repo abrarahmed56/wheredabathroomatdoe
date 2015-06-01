@@ -93,7 +93,7 @@ def get_user_password(uid=None, email=None):
         if conn:
             conn.close()
 
-def update_user_password(uid, verify_old_password=None, new_password):
+def update_user_password(uid, new_password, verify_old_password=None):
     # NOTE: Make sure password is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_old_password to None
@@ -116,7 +116,7 @@ def update_user_password(uid, verify_old_password=None, new_password):
         if conn:
             conn.close()
 
-def update_user_email(uid, verify_password=None, new_email):
+def update_user_email(uid, new_email, verify_password=None):
     # NOTE: Make sure email is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_password to None
@@ -139,7 +139,7 @@ def update_user_email(uid, verify_password=None, new_email):
         if conn:
             conn.close()
 
-def update_user_phone(uid, verify_password=None, new_phone):
+def update_user_phone(uid, new_phone, verify_password=None):
     # NOTE: Make sure phone is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_password to None
@@ -162,22 +162,22 @@ def update_user_phone(uid, verify_password=None, new_phone):
         if conn:
             conn.close()
 
-def add_place(name, location_x, location_y, finder):
+def add_place(place_type, location_x, location_y, finder):
     global ID_PLACE
     conn = connect()
     if conn == None:
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("SELECT 1 FROM Places WHERE Name=%s AND LocationX=%s AND LocationY=%s LIMIT ONE",
-                 (name, location_x, location_y))
+        c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT ONE",
+                 (place_type, location_x, location_y))
         exists = c.fetchall()
         if exists == []:
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
                 return uuid[1]
             c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
-                      (uuid[1], name, location_x, location_y, finder))
+                      (uuid[1], place_type, location_x, location_y, finder))
             conn.commit()
             return "Location added to map"
         else:
@@ -188,14 +188,14 @@ def add_place(name, location_x, location_y, finder):
         if conn:
             conn.close()
 
-def remove_place(name, location_x, location_y):
+def remove_place(place_type, location_x, location_y):
     conn = connect()
     if conn == None:
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""DELETE FROM Places WHERE Name = %s AND LocationX = %s AND
-                  LocationY = %s""", (name, location_x, location_y))
+        c.execute("""DELETE FROM Places WHERE PlaceType = %s AND LocationX = %s AND
+                  LocationY = %s LIMIT ONE""", (place_type, location_x, location_y))
         conn.commit()
         return "Location removed from map"
     except psycopg2.DatabaseError, e:
