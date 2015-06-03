@@ -76,6 +76,12 @@ def about():
 def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
+@app.route('/profile', methods=['POST'])
+@redirect_if_not_logged_in("welcome")
+def profile():
+    bio = get_user_bio(None,session["email"])
+    return render_template('profile.html', loggedin=session.has_key("email"), bio=bio)
+
 @app.route('/api/add', methods=['POST'])
 def add():
     print 'hey its works bub'
