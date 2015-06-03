@@ -58,13 +58,13 @@ def auth(type, email, password, phone=None, bio=None):
         if conn:
             conn.close()
 
-def add_user(uid, email, password, phone, bio:
+def add_user(uid, email, password, phone, bio):
     conn = connect()
     if conn == None:
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s)",
+        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s, %s)",
                 (uid, uid, email, validate.hash_password(password), phone, bio))
         conn.commit()
     except psycopg2.DatabaseError, e:
