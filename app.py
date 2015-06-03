@@ -35,12 +35,12 @@ def welcome():
         print request.form
         if request.form.has_key("register"):
             required_keys = [ 'registerEmail1'
-                            , 'registerPassword'
+                            , 'registerPassword1'
                             , 'registerPhone'
                             ]
             if is_valid_request(request.form, required_keys):
                 email = request.form['registerEmail1']
-                password = request.form['registerPassword']
+                password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
                 flash(auth(AUTH_REGISTER, email, password, phone))
             else:
@@ -101,7 +101,15 @@ def get():#eventually will get nearby places
 @app.route('/settings/', methods=['GET', 'POST'])
 def settings():
     if request.method == 'POST':
-        pass
+        required_keys = [ 'new_email'
+                        , 'new_phone'
+                        , 'new_password'
+                        , 'verify_password'
+                        ]
+        if is_valid_request(request.form, required_keys):
+            pass
+        else:
+            flash("Malformed request")
     else:
         return render_template('settings.html',
                                user_data=get_user_data(uuid.UUID(session['uid'])))
