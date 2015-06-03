@@ -15,24 +15,27 @@
         <form id='form' class="col s12" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="mdi-communication-email prefix"></i>
                     <label for="email">Email</label>
                     <input type="email" id="new_email" name="new_email" value="{{ user_data['email'] }}"></input>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="mdi-maps-local-phone prefix"></i>
                     <label for="phone">Phone number</label>
                     <input type="text" id="new_phone" name="new_phone" pattern=".{10,14}" value="{{ user_data['phone'] }}"></input>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
-                    <label for="bio">Bio</label>
-                    <textarea id="bio" name="new_bio" class="materialize-textarea" maxlength=250>{{ user_data['bio'] }}</textarea>
+                    <i class="mdi-editor-mode-edit prefix"></i>
+                    <label for="bio">Bio</label> <textarea id="bio" name="new_bio" class="materialize-textarea" maxlength=250>{{ user_data['bio'] }}</textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="mdi-action-lock prefix"></i>
                     <label for="new_password">New Password</label>
                     <input type="password" id="new_password" name="new_password" placeholder="NewSuperSecretPassword"
                     pattern=".{8,50}" class="validate">
@@ -40,6 +43,7 @@
             </div>
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="mdi-action-lock prefix"></i>
                     <label for="confirm_password">Confirm New Password</label>
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
                 </div>
@@ -47,6 +51,7 @@
             <br/>
             <div class="row">
                 <div class="input-field col s12">
+                    <i class="mdi-content-report prefix"></i>
                     <label for="password">Verify Password</label>
                     <input type="password" id="verify_password" name="verify_password" placeholder="CurrentSuperSecretPassword" pattern=".{8,50}" required>
                 </div>
