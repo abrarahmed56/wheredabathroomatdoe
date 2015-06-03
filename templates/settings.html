@@ -10,30 +10,53 @@
 
 <div class="container">
     <br/>
-    <form id='form' class="form-horizontal" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
-        <div>
-            <label for="email" class="black-text">Email</label>
-            <input type="email" id="new_email" class="white" name="new_email" value="{{ user_data['email'] }}"></input>
-        </div>
-        <div>
-            <label for="phone" class="black-text">Phone number</label>
-            <input type="text" id="new_phone" name="new_phone" pattern=".{10,14}" class="white" value="{{ user_data['phone'] }}"></input>
-        </div>
-        <div>
-            <label for="new_password" class="black-text">New Password</label>
-            <input type="password" class="white" id="new_password" name="new_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
-        </div>
-        <div>
-            <label for="confirm_password" class="black-text">Confirm New Password</label>
-            <input type="password" class="white" id="confirm_password" name="confirm_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
-        </div>
-        <br/>
-        <label for="password" class="black-text">Verify Password</label>
-        <input type="password" class="white" id="verify_password" name="verify_password" placeholder="CurrentSuperSecretPassword" pattern=".{8,50}" required>
-        <div class="center-text">
-                <button id="update" name="update" value="update" class="btn btn-primary">Update</button>
-        </div>
-    </form>
+    <div class="row card-panel white">
+        <form id='form' class="col s12" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="email">Email</label>
+                    <input type="email" id="new_email" name="new_email" value="{{ user_data['email'] }}"></input>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="phone">Phone number</label>
+                    <input type="text" id="new_phone" name="new_phone" pattern=".{10,14}" value="{{ user_data['phone'] }}"></input>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="bio">Bio</label>
+                    <textarea id="bio" class="materialize-textarea"></textarea>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" placeholder="NewSuperSecretPassword"
+                    pattern=".{8,50}" class="validate">
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="input-field col s12">
+                    <label for="password">Verify Password</label>
+                    <input type="password" id="verify_password" name="verify_password" placeholder="CurrentSuperSecretPassword" pattern=".{8,50}" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="center-text">
+                        <button id="update" name="update" value="update" class="btn btn-primary">Update</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 {% block scripts %}
