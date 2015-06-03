@@ -11,7 +11,7 @@ def connect():
         print "Error: %s" % e
         return None
 
-def auth(type, email, password, phone=None):
+def auth(type, email, password, phone=None, bio=None):
     global ID_USER
     conn = connect()
     if conn == None:
@@ -32,7 +32,7 @@ def auth(type, email, password, phone=None):
                 uuid = generate_id(ID_USER)
                 if not uuid[0]:
                     return "UUID error"
-                add_user(uuid[1], email, password, phone)
+                add_user(uuid[1], email, password, phone, bio)
                 return "Registration successful"
             else:
                 return "A user with that email already exists"
@@ -56,14 +56,14 @@ def auth(type, email, password, phone=None):
         if conn:
             conn.close()
 
-def add_user(uid, email, password, phone):
+def add_user(uid, email, password, phone, bio:
     conn = connect()
     if conn == None:
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s)",
-                (uid, email, validate.hash_password(password), phone))
+        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s)",
+                (uid, email, validate.hash_password(password), phone, bio))
         conn.commit()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -165,6 +165,44 @@ def update_user_phone(uid, new_phone, verify_password=None):
         if conn:
             conn.close()
 
+def get_user_bio(uid=None, email=None):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        results = ()
+        if uid:
+            c.execute("""SELECT Bio FROM Users WHERE ID = %s LIMIT 1""",
+                            (uid,))
+            results = c.fetchone()
+        elif email:
+            c.execute("""SELECT Bio FROM Users WHERE Email = %s LIMIT 1""",
+                            (email,))
+            results = c.fetchone()
+        return results[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+            
+def update_user_bio(uid, new_bio):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET Bio = %s WHERE ID = %s",
+                 (new_bio, uid))
+        c.commit()
+        return (True, "Successfully updated user bio")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+                        
 def add_place(place_type, location_x, location_y, finder):
     global ID_PLACE
     conn = connect()
