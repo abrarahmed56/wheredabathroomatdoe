@@ -88,7 +88,7 @@ def get_user_password(uid=None, email=None):
             c.execute("""SELECT Password FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0]
+        return results[0] if results else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -111,7 +111,7 @@ def update_user_password(uid, new_password, verify_old_password=None):
     try:
         c.execute("UPDATE USERS SET Password = %s WHERE ID = %s",
                  (validate.hash_password(new_password), uid))
-        c.commit()
+        conn.commit()
         return (True, "Successfully updated password")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -135,7 +135,8 @@ def update_user_email(uid, new_email, verify_password=None):
     try:
         c.execute("UPDATE USERS SET Email = %s WHERE ID = %s",
                  (new_email, uid))
-        c.commit()
+        conn.commit()
+        session['email'] = new_email
         return (True, "Successfully updated email")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -159,7 +160,7 @@ def update_user_phone(uid, new_phone, verify_password=None):
     try:
         c.execute("UPDATE USERS SET Phone = %s WHERE ID = %s",
                  (new_phone, uid))
-        c.commit()
+        conn.commit()
         return (True, "Successfully updated phone number")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -212,7 +213,7 @@ def update_user_bio(uid, new_bio):
     try:
         c.execute("UPDATE USERS SET Bio = %s WHERE ID = %s",
                  (new_bio, uid))
-        c.commit()
+        conn.commit()
         return (True, "Successfully updated user bio")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e

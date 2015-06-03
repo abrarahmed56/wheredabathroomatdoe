@@ -32,7 +32,6 @@ def index():
 @app.route("/welcome", methods=['GET', 'POST'])
 def welcome():
     if request.method=="POST":
-        print request.form
         if request.form.has_key("register"):
             required_keys = [ 'registerEmail1'
                             , 'registerPassword1'
@@ -107,7 +106,32 @@ def settings():
                         , 'verify_password'
                         ]
         if is_valid_request(request.form, required_keys):
-            pass
+            uid = uuid.UUID(session['uid'])
+            old_password = get_user_password(uid=uid)
+            if old_password:
+                if not validate.check_password(old_password,
+                        request.form['verify_password']):
+                    flash("Invalid verification credentials")
+                else:
+                    if session['email'] != request.form['new_email']:
+                        validate_email = validate.is_valid_email(request.form['new_email'])
+                        if validate_email[0]:
+                            flash(update_user_email(uid,
+                                request.form['new_email'])[1])
+                        else:
+                            flash(validate_email[1])
+                    validate_phone = validate.is_valid_telephone(request.form['new_phone'])
+                    if validate_phone[0]:
+                        flash(update_user_phone(uid, validate_phone[1])[1])
+                    else:
+                        flash(validate_email[1])
+                    if request.form['new_password']:
+                        validate_password = validate.is_valid_password(request.form['new_password'])
+                        if validate_password[0]:
+                            flash(update_user_password(uid, request.form['new_password'])[1])
+                        else:
+                            flash(validate_password[1])
+            return render_template('settings.html', user_data=get_user_data(uid))
         else:
             flash("Malformed request")
     else:
