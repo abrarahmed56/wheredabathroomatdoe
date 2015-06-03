@@ -29,7 +29,7 @@ if ("users",) in tables_list:
         c.execute("SELECT * FROM Users")
         print c.fetchall()
         #delete everything in Users table
-        c.execute("DROP TABLE Users")
+        c.execute("DROP TABLE Users CASCADE")
     except Exception, e:
         print "Error displaying contents of Users database: %s" % e
 if ("places",) in tables_list:
@@ -38,7 +38,7 @@ if ("places",) in tables_list:
         c.execute("SELECT * FROM Places")
         print c.fetchall()
         #delete everything in Places table
-        c.execute("DROP TABLE Places")
+        c.execute("DROP TABLE Places CASCADE")
     except Exception, e:
         print "Error displaying contents of Places database: %s" % e
 
@@ -52,9 +52,20 @@ if ("reviews",) in tables_list:
     except Exception, e:
         print "Error displaying contents of Reviews database: %s" % e
 
+if ("favorites",) in tables_list:
+    try:
+        #next two lines show previous contents in table Reviews
+        c.execute("SELECT * FROM Favorites")
+        print c.fetchall()
+        #delete everything in Reviews table
+        c.execute("DROP TABLE Favorites")
+    except Exception, e:
+        print "Error displaying contents of Favorites database: %s" % e
+
 # Create new Users, Places, and Reviews tables
-c.execute("CREATE TABLE Users (ID UUID PRIMARY KEY, Email TEXT, Password TEXT, Phone TEXT)")
 c.execute("""CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceType TEXT, LocationX DOUBLE PRECISION,
           LocationY DOUBLE PRECISION, Favorites INT, Finder TEXT)""")
 c.execute("CREATE TABLE Reviews (ID UUID PRIMARY KEY, Username TEXT, Rating INT, Review TEXT)")
+c.execute("CREATE TABLE Users (ID UUID PRIMARY KEY, Email TEXT, Password TEXT, Phone TEXT, FAVORITES UUID REFERENCES Reviews(ID))")
+c.execute("CREATE TABLE Favorites (UserID UUID REFERENCES Users (ID), PlacesID UUID REFERENCES Places (ID))")
 conn.commit()
