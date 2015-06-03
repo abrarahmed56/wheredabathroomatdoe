@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block navbar_right %}
+    {% include 'geo_link.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'settings_link_active.html' %}
+    {% include 'logout_link.html' %}
+{% endblock navbar_right %}
+{% block bodycontent %}
+
+<div class="container">
+    <br/>
+    <form id='form' class="form-horizontal" method="POST">
+        <div>
+            <label for="email" class="black-text">Email</label>
+            <input type="email" id="new_email" class="white" name="new_email" value="{{ user_data['email'] }}"></input>
+        </div>
+        <div>
+            <label for="phone" class="black-text">Phone number</label>
+            <input type="text" id="new_phone" name="new_phone" pattern=".{10,14}" class="white" value="{{ user_data['phone'] }}"></input>
+        </div>
+        <div>
+            <label for="new_password" class="black-text">New Password</label>
+            <input type="password" class="white" id="new_password" name="new_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
+        </div>
+        <div>
+            <label for="confirm_password" class="black-text">Confirm New Password</label>
+            <input type="password" class="white" id="confirm_password" name="confirm_password" placeholder="NewSuperSecretPassword" pattern=".{8,50}">
+        </div>
+        <br/>
+        <label for="password" class="black-text">Verify Password</label>
+        <input type="password" class="white" id="password" name="password" placeholder="CurrentSuperSecretPassword" pattern=".{6,50}" required>
+        <div class="center-text">
+                <button id="update" name="update" value="update" class="btn btn-primary">Update</button>
+        </div>
+    </form>
+</div>
+
+{% endblock bodycontent %}

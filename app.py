@@ -4,6 +4,7 @@ from validate import *
 from dbhelper import *
 from constants import *
 import json
+import uuid
 
 app = Flask(__name__)
 with open('key', 'r') as f:
@@ -94,8 +95,16 @@ def add():
 
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
-    return json.dumps(get_places())    
+    return json.dumps(get_places())
     #return json.dumps(get_local_places(location_x, location_y, radius))
+
+@app.route('/settings/', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        pass
+    else:
+        return render_template('settings.html',
+                               user_data=get_user_data(uuid.UUID(session['uid'])))
 
 @app.errorhandler(404)
 def page_not_found(error):

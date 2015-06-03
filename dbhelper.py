@@ -6,6 +6,7 @@ import uuid
 
 def connect():
     try:
+        psycopg2.extras.register_uuid()
         return psycopg2.connect("dbname='%s' user='%s'" % (DB_NAME, DB_USER))
     except psycopg2.DatabaseError, e:
         print "Error: %s" % e
@@ -43,6 +44,7 @@ def auth(type, email, password, phone=None, bio=None):
                 if validate.check_password(stored_pass, password):
                     if type == AUTH_LOGIN:
                         session['email'] = email
+                        session['uid'] = str(get_user_id(email))
                         success = True
                         return "Login successful"
                     elif type == AUTH_VERIFY:
@@ -63,7 +65,7 @@ def add_user(uid, email, password, phone, bio:
     c = conn.cursor()
     try:
         c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s)",
-                (uid, email, validate.hash_password(password), phone, bio))
+                (uid, uid, email, validate.hash_password(password), phone, bio))
         conn.commit()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -186,7 +188,22 @@ def get_user_bio(uid=None, email=None):
     finally:
         if conn:
             conn.close()
-            
+
+def get_user_email(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT Email FROM Users WHERE ID = %s LIMIT 1""",
+                        (uid,))
+        return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def update_user_bio(uid, new_bio):
     conn = connect()
     if conn == None:
@@ -202,7 +219,45 @@ def update_user_bio(uid, new_bio):
     finally:
         if conn:
             conn.close()
-                        
+
+def get_user_phone(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT Phone FROM Users WHERE ID = %s LIMIT 1""",
+                        (uid,))
+        return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_id(email):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT UserID FROM Users WHERE Email = %s LIMIT 1""",
+                        (email,))
+        return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_data(_uid):
+    user_data = {
+        'uid' : str(_uid),
+        'email' : get_user_email(_uid),
+        'phone' : get_user_phone(_uid),
+    }
+    return user_data
+
 def add_place(place_type, location_x, location_y, finder):
     global ID_PLACE
     conn = connect()
@@ -314,7 +369,6 @@ def generate_id(datatype):
     elif datatype == ID_REVIEW:
         query = "SELECT 1 FROM REVIEW WHERE ID = %s"
     success = False
-    psycopg2.extras.register_uuid()
     u = uuid.uuid4()
     conn = connect()
     if conn == None:
