@@ -1,16 +1,26 @@
 <div id="login" class="modal">
-    <div class="modal-content">
-        <h4>Login</h4>
-        Need an account? Register <a href="#register" class="modal-trigger">here.</a>
-        <form method="POST">
-            <input type="hidden" name="login">
-            <label class="active" for="email">Username</label>
-            <input type="text" id="loginEmail" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
-            <br>
-            <label class="active" for="password">Password</label>
-            <input type="password" id="loginPassword" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{8,50}" class="white" required></input>
-            <br>
-            <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
-        </form>
+    <div class="modal-content white">
+        <div>
+            <h4>Login</h4>
+            Need an account? Register <a href="#register" class="modal-trigger">here.</a>
+            <form method="POST">
+                <input type="hidden" name="login">
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="mdi-communication-email prefix"></i>
+                        <label class="active" for="email">Email</label>
+                        <input type="text" id="loginEmail" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <i class="mdi-action-lock prefix"></i>
+                        <label class="active" for="password">Password</label>
+                        <input type="password" id="loginPassword" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{8,50}" class="white" required></input>
+                    </div>
+                </div>
+                <input type="submit" value="Login" id="submit" class="btn green darken-2"></input>
+            </form>
+        </div>
     </div>
 </div>
