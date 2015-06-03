@@ -252,10 +252,14 @@ def get_user_id(email):
             conn.close()
 
 def get_user_data(_uid):
+    user_email = get_user_email(_uid)
+    user_phone = get_user_phone(_uid)
+    user_bio = get_user_bio(_uid)
     user_data = {
         'uid' : str(_uid),
-        'email' : get_user_email(_uid),
-        'phone' : get_user_phone(_uid),
+        'email' : user_email,
+        'phone' : user_phone,
+        'bio' : user_bio if user_bio else "",
     }
     return user_data
 

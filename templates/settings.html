@@ -10,6 +10,7 @@
 
 <div class="container">
     <br/>
+    <h1 class="center-text">My Settings</h1>
     <div class="row card-panel white">
         <form id='form' class="col s12" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
             <div class="row">
@@ -27,7 +28,7 @@
             <div class="row">
                 <div class="input-field col s12">
                     <label for="bio">Bio</label>
-                    <textarea id="bio" class="materialize-textarea"></textarea>
+                    <textarea id="bio" name="new_bio" class="materialize-textarea" maxlength=250>{{ user_data['bio'] }}</textarea>
                 </div>
             </div>
             <div class="row">

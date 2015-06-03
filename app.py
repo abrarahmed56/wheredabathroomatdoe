@@ -103,6 +103,7 @@ def settings():
         required_keys = [ 'new_email'
                         , 'new_phone'
                         , 'new_password'
+                        , 'new_bio'
                         , 'verify_password'
                         ]
         if is_valid_request(request.form, required_keys):
@@ -131,6 +132,8 @@ def settings():
                             flash(update_user_password(uid, request.form['new_password'])[1])
                         else:
                             flash(validate_password[1])
+                    if request.form['new_bio']:
+                        flash(update_user_bio(uid, request.form['new_bio'])[1])
             return render_template('settings.html', user_data=get_user_data(uid))
         else:
             flash("Malformed request")
