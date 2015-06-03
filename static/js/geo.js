@@ -33,7 +33,11 @@ function getPosition(show) {
             }, showError);
         }
         else if (activeMarker) {
-	    markutil();
+	    activeMarker.draggable = false;
+	    activeMarker = false;
+	    markActiveUtil();
+	    $('input[type="button"]')[0].value = 'Utility Spotted';
+	    location = location;
 	}
 	else {
             console.log("button pressed");
@@ -54,15 +58,14 @@ function getPosition(show) {
         }
     }
     else {
-        err.innerHTML = "Geolocation is not supported by this browser.";
+        err.innerHTML = "Geolocation is not supported by this browser.";//flash
     }
 }
 
-function markutil() {
-    console.log('swagg')
-    $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})                                  
-        .done(function(data) {                                                                                                                            
-            alert(data);//flash data                                                                                                                    
+function markActiveUtil() {
+    $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})
+        .done(function(data) {
+	    Materialize.toast('Location marked', 3000);
         });
 }
 
@@ -86,6 +89,10 @@ function markUtil(util) {
 	position: latlng,
 	map: map,
 	icon: img});
+    google.maps.event.addListener(marker, 'click', function() {
+	console.log('ayy lmao');
+	console.log(marker);
+    });
     console.log('UTILITY MARKED');
 }
 
