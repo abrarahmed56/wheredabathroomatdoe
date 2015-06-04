@@ -48,3 +48,20 @@ https://www.python.org/dev/peps/pep-0008/
 
 ## Set up dependencies
 See `dependencies.md`  
+
+## To-do List
+- Add user name
+- Add disabled and email confirmed and phone confirmed to database
+- Post utility review feature
+- Update utility review feature
+- Delete utility review feature
+- Upload utility picture
+- Report utility feature
+- Favorite utility feature
+- Upload user profile picture
+- Report user feature
+- Disable account feature (report threshold)
+- User ranking feature
+- Database migration function
+- Email confirmation
+- Sms confirmation
