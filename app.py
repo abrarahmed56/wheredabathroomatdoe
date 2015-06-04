@@ -6,7 +6,7 @@ from constants import *
 import json
 import uuid
 import os
-from werkzeug import secure_filename
+from werkzeug import secure_filename, FileStorage
 import tempfile
 from PIL import Image
 
@@ -140,17 +140,23 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             try:
-                #temp = tempfile.TemporaryFile()
-                #temp.write(file)
+                temp = tempfile.NamedTemporaryFile()
+                print file
+                #FileStorage(stream=temp, filename=filename)
+                temp.write(file.stream.read())
+                #temp = file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                print "temp write success- " + str(temp.name)
+                im = Image.open(temp.name)
+                print "image success"
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                im = Image.open(temp)
                 flash("Upload successful")
             except IOError:
-                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                #os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 flash("Please upload a real image")
             except IOError:
                 pass
-            return redirect(url_for("welcome"))
+            #return redirect(url_for("welcome"))
+            return "hi"
         flash("Upload unsuccessful")
         return render_template("upload_form.html")
     return render_template("upload_form.html")
