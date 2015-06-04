@@ -355,9 +355,22 @@ def email_exists(email):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""SELECT 1 FROM Users WHERE Email = %s""", (email,))
-        conn.commit()
-        return len(c.fetchall()) > 0
+        c.execute("""SELECT 1 FROM Users WHERE Email = %s LIMIT 1""", (email,))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def uid_exists(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM Users WHERE UserId = %s LIMIT 1""", (uid,))
+        return c.fetchone()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

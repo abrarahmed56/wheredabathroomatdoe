@@ -10,6 +10,15 @@ app = Flask(__name__)
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
 
+def deflate_uuid(uuid):
+    return uuid.replace('-', '')
+
+def inflate_uuid(uuid):
+    if len(uuid) == 32:
+        return uuid[0:8] + '-' + uuid[8:12] + '-' + uuid[12:16] + '-' + uuid[16:20] + '-' + uuid[20:32]
+    else:
+        return None
+
 def redirect_if_not_logged_in(target):
     def wrap(func):
        @wraps(func)
@@ -77,19 +86,26 @@ def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/profile', methods=['GET'])
+@redirect_if_not_logged_in("welcome")
 def profile():
-    return redirect('/profile/' + session['uid'])
+    return redirect('/profile/' + deflate_uuid(session['uid']))
 
 @app.route('/profile/<userid>', methods=['GET'])
 @redirect_if_not_logged_in("welcome")
 def profile_with_id(userid):
     try:
-        uid = uuid.UUID(userid)
-        return render_template('profile.html',
-                loggedin=session.has_key("email"),
-                user_data = get_user_data(uid))
+        userid = inflate_uuid(userid)
+        if userid:
+            uid = uuid.UUID(userid)
+            if uid_exists(uid):
+                return render_template('profile.html',
+                        loggedin=session.has_key("email"),
+                        user_data = get_user_data(uid))
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
     except ValueError, e:
-        return redirect(url_for('welcome'))
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
 
 @app.route('/api/add', methods=['POST'])
 def add():
