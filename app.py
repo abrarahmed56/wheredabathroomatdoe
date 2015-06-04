@@ -7,6 +7,7 @@ import json
 import uuid
 import os
 from werkzeug import secure_filename
+import Image
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
@@ -134,14 +135,18 @@ def allowed_file(filename):
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method=="POST":
-       file = request.files['pic']
-       if file and allowed_file(file.filename):
-          filename = secure_filename(file.filename)
-          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-          flash("Upload successful")
-          return redirect(url_for("welcome"))
-       flash("Upload unsuccessful")
-       return render_template("upload_form.html")
+        file = request.files['pic']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            try:
+                im = Image.open(filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                flash("Upload successful")
+            except IOError:
+                flash("Please upload a real image")
+            return redirect(url_for("welcome"))
+        flash("Upload unsuccessful")
+        return render_template("upload_form.html")
     return render_template("upload_form.html")
 
 @app.route('/settings/', methods=['GET', 'POST'])
