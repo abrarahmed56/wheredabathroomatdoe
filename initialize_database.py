@@ -18,57 +18,69 @@ c = conn.cursor()
 # >> psql
 # <dbname>=# \dt
 
-#show table names
+USER_TABLE_CREATE = """CREATE TABLE Users (ID UUID PRIMARY KEY, UserID UUID, Email TEXT,
+    Password TEXT, Phone TEXT, FirstName varchar(50), LastName
+    varchar(50), Bio varchar(250), Disabled BOOLEAN, EmailConfirmed
+    BOOLEAN, PhoneConfirmed BOOLEAN)"""
+
+PLACES_TABLE_CREATE = """CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID,
+    PlaceType TEXT, LocationX DOUBLE PRECISION, LocationY DOUBLE PRECISION,
+    Favorites INT, Finder UUID REFERENCES Users(ID))"""
+
+REVIEWS_TABLE_CREATE = """CREATE TABLE Reviews (ID UUID PRIMARY KEY, ReviewID
+    UUID, Username TEXT, Rating INT, Review TEXT)"""
+
+FAVORITES_TABLE_CREATE = """CREATE TABLE Favorites (UserID UUID REFERENCES Users
+    (ID), PlacesID UUID REFERENCES Places (ID))"""
+
+def drop(dbname):
+    c.execute("DROP TABLE %s CASCADE" % dbname)
+
+def migrate(dbname, create_query):
+    try:
+        # Print contents of table
+        c.execute("SELECT * FROM %s" % (dbname,))
+        print c.fetchall()
+        # Migrate data to new table
+        old_col_names = [desc[0] for desc in c.description]
+        c.execute("ALTER TABLE %s RENAME TO temp_%s" % (dbname, dbname))
+        c.execute(create_query)
+        c.execute("SELECT * FROM %s LIMIT 0" % (dbname,))
+        new_col_names = [desc[0] for desc in c.description]
+        preserved_col_names = [col_name for col_name in new_col_names if
+                col_name in old_col_names]
+        preserved_col_names = ', '.join(preserved_col_names)
+        c.execute("""INSERT INTO %s (%s) SELECT %s from temp_%s""" %
+                (dbname, preserved_col_names, preserved_col_names, dbname))
+        c.execute("DROP TABLE temp_%s CASCADE" % (dbname,))
+    except Exception, e:
+        print "Error displaying contents of %s database: %s" % (dbname, e)
+
+# Print existing table names
 c.execute("SELECT relname from pg_class where relkind='r' and relname !~ '^(pg_|sql_)';")
 tables_list =  c.fetchall()
+print "Table names: "
 print tables_list
 
 if ("users",) in tables_list:
-    try:
-        #next two lines show previous contents in table Users
-        c.execute("SELECT * FROM Users")
-        print c.fetchall()
-        #delete everything in Users table
-        c.execute("DROP TABLE Users CASCADE")
-    except Exception, e:
-        print "Error displaying contents of Users database: %s" % e
+    migrate('Users', USER_TABLE_CREATE)
+else:
+    c.execute(USER_TABLE_CREATE)
+
 if ("places",) in tables_list:
-    try:
-        #next two lines show previous contents in table Places
-        c.execute("SELECT * FROM Places")
-        print c.fetchall()
-        #delete everything in Places table
-        c.execute("DROP TABLE Places CASCADE")
-    except Exception, e:
-        print "Error displaying contents of Places database: %s" % e
+    migrate('Places', PLACES_TABLE_CREATE)
+else:
+    c.execute(PLACES_TABLE_CREATE)
 
 if ("reviews",) in tables_list:
-    try:
-        #next two lines show previous contents in table Reviews
-        c.execute("SELECT * FROM Reviews")
-        print c.fetchall()
-        #delete everything in Reviews table
-        c.execute("DROP TABLE Reviews")
-    except Exception, e:
-        print "Error displaying contents of Reviews database: %s" % e
+    migrate('Reviews', REVIEWS_TABLE_CREATE)
+else:
+    c.execute(REVIEWS_TABLE_CREATE)
 
 if ("favorites",) in tables_list:
-    try:
-        #next two lines show previous contents in table Reviews
-        c.execute("SELECT * FROM Favorites")
-        print c.fetchall()
-        #delete everything in Reviews table
-        c.execute("DROP TABLE Favorites")
-    except Exception, e:
-        print "Error displaying contents of Favorites database: %s" % e
+    migrate('Favorites', FAVORITES_TABLE_CREATE)
+else:
+    c.execute(FAVORITES_TABLE_CREATE)
 
-# Create new Users, Places, and Reviews tables
-c.execute("""CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID, PlaceType TEXT, LocationX DOUBLE PRECISION,
-          LocationY DOUBLE PRECISION, Favorites INT, Finder TEXT)""")
-c.execute("CREATE TABLE Reviews (ID UUID PRIMARY KEY, ReviewID UUID, Username TEXT, Rating INT, Review TEXT)")
-c.execute("""CREATE TABLE Users (ID UUID PRIMARY KEY, UserID UUID, Email TEXT,
-          Password TEXT, Phone TEXT, FirstName varchar(50), LastName
-          varchar(50), Bio varchar(250), FAVORITES UUID REFERENCES
-          Reviews(ID))""")
-c.execute("CREATE TABLE Favorites (UserID UUID REFERENCES Users (ID), PlacesID UUID REFERENCES Places (ID))")
 conn.commit()
+
