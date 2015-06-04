@@ -7,7 +7,7 @@ import json
 import uuid
 import os
 from werkzeug import secure_filename
-import Image
+from PIL import Image
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
