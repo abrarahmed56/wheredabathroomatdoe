@@ -8,6 +8,7 @@ import uuid
 import os
 from werkzeug import secure_filename
 import Image
+import tempfile
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
@@ -139,11 +140,16 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             try:
-                im = Image.open(filename)
+                #temp = tempfile.TemporaryFile()
+                #temp.write(file)
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                im = Image.open(temp)
                 flash("Upload successful")
             except IOError:
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 flash("Please upload a real image")
+            except IOError:
+                pass
             return redirect(url_for("welcome"))
         flash("Upload unsuccessful")
         return render_template("upload_form.html")
