@@ -1,3 +1,5 @@
+# Image files
+static/uploads/
 # Swap files
 *~
 *.swp

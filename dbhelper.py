@@ -64,8 +64,9 @@ def add_user(uid, email, password, phone, bio):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s, %s)",
-                (uid, uid, email, validate.hash_password(password), phone, bio))
+        c.execute("INSERT INTO Users VALUES(%s, %s, %s, %s, %s, %s, %s, %s)",
+                (uid, uid, email, validate.hash_password(password), phone, '',
+                '', bio))
         conn.commit()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -168,6 +169,50 @@ def update_user_phone(uid, new_phone, verify_password=None):
         if conn:
             conn.close()
 
+def get_user_firstname(uid=None, email=None):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        results = ()
+        if uid:
+            c.execute("""SELECT FirstName FROM Users WHERE ID = %s LIMIT 1""",
+                            (uid,))
+            results = c.fetchone()
+        elif email:
+            c.execute("""SELECT FirstName FROM Users WHERE Email = %s LIMIT 1""",
+                            (email,))
+            results = c.fetchone()
+        return results[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_lastname(uid=None, email=None):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        results = ()
+        if uid:
+            c.execute("""SELECT LastName FROM Users WHERE ID = %s LIMIT 1""",
+                            (uid,))
+            results = c.fetchone()
+        elif email:
+            c.execute("""SELECT LastName FROM Users WHERE Email = %s LIMIT 1""",
+                            (email,))
+            results = c.fetchone()
+        return results[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def get_user_bio(uid=None, email=None):
     conn = connect()
     if conn == None:
@@ -199,6 +244,38 @@ def get_user_email(uid):
         c.execute("""SELECT Email FROM Users WHERE ID = %s LIMIT 1""",
                         (uid,))
         return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_user_firstname(uid, new_firstname):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET FirstName = %s WHERE ID = %s",
+                 (new_firstname, uid))
+        conn.commit()
+        return (True, "Successfully updated user first name")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_user_lastname(uid, new_lastname):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET LastName = %s WHERE ID = %s",
+                 (new_lastname, uid))
+        conn.commit()
+        return (True, "Successfully updated user last name")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -254,11 +331,15 @@ def get_user_id(email):
 def get_user_data(_uid):
     user_email = get_user_email(_uid)
     user_phone = get_user_phone(_uid)
+    user_firstname = get_user_firstname(_uid)
+    user_lastname = get_user_lastname(_uid)
     user_bio = get_user_bio(_uid)
     user_data = {
         'uid' : str(_uid),
         'email' : user_email,
         'phone' : user_phone,
+        'first_name' : user_firstname,
+        'last_name' : user_lastname,
         'bio' : user_bio if user_bio else "",
     }
     return user_data
