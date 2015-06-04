@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% include 'logout.html' %}
 {% block navbar_right %}
+    {% include 'profile_link.html' %}
     {% include 'geo_link.html' %}
     {% include 'donate_link.html' %}
     {% include 'settings_link_active.html' %}
-    {% include 'profile.html' %}
     {% include 'logout_link.html' %}
 {% endblock navbar_right %}
 {% block bodycontent %}
 
-<div class="container">
+<div>
     <br/>
     <h1 class="center-text">My Settings</h1>
     <div class="row card-panel white">

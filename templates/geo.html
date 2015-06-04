@@ -4,10 +4,10 @@
 {% endblock headcontent %}
 {% block navbar_right %}
     {% if loggedin %}
+        {% include 'profile_link.html' %}
         {% include 'geo_link_active.html' %}
         {% include 'donate_link.html' %}
         {% include 'settings_link.html' %}
-        {% include 'profile_link.html' %}
         {% include 'logout_link.html' %}
     {% else %}
         {% include 'geo_link_active.html' %}

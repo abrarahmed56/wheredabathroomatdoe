@@ -24,12 +24,12 @@ def redirect_if_not_logged_in(target):
        return inner
     return wrap
 
-@app.route("/")
+@app.route('/')
 @redirect_if_not_logged_in("welcome")
 def index():
     return render_template('index.html', loggedin=session.has_key("email"))
 
-@app.route("/welcome", methods=['GET', 'POST'])
+@app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     if request.method=="POST":
         if request.form.has_key("register"):
@@ -58,7 +58,7 @@ def welcome():
     else:
         return render_template('welcome.html', loggedin=session.has_key("email"))
 
-@app.route("/geo", methods=["GET", "POST"])
+@app.route('/geo', methods=['GET', 'POST'])
 def geo():
     return render_template('geo.html', loggedin=session.has_key("email"))
 
@@ -77,11 +77,19 @@ def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/profile', methods=['GET'])
+def profile():
+    return redirect('/profile/' + session['uid'])
+
 @app.route('/profile/<userid>', methods=['GET'])
 @redirect_if_not_logged_in("welcome")
-def profile(userid=session['uid']):
-    uid = uuid.UUID(userid)
-    return render_template('profile.html', loggedin=session.has_key("email"), email=get_user_email(uid), bio=get_user_bio(uid))
+def profile_with_id(userid):
+    try:
+        uid = uuid.UUID(userid)
+        return render_template('profile.html',
+                loggedin=session.has_key("email"),
+                user_data = get_user_data(uid))
+    except ValueError, e:
+        return redirect(url_for('welcome'))
 
 @app.route('/api/add', methods=['POST'])
 def add():
