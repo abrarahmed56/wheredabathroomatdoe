@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block navbar_right %}
+   {% include 'profile_link_active.html' %}
+   {% include 'geo_link.html' %}
+   {% include 'donate_link.html' %}
+   {% include 'settings_link.html' %}
+   {% include 'logout.html' %}
+   {% include 'logout_link.html' %}
+{% endblock navbar_right %}
+{% block bodycontent %}
+<br/>
+<div>
+    <div class="card-panel white">
+        <h3>Welcome to TEMPORARYNAME's profile!</h3>
+        <div class="col s12 text-center">
+            <b>Email:</b> {{ user_data['email'] }}
+            <br>
+            <b>User Bio:</b> {{ user_data['bio'] }}
+        </div>
+</div>
+{% endblock bodycontent %}

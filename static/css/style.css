@@ -18,3 +18,7 @@ input[type="password"],
 input[type="email"] {
     padding-left: 10px;
 }
+
+.black-text {
+    color: #292929;
+}

@@ -4,7 +4,7 @@ from validate import *
 from dbhelper import *
 from constants import *
 import json
-import urllib2
+import uuid
 import os
 from werkzeug import secure_filename
 
@@ -15,6 +15,15 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
+
+def deflate_uuid(uuid):
+    return uuid.replace('-', '')
+
+def inflate_uuid(uuid):
+    if len(uuid) == 32:
+        return uuid[0:8] + '-' + uuid[8:12] + '-' + uuid[12:16] + '-' + uuid[16:20] + '-' + uuid[20:32]
+    else:
+        return None
 
 def redirect_if_not_logged_in(target):
     def wrap(func):
@@ -30,23 +39,22 @@ def redirect_if_not_logged_in(target):
        return inner
     return wrap
 
-@app.route("/")
+@app.route('/')
 @redirect_if_not_logged_in("welcome")
 def index():
     return render_template('index.html', loggedin=session.has_key("email"))
 
-@app.route("/welcome", methods=['GET', 'POST'])
+@app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     if request.method=="POST":
-        print request.form
         if request.form.has_key("register"):
             required_keys = [ 'registerEmail1'
-                            , 'registerPassword'
+                            , 'registerPassword1'
                             , 'registerPhone'
                             ]
             if is_valid_request(request.form, required_keys):
                 email = request.form['registerEmail1']
-                password = request.form['registerPassword']
+                password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
                 flash(auth(AUTH_REGISTER, email, password, phone))
             else:
@@ -65,7 +73,7 @@ def welcome():
     else:
         return render_template('welcome.html', loggedin=session.has_key("email"))
 
-@app.route("/geo", methods=["GET", "POST"])
+@app.route('/geo', methods=['GET', 'POST'])
 def geo():
     return render_template('geo.html', loggedin=session.has_key("email"))
 
@@ -83,6 +91,28 @@ def about():
 def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
+@app.route('/profile', methods=['GET'])
+@redirect_if_not_logged_in("welcome")
+def profile():
+    return redirect('/profile/' + deflate_uuid(session['uid']))
+
+@app.route('/profile/<userid>', methods=['GET'])
+@redirect_if_not_logged_in("welcome")
+def profile_with_id(userid):
+    try:
+        userid = inflate_uuid(userid)
+        if userid:
+            uid = uuid.UUID(userid)
+            if uid_exists(uid):
+                return render_template('profile.html',
+                        loggedin=session.has_key("email"),
+                        user_data = get_user_data(uid))
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
+    except ValueError, e:
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
+
 @app.route('/api/add', methods=['POST'])
 def add():
     print 'hey its works bub'
@@ -95,7 +125,7 @@ def add():
 
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
-    return json.dumps(get_places())    
+    return json.dumps(get_places())
     #return json.dumps(get_local_places(location_x, location_y, radius))
 
 def allowed_file(filename):
@@ -113,6 +143,50 @@ def upload():
        flash("Upload unsuccessful")
        return render_template("upload_form.html")
     return render_template("upload_form.html")
+
+@app.route('/settings/', methods=['GET', 'POST'])
+def settings():
+    if request.method == 'POST':
+        required_keys = [ 'new_email'
+                        , 'new_phone'
+                        , 'new_password'
+                        , 'new_bio'
+                        , 'verify_password'
+                        ]
+        if is_valid_request(request.form, required_keys):
+            uid = uuid.UUID(session['uid'])
+            old_password = get_user_password(uid=uid)
+            if old_password:
+                if not validate.check_password(old_password,
+                        request.form['verify_password']):
+                    flash("Invalid verification credentials")
+                else:
+                    if session['email'] != request.form['new_email']:
+                        validate_email = validate.is_valid_email(request.form['new_email'])
+                        if validate_email[0]:
+                            flash(update_user_email(uid,
+                                request.form['new_email'])[1])
+                        else:
+                            flash(validate_email[1])
+                    validate_phone = validate.is_valid_telephone(request.form['new_phone'])
+                    if validate_phone[0]:
+                        flash(update_user_phone(uid, validate_phone[1])[1])
+                    else:
+                        flash(validate_email[1])
+                    if request.form['new_password']:
+                        validate_password = validate.is_valid_password(request.form['new_password'])
+                        if validate_password[0]:
+                            flash(update_user_password(uid, request.form['new_password'])[1])
+                        else:
+                            flash(validate_password[1])
+                    if request.form['new_bio']:
+                        flash(update_user_bio(uid, request.form['new_bio'])[1])
+            return render_template('settings.html', user_data=get_user_data(uid))
+        else:
+            flash("Malformed request")
+    else:
+        return render_template('settings.html',
+                               user_data=get_user_data(uuid.UUID(session['uid'])))
 
 @app.errorhandler(404)
 def page_not_found(error):
