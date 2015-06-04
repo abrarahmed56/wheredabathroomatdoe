@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block navbar_right %}
+   {% include 'geo_link.html' %}
+   {% include 'donate_link.html' %}
+   {% include 'settings_link.html' %}
+   {% include 'profile_link_active.html' %}
+   {% include 'logout.html' %}
+   {% include 'logout_link.html' %}
+{% endblock navbar_right %}
+{% block bodycontent %}
+<h3>Welcome to TEMPORARYNAME's profile!</h3>
+<b>Email:</b> {{ email }}
+<b>User Bio:</b> {{ bio }}
+{% endblock bodycontent %}

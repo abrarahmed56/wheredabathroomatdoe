@@ -76,11 +76,12 @@ def about():
 def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
-@app.route('/profile', methods=['POST'])
+@app.route('/profile', methods=['GET'])
+@app.route('/profile/<userid>', methods=['GET'])
 @redirect_if_not_logged_in("welcome")
-def profile():
-    bio = get_user_bio(None,session["email"])
-    return render_template('profile.html', loggedin=session.has_key("email"), bio=bio)
+def profile(userid=session['uid']):
+    uid = uuid.UUID(userid)
+    return render_template('profile.html', loggedin=session.has_key("email"), email=get_user_email(uid), bio=get_user_bio(uid))
 
 @app.route('/api/add', methods=['POST'])
 def add():
