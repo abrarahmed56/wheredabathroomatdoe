@@ -115,12 +115,23 @@ def profile_with_id(userid):
         return redirect(url_for('index'))
 
 @app.route('/api/add', methods=['POST'])
+@redirect_if_not_logged_in("welcome")
 def add():
-    uemail = session['email']
-    latter = float(request.form['latitude'])
-    longter = float(request.form['longitude'])
-    utype = request.form['type']
-    add_place(utype, longter, latter, uemail)
+    email = session['email']
+    required_keys = [ 'latitude'
+                    , 'longitude'
+                    , 'type'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        try:
+            latitude = float(request.form['latitude'])
+            longitude = float(request.form['longitude'])
+            util_type = request.form['type']
+            add_place(util_type, longitude, latitude, email)
+        except ValueError:
+            return "Malformed Request"
+    else:
+        return "Malformed Request"
     return 'Utility marked!'
 
 @app.route('/api/get', methods=['POST'])
@@ -129,9 +140,10 @@ def get():#eventually will get nearby places
     #return json.dumps(get_local_places(location_x, location_y, radius))
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit(".", 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['GET', 'POST'])
+@redirect_if_not_logged_in("welcome")
 def upload():
     if request.method == 'POST' and request.files.has_key('pic'):
         file = request.files['pic']
@@ -139,7 +151,13 @@ def upload():
             filename = secure_filename(file.filename)
             try:
                 img = Image.open(file.stream)
-                img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                try:
+                    os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'],
+                        session['uid']))
+                except OSError:
+                    pass
+                img.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                    session['uid'], 'profile.' + filename.rsplit('.', 1)[1]))
                 flash("Upload successful")
             except IOError:
                 flash("Invalid image")
