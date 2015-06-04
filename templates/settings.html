@@ -20,6 +20,12 @@
                     <label for="email">Email</label>
                     <input type="email" id="new_email" name="new_email" value="{{ user_data['email'] }}"></input>
                 </div>
+                {% if not user_data['email_confirmed'] %}
+                <span id="email_confirm_warning" class="red-text">
+                    <i class="mdi-alert-warning prefix red-text"></i>
+                    Your email has not been confirmed. Please click <a href="#">here</a>
+                    to receive a confirmation email with more details.</span>
+                {% endif %}
             </div>
             <div class="row">
                 <div class="input-field col s12">
