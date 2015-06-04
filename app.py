@@ -6,8 +6,7 @@ from constants import *
 import json
 import uuid
 import os
-from werkzeug import secure_filename, FileStorage
-import tempfile
+from werkzeug import secure_filename
 from PIL import Image
 
 UPLOAD_FOLDER = "static/uploads"
@@ -135,30 +134,18 @@ def allowed_file(filename):
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    if request.method=="POST":
+    if request.method == 'POST' and request.files.has_key('pic'):
         file = request.files['pic']
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             try:
-                temp = tempfile.NamedTemporaryFile()
-                print file
-                #FileStorage(stream=temp, filename=filename)
-                temp.write(file.stream.read())
-                #temp = file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                print "temp write success- " + str(temp.name)
-                im = Image.open(temp.name)
-                print "image success"
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                img = Image.open(file.stream)
+                img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 flash("Upload successful")
             except IOError:
-                #os.remove(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                flash("Please upload a real image")
-            except IOError:
-                pass
-            #return redirect(url_for("welcome"))
-            return "hi"
+                flash("Invalid image")
+            return redirect(url_for("welcome"))
         flash("Upload unsuccessful")
-        return render_template("upload_form.html")
     return render_template("upload_form.html")
 
 @app.route('/settings/', methods=['GET', 'POST'])
