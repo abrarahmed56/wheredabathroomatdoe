@@ -150,6 +150,8 @@ def settings():
         required_keys = [ 'new_email'
                         , 'new_phone'
                         , 'new_password'
+                        , 'new_firstname'
+                        , 'new_lastname'
                         , 'new_bio'
                         , 'verify_password'
                         ]
@@ -170,7 +172,8 @@ def settings():
                             flash(validate_email[1])
                     validate_phone = validate.is_valid_telephone(request.form['new_phone'])
                     if validate_phone[0]:
-                        flash(update_user_phone(uid, validate_phone[1])[1])
+                        if validate_phone[1] != get_user_phone(uid):
+                            flash(update_user_phone(uid, validate_phone[1])[1])
                     else:
                         flash(validate_email[1])
                     if request.form['new_password']:
@@ -179,7 +182,13 @@ def settings():
                             flash(update_user_password(uid, request.form['new_password'])[1])
                         else:
                             flash(validate_password[1])
-                    if request.form['new_bio']:
+                    if request.form['new_firstname'] != get_user_firstname(uid):
+                        flash(update_user_firstname(uid,
+                            request.form['new_firstname'])[1])
+                    if request.form['new_lastname'] != get_user_lastname(uid):
+                        flash(update_user_lastname(uid,
+                            request.form['new_lastname'])[1])
+                    if request.form['new_bio'] != get_user_bio(uid):
                         flash(update_user_bio(uid, request.form['new_bio'])[1])
             return render_template('settings.html', user_data=get_user_data(uid))
         else:
