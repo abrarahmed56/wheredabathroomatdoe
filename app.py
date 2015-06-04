@@ -116,7 +116,6 @@ def profile_with_id(userid):
 
 @app.route('/api/add', methods=['POST'])
 def add():
-    print 'hey its works bub'
     uemail = session['email']
     latter = float(request.form['latitude'])
     longter = float(request.form['longitude'])
@@ -144,7 +143,7 @@ def upload():
                 flash("Upload successful")
             except IOError:
                 flash("Invalid image")
-            return redirect(url_for("welcome"))
+            return redirect(url_for('index'))
         flash("Upload unsuccessful")
     return render_template("upload_form.html")
 
