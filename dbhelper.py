@@ -298,6 +298,54 @@ def update_user_bio(uid, new_bio):
         if conn:
             conn.close()
 
+def update_user_disabled(uid, disabled):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET Disabled = %s WHERE ID = %s",
+                 (disabled, uid))
+        conn.commit()
+        return (True, "Successfully updated user disabled flag")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_user_email_confirmed(uid, confirmed):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET EmailConfirmed = %s WHERE ID = %s",
+                 (confirmed, uid))
+        conn.commit()
+        return (True, "Successfully updated user email confirmed flag")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_user_phone_confirmed(uid, confirmed):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE USERS SET PhoneConfirmed = %s WHERE ID = %s",
+                 (confirmed, uid))
+        conn.commit()
+        return (True, "Successfully updated user phone confirmed flag")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def get_user_phone(uid):
     conn = connect()
     if conn == None:
@@ -343,6 +391,51 @@ def get_user_data(_uid):
         'bio' : user_bio if user_bio else "",
     }
     return user_data
+
+def get_user_disabled(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Disabled FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        return conn.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_email_confirmed(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT EmailConfirmed FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        return conn.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_phone_confirmed(uid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT PhoneConfirmed FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        return conn.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
 
 def add_place(place_type, location_x, location_y, finder):
     global ID_PLACE
