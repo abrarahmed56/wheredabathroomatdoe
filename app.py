@@ -4,8 +4,15 @@ from validate import *
 from dbhelper import *
 from constants import *
 import json
+import urllib2
+import os
+from werkzeug import secure_filename
+
+UPLOAD_FOLDER = "static/uploads"
+ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
 
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
 
@@ -90,6 +97,22 @@ def add():
 def get():#eventually will get nearby places
     return json.dumps(get_places())    
     #return json.dumps(get_local_places(location_x, location_y, radius))
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit(".", 1)[1] in ALLOWED_EXTENSIONS
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method=="POST":
+       file = request.files['pic']
+       if file and allowed_file(file.filename):
+          filename = secure_filename(file.filename)
+          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+          flash("Upload successful")
+          return redirect(url_for("welcome"))
+       flash("Upload unsuccessful")
+       return render_template("upload_form.html")
+    return render_template("upload_form.html")
 
 @app.errorhandler(404)
 def page_not_found(error):
