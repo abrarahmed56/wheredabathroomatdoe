@@ -42,6 +42,20 @@
                     <label for="phone">Phone number</label>
                     <input type="text" id="new_phone" name="new_phone" pattern=".{10,14}" value="{{ user_data['phone'] }}"></input>
                 </div>
+                {% if not user_data['phone_confirmed'] %}
+                <span id="phone_confirm_warning" class="col s12 red-text">
+                    <i class="mdi-alert-warning prefix red-text"></i>
+                    Your phone number has not been confirmed.
+                    <br/>
+                    Please click <a href="#">here</a>
+                    to receive a confirmation SMS text message with more details.
+                </span>
+                {% else %}
+                <span id="phone_confirm_acknowledge" class="col s12 green-text">
+                    <i class="mdi-action-verified-user prefix green-text"></i>
+                    Your phone number has been confirmed.
+                </span>
+                {% endif %}
             </div>
             <div class="row">
                 <div class="input-field col s6">
