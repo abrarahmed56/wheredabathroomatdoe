@@ -131,7 +131,7 @@ def add():
             longitude = float(request.form['longitude'])
             util_type = request.form['type']
             if util_type in ALLOWED_TYPES:
-               add_place(util_type, longitude, latitude, email)
+               print add_place(util_type, longitude, latitude, email)
             else:
                return "Malformed Request"
         except ValueError:

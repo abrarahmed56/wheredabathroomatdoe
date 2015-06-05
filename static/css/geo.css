@@ -7,11 +7,20 @@ body, html {
     height: 100%;
 }
 #map-canvas {
-    height: 87%;
+    height: 90%;
     width: 100%;
     margin: 0px;
     padding: 0px
 }
 .select-dropdown {
     text-indent: 10px
+}
+
+#inputForm {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        margin-left: -180px;
+        z-index: 5;
+        background-color: transparent;
 }

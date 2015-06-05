@@ -62,12 +62,12 @@ function getPosition(show) {
 }
 
 function markActiveUtil() {
+    console.log(activeMarker.position['F']);
     $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})
         .done(function(data) {
 	    console.log(data);
 	    Materialize.toast('Location marked', 3000);
-            location = location;
-	});
+   	});
 }
 
 function getNearbyUtils(lati,longi) {

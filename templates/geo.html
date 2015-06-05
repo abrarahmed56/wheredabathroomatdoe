@@ -17,8 +17,8 @@
    {% endif %}
 {% endblock navbar_right %}
 {% block bodycontent %}
-<div class="row">
 {% if loggedin %}
+<div class="row" id="inputForm">
   <form>
     <div class="input-field col s6">
       <select name="utils" id="utilType" class="white">
@@ -32,15 +32,15 @@
       <input type="button" id="b" value="Utility Spotted" onclick="getPosition(MARK);" class="btn green darken-3"/>
     </div>
   </form>
-{% endif %}
 </div>
+{% endif %}
 <div id="map-canvas"></div>
 {% include 'util_info.html' %} 
 {% endblock bodycontent %}
 {% block scripts %}
-<!-- TODO: load locally with slow connections -->
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
-<script src="static/js/geo.js"></script>
+  <!-- TODO: load locally with slow connections -->
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+  <script src="static/js/geo.js"></script>
 {% endblock scripts %}
 
 
