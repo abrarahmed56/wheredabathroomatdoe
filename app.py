@@ -32,8 +32,8 @@ def redirect_if_not_logged_in(target):
        @wraps(func)
        def inner(*args, **kwargs):
           if not session.has_key('email') or session['email'] == None:
-             #flash ("You are not logged in!")
-             #session.clear()
+             session.clear()
+             flash ("You are not logged in!")
              return redirect(url_for(target))
           else:
              pass
@@ -80,6 +80,7 @@ def geo():
     return render_template('geo.html', loggedin=session.has_key("email"))
 
 @app.route('/logout', methods=['POST'])
+@redirect_if_not_logged_in("welcome")
 def logout():
     session.clear()
     flash("Logout successful")
@@ -170,6 +171,7 @@ def upload():
     return redirect(url_for('settings'))
 
 @app.route('/settings/', methods=['GET', 'POST'])
+@redirect_if_not_logged_in("welcome")
 def settings():
     if request.method == 'POST':
         required_keys = [ 'new_email'
