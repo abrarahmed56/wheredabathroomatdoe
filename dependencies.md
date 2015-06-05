@@ -18,3 +18,6 @@ Now we can connect to the database with: `psql` and create a new database: `crea
 `pip install validate_email`  
 `pip install psycopg2`
 `pip install Pillow`
+
+#Install libjpeg-dev for image manipulation
+`sudo apt-get install libjpeg-dev`

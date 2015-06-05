@@ -159,17 +159,25 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             try:
-                img = Image.open(file.stream)
+                img1 = Image.open(file.stream)
+                img2 = img1.copy()
+                img1.thumbnail((256, 256))
+                img2.thumbnail((128, 128))
                 try:
                     os.makedirs(os.path.join(app.config['UPLOAD_FOLDER'],
                         session['uid']))
                 except OSError:
                     pass
-                img.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                    session['uid'], 'profile.' + filename.rsplit('.', 1)[1]))
+                img1.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                    session['uid'], 'profile256.jpg'))
+                img2.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                    session['uid'], 'profile128.jpg'))
                 flash("Upload successful")
-            except IOError:
-                flash("Invalid image")
+            except IOError, e:
+                if app.debug:
+                    flash("Invalid image: %s" % e)
+                else:
+                    flash("Invalid image")
             return redirect(url_for('settings'))
         flash("Upload unsuccessful")
     return redirect(url_for('settings'))
