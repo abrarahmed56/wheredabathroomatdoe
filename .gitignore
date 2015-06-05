@@ -6,6 +6,8 @@ static/uploads/
 *.swo
 # Secret key!
 key
+# Password for email
+emailpassword
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
