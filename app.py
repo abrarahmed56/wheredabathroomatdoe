@@ -27,13 +27,14 @@ def inflate_uuid(uuid):
     else:
         return None
 
-def redirect_if_not_logged_in(target):
+def redirect_if_not_logged_in(target, show_flash=True):
     def wrap(func):
        @wraps(func)
        def inner(*args, **kwargs):
           if not session.has_key('email') or session['email'] == None:
              session.clear()
-             flash ("You are not logged in!")
+             if show_flash:
+                flash ("You are not logged in!")
              return redirect(url_for(target))
           else:
              pass
@@ -42,7 +43,7 @@ def redirect_if_not_logged_in(target):
     return wrap
 
 @app.route('/')
-@redirect_if_not_logged_in("welcome")
+@redirect_if_not_logged_in("welcome", show_flash=False)
 def index():
     return render_template('index.html', loggedin=session.has_key("email"))
 
