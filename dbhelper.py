@@ -413,6 +413,7 @@ def get_user_data(_uid):
     user_bio = get_user_bio(_uid)
     user_email_confirmed = get_user_email_confirmed(_uid)
     user_phone_confirmed = get_user_phone_confirmed(_uid)
+    user_profile_pic = get_user_profile_pic_url(_uid, 256)
     user_data = {
         'uid' : str(_uid),
         'email' : user_email,
@@ -422,6 +423,7 @@ def get_user_data(_uid):
         'bio' : user_bio if user_bio else "",
         'email_confirmed' : user_email_confirmed,
         'phone_confirmed' : user_phone_confirmed,
+        'profile_pic' : user_profile_pic,
     }
     return user_data
 

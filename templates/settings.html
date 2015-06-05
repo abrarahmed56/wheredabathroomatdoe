@@ -12,8 +12,11 @@
 <div class="container">
     <h1 class="center-text">My Settings</h1>
     <div class="row card-panel white">
-        {% include 'upload_link.html' %}
-        {% include 'upload_form.html' %}
+        <div id="profile_pic_container" class="center-all">
+            <img src="{{ user_data['profile_pic'] }}" alt="Profile Picture"/>
+            {% include 'upload_link.html' %}
+            {% include 'upload_form.html' %}
+        </div>
         <form id='form' class="col s12" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
             <div class="row">
                 <div class="input-field col s12">
