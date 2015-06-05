@@ -9,19 +9,21 @@
   <body class="blue-grey lighten-4">
     <header>
         <nav class="top-nav green">
-          <div class="nav-wrapper">
-            {% block navbar_left %}
-            <a href="{{ url_for('index') }}" class="brand-logo" id="logo">WhereDaBathroomAtDoe?!</a>
-            {% endblock navbar_left %}
-            <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-              {% block navbar_right %}
-              {% endblock navbar_right %}
-            </ul>
-            <ul class="side-nav" id="mobile-version">
-              {{ self.navbar_right() }}
-            </ul>
-          </div>
+            <div class="container">
+                <div class="nav-wrapper">
+                    {% block navbar_left %}
+                    <a href="{{ url_for('index') }}" class="brand-logo" id="logo">WhereDaBathroomAtDoe?!</a>
+                    {% endblock navbar_left %}
+                    <a href="#" data-activates="mobile-version" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                    {% block navbar_right %}
+                    {% endblock navbar_right %}
+                    </ul>
+                    <ul class="side-nav" id="mobile-version">
+                    {{ self.navbar_right() }}
+                    </ul>
+                </div>
+            </div>
         </nav>
     </header>
     <div id="flashed_messages">

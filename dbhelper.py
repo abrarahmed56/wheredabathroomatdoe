@@ -3,6 +3,8 @@ from flask import flash, session
 from constants import *
 import validate
 import uuid
+import os.path
+import qrcode
 
 def connect():
     try:
@@ -59,6 +61,7 @@ def auth(type, email, password, phone=None, bio=None):
             conn.close()
 
 def add_user(uid, email, password, phone, bio):
+    global UPLOAD_FOLDER
     conn = connect()
     if conn == None:
         return "Database Error"
@@ -68,8 +71,30 @@ def add_user(uid, email, password, phone, bio):
                 (uid, uid, email, validate.hash_password(password), phone, '',
                 '', bio))
         conn.commit()
+        try:
+            os.makedirs(os.path.join(UPLOAD_FOLDER, str(uid)))
+        except OSError:
+            pass
+        try:
+            qr = qrcode.QRCode(
+                version=None,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=12,
+                border=4,
+            )
+            # TODO make this a link to the profile
+            qr.add_data(str(uid))
+            qr.make(fit=True)
+            img1 = qr.make_image()
+            img2 = img1.copy()
+            img1.thumbnail((256, 256))
+            img2.thumbnail((128, 128))
+            img1.save(get_user_profile_pic_url(uid, 256).lstrip('/'))
+            img2.save(get_user_profile_pic_url(uid, 128).lstrip('/'))
+        except IOError, e:
+            print "Error %s: " % e
     except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
+        print "Error %s: " % e
     finally:
         if conn:
             conn.close()
@@ -249,6 +274,9 @@ def get_user_email(uid):
     finally:
         if conn:
             conn.close()
+
+def get_user_profile_pic_url(uid, size):
+    return "/static/uploads/" + str(uid) + "/profile" + str(size) + ".jpg"
 
 def update_user_firstname(uid, new_firstname):
     conn = connect()
