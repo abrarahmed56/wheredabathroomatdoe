@@ -90,10 +90,25 @@ function markUtil(util) {
 	map: map,
 	icon: img});
     google.maps.event.addListener(marker, 'click', function() {
-	console.log('ayy lmao');
-	console.log(marker);
+	console.log('util clicked'); 
+	var infowindow = new google.maps.InfoWindow({
+	    map: map,
+	    position: latlng,
+	    content: getUtilInfo(util)
+	});
     });
     console.log('UTILITY MARKED');
+}
+
+function getUtilInfo(util) {
+    console.log(util);
+    $(".utilImage")[0].src = UTILITY_TYPES[util['type']];
+    $(".utilTitle")[0].innerHTML = util['type'] + " Info";
+    $(".utilTitle")[1].innerHTML = util['type'] + " Info";
+    $(".utilDescription")[0].innerHTML =
+	'Here are the reviews about this ' + util['type'];
+    moocow = $('#infoWindow')[0].innerHTML;
+    return $('#infoWindow')[0].innerHTML;
 }
 
 function showError(error) {
