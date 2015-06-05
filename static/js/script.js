@@ -24,8 +24,45 @@ var showFlashes = function() {
     }
 }
 
+function getScreenCoordinates(obj) {
+    var p = {};
+    p.x = obj.offsetLeft;
+    p.y = obj.offsetTop;
+    while (obj.offsetParent) {
+        p.x = p.x + obj.offsetParent.offsetLeft;
+        p.y = p.y + obj.offsetParent.offsetTop;
+        if (obj == document.getElementsByTagName("body")[0]) {
+            break;
+        }
+        else {
+            obj = obj.offsetParent;
+        }
+    }
+    return p;
+}
+
+var toggleLogoDisplay = function() {
+    // Toggle visibility for logo to prevent menu icon and logo from overlapping
+    var logo = document.getElementById("logo");
+    var menu = document.getElementById("nav-menu");
+    var logoCoords = getScreenCoordinates(logo);
+    var menuCoords = getScreenCoordinates(menu);
+    if (menuCoords.x != 0) { // menu.x is 0 when the menu icon is not visible
+        if (Math.abs(logoCoords.x - menuCoords.x) <= 250) {
+            logo.style.visibility = 'hidden';
+            return;
+        }
+    }
+    // Default to visible
+    logo.style.visibility = 'visible';
+}
+
 $(document).ready(function() {
     $(".button-collapse").sideNav();
     $(".modal-trigger").leanModal();
+    toggleLogoDisplay();
     showFlashes();
+});
+$(window).resize(function() {
+    toggleLogoDisplay();
 });

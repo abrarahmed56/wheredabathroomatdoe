@@ -21,3 +21,7 @@ input[type="email"] {
 .black-text {
     color: #292929;
 }
+
+#nav-menu {
+    margin-left: 50px;
+}

@@ -1,4 +1,4 @@
-DB_NAME = "users-chesley"
+DB_NAME = "users"
 DB_USER = "softdev"
 
 ID_USER = 0
