@@ -10,9 +10,10 @@
 {% block bodycontent %}
 
 <div>
-    <br/>
     <h1 class="center-text">My Settings</h1>
     <div class="row card-panel white">
+        {% include 'upload_link.html' %}
+        {% include 'upload_form.html' %}
         <form id='form' class="col s12" method="POST" onsubmit="return matchPasswords('new_password', 'confirm_password')">
             <div class="row">
                 <div class="input-field col s12">
@@ -21,10 +22,18 @@
                     <input type="email" id="new_email" name="new_email" value="{{ user_data['email'] }}"></input>
                 </div>
                 {% if not user_data['email_confirmed'] %}
-                <span id="email_confirm_warning" class="red-text">
+                <span id="email_confirm_warning" class="col s12 red-text">
                     <i class="mdi-alert-warning prefix red-text"></i>
-                    Your email has not been confirmed. Please click <a href="#">here</a>
-                    to receive a confirmation email with more details.</span>
+                    Your email has not been confirmed.
+                    <br/>
+                    Please click <a href="#">here</a>
+                    to receive a confirmation email with more details.
+                </span>
+                {% else %}
+                <span id="email_confirm_acknowledge" class="col s12 green-text">
+                    <i class="mdi-action-verified-user prefix green-text"></i>
+                    Your email has been confirmed.
+                </span>
                 {% endif %}
             </div>
             <div class="row">

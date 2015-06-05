@@ -1,5 +1,15 @@
-Please enter the image
-<form method="POST" enctype="multipart/form-data">
-  <input name="pic" type="file" accept="image/*"></input>
-  <input type="submit"></input>
-</form>
+<div id="upload" class="modal">
+    <div class="modal-content white">
+        <h4>Please choose an image to upload</h4>
+        <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
+            <div class="file-field input-field">
+                <input class="file-path validate" type="text"/>
+                <div class="btn">
+                    <span>File</span>
+                    <input name="pic" type="file" accept="image/*"></input>
+                </div>
+            </div>
+            <button class="waves-effect waves-light btn" type="submit"><i class="mdi-file-file-upload right"></i>Submit</a>
+        </form>
+    </div>
+</div>

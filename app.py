@@ -161,9 +161,9 @@ def upload():
                 flash("Upload successful")
             except IOError:
                 flash("Invalid image")
-            return redirect(url_for('index'))
+            return redirect(url_for('settings'))
         flash("Upload unsuccessful")
-    return render_template("upload_form.html")
+    return redirect(url_for('settings'))
 
 @app.route('/settings/', methods=['GET', 'POST'])
 def settings():
