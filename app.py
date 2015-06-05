@@ -32,7 +32,10 @@ def redirect_if_not_logged_in(target, show_flash=True):
        @wraps(func)
        def inner(*args, **kwargs):
           if not session.has_key('email') or session['email'] == None:
-             session.clear()
+             if session.has_key('email'):
+                del session['email']
+             if session.has_key('uid'):
+                del session['uid']
              if show_flash:
                 flash ("You are not logged in!")
              return redirect(url_for(target))
