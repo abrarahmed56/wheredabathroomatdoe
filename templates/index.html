@@ -7,30 +7,32 @@
     {% include 'logout_link.html' %}
 {% endblock navbar_right %}
 {% block bodycontent %}
-<h1>Places:</h1>
-<script type="text/template" id="t">
-  <td><%- clas %></td><td><%- homework %></td><td><%- deadline %></td><td><button id="delete" class="pure-button">Delete</button>
-</script>
+<div class="container">
+    <h1>Places:</h1>
+    <script type="text/template" id="t">
+    <td><%- clas %></td><td><%- homework %></td><td><%- deadline %></td><td><button id="delete" class="pure-button">Delete</button>
+    </script>
 
-<script type="text/template" id="comptemp">
-  Add new place: 
-  <br>
-  Type: <input id="newclass">
-  <br>
-  Address: <input id="newassignment">
-  <br>
-  Rating: <input id="newdeadline">
-  <button class="pure-button" id="add">Add</button>
-  <table class="pure-table pure-table-bordered">
-    <thead>
-      <tr><th>Type</th><th>Address</th><th>Rating</th><th>Remove</th></tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</script>
+    <script type="text/template" id="comptemp">
+    Add new place: 
+    <br>
+    Type: <input id="newclass">
+    <br>
+    Address: <input id="newassignment">
+    <br>
+    Rating: <input id="newdeadline">
+    <button class="pure-button" id="add">Add</button>
+    <table class="pure-table pure-table-bordered">
+        <thead>
+        <tr><th>Type</th><th>Address</th><th>Rating</th><th>Remove</th></tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    </script>
 
-<table class="pure-table pure-table-bordered" id="homework">
-</table>
+    <table class="pure-table pure-table-bordered" id="homework">
+    </table>
 
+</div>
 {% endblock bodycontent %}
