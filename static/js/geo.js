@@ -33,11 +33,10 @@ function getPosition(show) {
             }, showError);
         }
         else if (activeMarker) {
+	    markActiveUtil();
 	    activeMarker.draggable = false;
 	    activeMarker = false;
-	    markActiveUtil();
 	    $('input[type="button"]')[0].value = 'Utility Spotted';
-	    location = location;
 	}
 	else {
             console.log("button pressed");
@@ -65,8 +64,10 @@ function getPosition(show) {
 function markActiveUtil() {
     $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})
         .done(function(data) {
+	    console.log(data);
 	    Materialize.toast('Location marked', 3000);
-        });
+            location = location;
+	});
 }
 
 function getNearbyUtils(lati,longi) {

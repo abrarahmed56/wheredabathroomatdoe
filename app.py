@@ -11,6 +11,7 @@ from PIL import Image
 
 UPLOAD_FOLDER = "static/uploads"
 ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
+ALLOWED_TYPES = set(["bench", "fountain", "bathroom"])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -127,7 +128,10 @@ def add():
             latitude = float(request.form['latitude'])
             longitude = float(request.form['longitude'])
             util_type = request.form['type']
-            add_place(util_type, longitude, latitude, email)
+            if util_type in ALLOWED_TYPES:
+               add_place(util_type, longitude, latitude, email)
+            else:
+               return "Malformed Request"
         except ValueError:
             return "Malformed Request"
     else:
