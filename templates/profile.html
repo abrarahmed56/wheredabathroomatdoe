@@ -6,21 +6,45 @@
    {% include 'settings_link.html' %}
    {% include 'logout_link.html' %}
 {% endblock navbar_right %}
+{% block headcontent %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/profile.css') }}"/>
+{% endblock headcontent %}
 {% block bodycontent %}
 <div class="container">
     <br/>
     <div>
-        <div class="card-panel white">
-            <h3>Welcome to {{ user_data['first_name'] }}'s profile!</h3>
-            <div class="col s12 text-center">
-                <i class="mdi-social-person prefix"></i>
-                <b>Name:</b> {{ user_data['first_name'] }} {{ user_data['last_name'] }}
-                <br/>
-                <i class="mdi-communication-email prefix"></i>
-                <b>Email:</b> {{ user_data['email'] }}
-                <br/>
-                <i class="mdi-editor-mode-edit prefix"></i>
-                <b>User Bio:</b> {{ user_data['bio'] }}
+        <div class="card-panel white col s12">
+            <div class="row">
+                <div class="col s12 center-all">
+                    <h3>Welcome to {{ user_data['first_name'] }}'s profile!</h3>
+                    <img src="{{ user_data['profile_pic'] }}" alt="Profile Picture" class="profile-picture no-select"/>
+                    <br/>
+                    <i>
+                        {{ user_data['bio'] }}
+                    </i>
+                    <br/>
+                </div>
+            </div>
+            <div class="row">
+                <div id="profile-container">
+                    <span class="profile-data-category">
+                        <i class="mdi-social-person prefix"></i>
+                        <b>Name:</b>
+                    </span>
+                    <span class="profile-data">
+                        {{ user_data['first_name'] }} {{ user_data['last_name'] }}
+                    </span>
+                    <br/>
+                    <br/>
+                    <span class="profile-data-category">
+                        <i class="mdi-communication-email prefix"></i>
+                        <b>Email:</b>
+                    </span>
+                    <span class="profile-data">
+                        {{ user_data['email'] }}
+                    </span>
+                    <br/>
+                </div>
             </div>
     </div>
 </div>

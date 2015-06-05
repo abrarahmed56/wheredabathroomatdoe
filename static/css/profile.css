@@ -1,0 +1,13 @@
+#profile-container {
+    position: relative;
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+.profile-data-category {
+    float: left;
+}
+
+.profile-data {
+    float: right;
+}
