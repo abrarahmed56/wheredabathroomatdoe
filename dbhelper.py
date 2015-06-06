@@ -99,6 +99,21 @@ def add_user(uid, email, password, phone, bio):
         if conn:
             conn.close()
 
+def get_users_list():
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM USERS")
+        conn.commit()
+        return c.fetchall()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def get_user_password(uid=None, email=None):
     conn = connect()
     if conn == None:
@@ -482,8 +497,8 @@ def add_place(place_type, location_x, location_y, finder):
         c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT 1",
                  (place_type, location_x, location_y))
         exists = c.fetchone()
-        #if exists == ():
-        if True:
+        #if True:
+        if not exists:
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
                 return uuid[1]
@@ -506,8 +521,7 @@ def remove_place(place_type, location_x, location_y):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""DELETE FROM Places WHERE PlaceType = %s AND LocationX = %s AND
-                  LocationY = %s LIMIT 1""", (place_type, location_x, location_y))
+        c.execute("""DELETE FROM Places WHERE PlaceType = %s AND LocationX = %s AND LocationY = %s""", (place_type, location_x, location_y))
         conn.commit()
         return "Location removed from map"
     except psycopg2.DatabaseError, e:
@@ -627,9 +641,33 @@ def add_review(placeID, user, rating, review):
         uuid = generate_id(ID_REVIEW)
         if not uuid[0]:
             return uuid[1]
-        c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s)",
-                      (uuid[1], user, rating, review))
+        c.execute("SELECT * FROM Reviews WHERE Username=%s", (user,))
         conn.commit()
+        exists = c.fetchone()
+        if not exists:
+            print "review doesnt exist"
+            c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s, %s, %s)",
+                      (uuid[1], uuid[1], placeID, user, rating, review))
+        else:
+            print "review exists"
+            c.execute("UPDATE Reviews SET Rating=%s, Review=%s WHERE Username=%s",
+                      (rating, review, user))
+        conn.commit()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_reviews(placeID):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM Reviews WHERE PlacesID=%s", (placeID,))
+        conn.commit()
+        return c.fetchall()
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

@@ -28,7 +28,7 @@ PLACES_TABLE_CREATE = """CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID,
     Favorites INT, Finder UUID REFERENCES Users(ID))"""
 
 REVIEWS_TABLE_CREATE = """CREATE TABLE Reviews (ID UUID PRIMARY KEY, ReviewID
-    UUID, Username TEXT, Rating INT, Review TEXT)"""
+    UUID, PlacesID UUID REFERENCES Places (ID), Username TEXT, Rating INT, Review TEXT)"""
 
 FAVORITES_TABLE_CREATE = """CREATE TABLE Favorites (UserID UUID REFERENCES Users
     (ID), PlacesID UUID REFERENCES Places (ID))"""
