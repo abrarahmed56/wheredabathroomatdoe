@@ -27,11 +27,14 @@ PLACES_TABLE_CREATE = """CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID,
     PlaceType TEXT, LocationX DOUBLE PRECISION, LocationY DOUBLE PRECISION,
     Favorites INT, Finder UUID REFERENCES Users(ID))"""
 
+# TODO user deletion should not cascade places
+
 REVIEWS_TABLE_CREATE = """CREATE TABLE Reviews (ID UUID PRIMARY KEY, ReviewID
-    UUID, PlacesID UUID REFERENCES Places (ID), Username TEXT, Rating INT, Review TEXT)"""
+    UUID, PlacesID UUID REFERENCES Places (ID) ON DELETE CASCADE, Username TEXT, Rating INT, Review TEXT)"""
 
 FAVORITES_TABLE_CREATE = """CREATE TABLE Favorites (UserID UUID REFERENCES Users
-    (ID), PlacesID UUID REFERENCES Places (ID))"""
+    (ID) ON DELETE CASCADE, PlacesID UUID REFERENCES Places (ID) ON DELETE
+    CASCADE)"""
 
 def drop(dbname):
     c.execute("DROP TABLE %s CASCADE" % dbname)

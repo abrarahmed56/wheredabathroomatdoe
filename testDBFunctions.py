@@ -1,34 +1,60 @@
 import dbhelper
 import constants
-if not dbhelper.email_exists("test@chesley.party"):
-    print "email no exist"
-    uuid = dbhelper.generate_id(constants.ID_USER)
-    if not uuid[0]:
+from dbhelper import *
+
+def get_users_list():
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM USERS")
+        conn.commit()
+        return c.fetchall()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+if not email_exists("test@chesley.party"):
+    print "email1 no exist (should always occur)"
+    uuid = generate_id(constants.ID_USER)
+    if uuid[0]:
         add_user(uuid[1], "test@chesley.party", "p4s5w0rD", "0123456789", None)
 else:
-    #remove_user("test@www.chesley.party")
-    print("test email already added")
+    print("test email1 added again (you screwed something up, unless you dropped users)")
+
+if not email_exists("test2@chesley.party"):
+    print "email2 no exist (correct, should be here)"
+    uuid = generate_id(constants.ID_USER)
+    if not uuid[0]:
+        add_user(uuid[1], "test2@chesley.party", "p4s5w0rD", "0123456789", None)
+if email_exists("test2@chesley.party"):
+    remove_user(get_user_id("test2@chesley.party"))
+    print("test email2 deleted (also correct, also should be here)")
+
 print "users:"
-for user in dbhelper.get_users_list():
+for user in get_users_list():
     print user
-dbhelper.add_place("bench", 1, 1, "a@a.com")
+add_place("bench", 1, 1, "test@chesley.party")
 print "added bench at 1, 1\n"
-print dbhelper.get_places()
+print get_places()
 print "added another bench at 1, 1-- should print location already added\n"
-print dbhelper.add_place("bench", 1, 1, "test@chesley.party")
-print dbhelper.get_places()
-dbhelper.remove_place("bench", 1, 1)
-print dbhelper.get_places()
+print add_place("bench", 1, 1, "test@chesley.party")
+print get_places()
+remove_place("bench", 1, 1)
+print get_places()
 print "removed bench at 1,1\n"
-print dbhelper.add_place("bench", 1, 1, "test@chesley.party")
-print dbhelper.get_places()
+print add_place("bench", 1, 1, "test@chesley.party")
+print get_places()
 print "re-added bench at 1, 1\n"
-print dbhelper.get_places()
+print get_places()
 print "get local places 1 unit away from 3, 3:\n"
-print dbhelper.get_local_places(3, 3, 1)
+print get_local_places(3, 3, 1)
 print "get local places 4 units away from 3, 3:\n"
-print dbhelper.get_local_places(3, 3, 4)
-print dbhelper.get_local_places(1, 1, 0)[0]['ID']
+print get_local_places(3, 3, 4)
+print get_local_places(1, 1, 0)[0]['ID']
 print "adding review:"
-dbhelper.add_review(dbhelper.get_local_places(1, 1, 0)[0]['ID'], "test@chesley.party", 10, "10/10 would sit again")
-print dbhelper.get_reviews(dbhelper.get_local_places(1, 1, 0)[0]['ID'])
+add_review(get_local_places(1, 1, 0)[0]['ID'], "test@chesley.party", 10, "10/10 would sit again")
+print get_reviews(get_local_places(1, 1, 0)[0]['ID'])

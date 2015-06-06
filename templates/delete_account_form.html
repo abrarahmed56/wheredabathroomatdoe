@@ -1,0 +1,16 @@
+<div id="delete_account" class="modal">
+    <div class="modal-content white">
+        <h4>Enter your password to confirm your account deletion</h4>
+        <h6 class="red-text">This action CANNOT be undone! Please be sure you
+            want to do this.</h4>
+        <form method="POST" action="{{ url_for('delete_account') }}">
+            <div class="input-field">
+                <input id="password" type="password" name="password"
+                class="validate red-text"
+                style="border-bottom: 1px solid black" pattern=".{8,50}" required/>
+                <label for="password" style="color: black">Password</label>
+            </div>
+            <button class="waves-effect btn red black-text" type="submit"><i class="mdi-alert-warning left"></i><i class="mdi-alert-warning right"></i>Continue</a>
+        </form>
+    </div>
+</div>

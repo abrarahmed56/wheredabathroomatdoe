@@ -5,6 +5,7 @@ import validate
 import uuid
 import os.path
 import qrcode
+import shutil
 
 def connect():
     try:
@@ -18,27 +19,27 @@ def auth(type, email, password, phone=None, bio=None):
     global ID_USER
     conn = connect()
     if conn == None:
-        return "Database Error"
+        return (False, "Database Error")
     c = conn.cursor()
     try:
         if type == AUTH_REGISTER:
             valid_email = validate.is_valid_email(email, check_db=False)
             if not valid_email[0]:
-                return valid_email[1]
+                return (False, valid_email[1])
             valid_password = validate.is_valid_password(password)
             if not valid_password[0]:
-                return valid_password[1]
+                return (False, valid_password[1])
             valid_phone = validate.is_valid_telephone(phone)
             if not valid_phone[0]:
-                return valid_phone[1]
+                return (False, valid_phone[1])
             if not email_exists(email):
                 uuid = generate_id(ID_USER)
                 if not uuid[0]:
-                    return "UUID error"
+                    return (False, "UUID error")
                 add_user(uuid[1], email, password, phone, bio)
-                return "Registration successful"
+                return (True, "Registration successful")
             else:
-                return "A user with that email already exists"
+                return (False, "A user with that email already exists")
         elif type == AUTH_LOGIN or type == AUTH_VERIFY:
             stored_pass = get_user_password(email=email)
             success = False
@@ -48,12 +49,12 @@ def auth(type, email, password, phone=None, bio=None):
                         session['email'] = email
                         session['uid'] = str(get_user_id(email))
                         success = True
-                        return "Login successful"
+                        return (True, "Login successful")
                     elif type == AUTH_VERIFY:
                         success = True
-                        return "Verification successful"
+                        return (True, "Verification successful")
             if not success:
-                return "Incorrect credentials"
+                return (False, "Incorrect credentials")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -99,17 +100,22 @@ def add_user(uid, email, password, phone, bio):
         if conn:
             conn.close()
 
-def get_users_list():
+def remove_user(uid):
+    global UPLOAD_FOLDER
     conn = connect()
     if conn == None:
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM USERS")
+        c.execute("DELETE FROM Users WHERE UserID = %s", (uid,))
         conn.commit()
-        return c.fetchall()
+        # Remove files uploaded by the user
+        try:
+            shutil.rmtree(os.path.join(UPLOAD_FOLDER, str(uid)))
+        except OSError:
+            pass
     except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
+        print "Error %s: " % e
     finally:
         if conn:
             conn.close()
@@ -552,7 +558,7 @@ def dictionarify(places_list):
             "ID": str(place[0]),
             "type": place[2],
             "position": [place[3], place[4]],
-            "finder": str(place[5]),
+            "finder": str(place[6]),
         }
         ans.append(place_dict)
     return ans

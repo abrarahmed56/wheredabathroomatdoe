@@ -28,20 +28,17 @@ def inflate_uuid(uuid):
 
 def redirect_if_not_logged_in(target, show_flash=True):
     def wrap(func):
-       @wraps(func)
-       def inner(*args, **kwargs):
-          if not session.has_key('email') or session['email'] == None:
-             if session.has_key('email'):
-                del session['email']
-             if session.has_key('uid'):
-                del session['uid']
-             if show_flash:
-                flash ("You are not logged in!")
-             return redirect(url_for(target))
-          else:
-             pass
-          return func(*args, **kwargs)
-       return inner
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if not session.has_key('email') or session['email'] == None:
+                clear_session_login_data(session)
+                if show_flash:
+                    flash ("You are not logged in!")
+                return redirect(url_for(target))
+            else:
+                pass
+            return func(*args, **kwargs)
+        return inner
     return wrap
 
 @app.route('/')
@@ -61,7 +58,7 @@ def welcome():
                 email = request.form['registerEmail1']
                 password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
-                flash(auth(AUTH_REGISTER, email, password, phone))
+                flash(auth(AUTH_REGISTER, email, password, phone)[1])
             else:
                 flash("Malformed request")
         elif request.form.has_key("login"):
@@ -71,7 +68,7 @@ def welcome():
             if is_valid_request(request.form, required_keys):
                 email = request.form['loginEmail']
                 password = request.form['loginPassword']
-                flash(auth(AUTH_LOGIN, email, password))
+                flash(auth(AUTH_LOGIN, email, password)[1])
             else:
                 flash("Malformed request")
         return redirect(url_for("index"))
@@ -235,6 +232,21 @@ def settings():
         return render_template('settings.html',
                                user_data=get_user_data(uuid.UUID(session['uid'])))
 
+@app.route('/delete_account', methods=['POST'])
+@redirect_if_not_logged_in("welcome")
+def delete_account():
+    required_keys = ['password']
+    if is_valid_request(request.form, required_keys):
+        result = auth(AUTH_VERIFY, session['email'], request.form['password'])
+        if result[0]:
+            uid = uuid.UUID(session['uid'])
+            remove_user(uid)
+        clear_session_login_data(session)
+        flash("Account successfully deleted")
+        return redirect(url_for('index'))
+    else:
+        return "Malformed request"
+
 @app.errorhandler(404)
 def page_not_found(error):
     return redirect(url_for('index')), 404
@@ -244,6 +256,12 @@ def is_valid_request(form, required_keys):
         if not form.has_key(key):
             return False
     return True
+
+def clear_session_login_data(session):
+    if session.has_key('email'):
+        del session['email']
+    if session.has_key('uid'):
+        del session['uid']
 
 if __name__ == '__main__':
     app.debug = True
