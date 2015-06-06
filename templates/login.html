@@ -9,14 +9,15 @@
                     <div class="input-field col s12">
                         <i class="mdi-communication-email prefix"></i>
                         <label class="active" for="email">Email</label>
-                        <input type="text" id="loginEmail" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
+                        <input type="email" id="loginEmail" class="validate" name="loginEmail" placeholder="your_awesome@email.com" class="white" required></input>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="mdi-action-lock prefix"></i>
                         <label class="active" for="password">Password</label>
-                        <input type="password" id="loginPassword" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{8,50}" class="white" required></input>
+                        <input type="password" id="loginPassword"
+                        class="validate" name="loginPassword" placeholder="SuperSecretPassword" pattern=".{8,50}" class="white" required></input>
                     </div>
                 </div>
                 <button type="submit" value="Login" id="submit" class="btn green darken-2 waves-effect waves-light">Login</button>
