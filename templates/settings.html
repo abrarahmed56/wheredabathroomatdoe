@@ -43,7 +43,7 @@
                     <i class="mdi-maps-local-phone prefix"></i>
                     <label for="phone">Phone number</label>
                     <input type="tel" id="new_phone" class="validate"
-                    name="new_phone" pattern="[-0-9].{10,14}" value="{{ user_data['phone'] }}"></input>
+                    name="new_phone" pattern="[-0-9]{10,14}" value="{{ user_data['phone'] }}"></input>
                 </div>
                 {% if not user_data['phone_confirmed'] %}
                 <span id="phone_confirm_warning" class="col s12 red-text">
