@@ -36,6 +36,11 @@ FAVORITES_TABLE_CREATE = """CREATE TABLE Favorites (UserID UUID REFERENCES Users
     (ID) ON DELETE CASCADE, PlacesID UUID REFERENCES Places (ID) ON DELETE
     CASCADE)"""
 
+TEMPORARY_URLS_TABLE_CREATE = """CREATE TABLE TemporaryUrls (ID UUID PRIMARY
+KEY, UrlID UUID, CreationTime TIMESTAMP NOT NULL DEFAULT NOW(), ExpiryTime
+INTERVAL NOT NULL DEFAULT INTERVAL '1 day', UrlType TEXT,
+UserID UUID REFERENCES Users (ID) ON DELETE CASCADE)"""
+
 def drop(dbname):
     c.execute("DROP TABLE %s CASCADE" % dbname)
 
@@ -84,6 +89,11 @@ if ("favorites",) in tables_list:
     migrate('Favorites', FAVORITES_TABLE_CREATE)
 else:
     c.execute(FAVORITES_TABLE_CREATE)
+
+if ("temporaryurls",) in tables_list:
+    migrate('TemporaryUrls', TEMPORARY_URLS_TABLE_CREATE)
+else:
+    c.execute(TEMPORARY_URLS_TABLE_CREATE)
 
 conn.commit()
 

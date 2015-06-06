@@ -612,11 +612,13 @@ def generate_id(datatype):
     global ID_USER, ID_PLACE, ID_REVIEW
     query = ""
     if datatype == ID_USER:
-        query = "SELECT 1 FROM Users WHERE ID = %s"
+        query = "SELECT 1 FROM Users WHERE ID = %s LIMIT 1"
     elif datatype == ID_PLACE:
-        query = "SELECT 1 FROM Places WHERE ID = %s"
+        query = "SELECT 1 FROM Places WHERE ID = %s LIMIT 1"
     elif datatype == ID_REVIEW:
-        query = "SELECT 1 FROM Reviews WHERE ID = %s"
+        query = "SELECT 1 FROM Reviews WHERE ID = %s LIMIT 1"
+    elif datatype == ID_TEMPORARY_URL:
+        query = "SELECT 1 FROM TemporaryUrls WHERE ID = %s LIMIT 1"
     success = False
     u = uuid.uuid4()
     conn = connect()
@@ -627,7 +629,7 @@ def generate_id(datatype):
         while not success:
             c.execute(query, (u,))
             conn.commit()
-            if len(c.fetchall()) == 0:
+            if c.fetchone() == None:
                 success = True
             else:
                 u = uuid.uuid4()
@@ -679,3 +681,60 @@ def get_reviews(placeID):
     finally:
         if conn:
             conn.close()
+
+def expire_temporary_urls():
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""DELETE FROM TemporaryUrls WHERE CreationTime < NOW() -
+                ExpiryTime""")
+        conn.commit()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def add_temporary_url(uid, url_type):
+    global TEMP_URL_EXPIRY_TIME
+    expire_temporary_urls()
+    uuid = generate_id(ID_USER)
+    if not uuid[0]:
+        return (False, "UUID error")
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""INSERT INTO TemporaryUrls VALUES(%s, %s, NOW(), INTERVAL
+                  %s, %s, %s)""",
+                  (uuid[1], uuid[1], TEMP_URL_EXPIRY_TIME, url_type, uid))
+        conn.commit()
+        return (True, uuid[1])
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_temporary_url(uuid, uid, url_type):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM TemporaryUrls WHERE UrlID = %s AND UserID =
+                  %s AND UrlType = %s AND CreationTime >= NOW() - ExpiryTime
+                  LIMIT 1""", (uuid, uid, url_type))
+        if c.fetchone():
+            return (True, "Valid temporary url")
+        else:
+            return (False, "Invalid temporary url")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
