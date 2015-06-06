@@ -50,7 +50,6 @@ https://www.python.org/dev/peps/pep-0008/
 See `dependencies.md`  
 
 ## To-do List
-- Email confirmation
 - Set up email for website
 - Email reset password feature
 - Post utility review feature
