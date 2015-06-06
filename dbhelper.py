@@ -487,8 +487,9 @@ def add_place(place_type, location_x, location_y, finder):
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
                 return uuid[1]
-            c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, 0, %s)",
-                      (uuid[1], place_type, location_x, location_y, finder))
+            c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, %s, 0, %s)",
+                      (uuid[1], uuid[1], place_type, location_x, location_y,
+                          get_user_id(finder)))
             conn.commit()
             return "Location added to map"
         else:
@@ -535,9 +536,9 @@ def dictionarify(places_list):
     for place in places_list:
         place_dict = {
             "ID": str(place[0]),
-            "type": place[1],
-            "position": [place[2], place[3]],
-            "finder": place[4]
+            "type": place[2],
+            "position": [place[3], place[4]],
+            "finder": str(place[5]),
         }
         ans.append(place_dict)
     return ans
@@ -591,11 +592,11 @@ def generate_id(datatype):
     global ID_USER, ID_PLACE, ID_REVIEW
     query = ""
     if datatype == ID_USER:
-        query = "SELECT 1 FROM USERS WHERE ID = %s"
+        query = "SELECT 1 FROM Users WHERE ID = %s"
     elif datatype == ID_PLACE:
-        query = "SELECT 1 FROM PLACE WHERE ID = %s"
+        query = "SELECT 1 FROM Places WHERE ID = %s"
     elif datatype == ID_REVIEW:
-        query = "SELECT 1 FROM REVIEW WHERE ID = %s"
+        query = "SELECT 1 FROM Reviews WHERE ID = %s"
     success = False
     u = uuid.uuid4()
     conn = connect()
