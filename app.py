@@ -44,7 +44,7 @@ def redirect_if_not_logged_in(target, show_flash=True):
 @app.route('/')
 @redirect_if_not_logged_in("welcome", show_flash=False)
 def index():
-    return render_template('index.html', loggedin=session.has_key("email"))
+    return render_template('index.html', loggedin=True)
 
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
@@ -108,7 +108,7 @@ def profile_with_id(userid):
             uid = uuid.UUID(userid)
             if uid_exists(uid):
                 return render_template('profile.html',
-                        loggedin=session.has_key("email"),
+                        loggedin=True,
                         user_data = get_user_data(uid))
         flash("I c wut u did dere ;)")
         return redirect(url_for('index'))
@@ -230,7 +230,8 @@ def settings():
             flash("Malformed request")
     else:
         return render_template('settings.html',
-                               user_data=get_user_data(uuid.UUID(session['uid'])))
+                               user_data=get_user_data(uuid.UUID(session['uid'])),
+                               loggedin=True)
 
 @app.route('/delete_account', methods=['POST'])
 @redirect_if_not_logged_in("welcome")
