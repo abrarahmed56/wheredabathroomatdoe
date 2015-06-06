@@ -3,6 +3,7 @@ from functools import wraps
 from validate import *
 from dbhelper import *
 from constants import *
+from utils import *
 import json
 import uuid
 import os
@@ -16,15 +17,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
-
-def deflate_uuid(uuid):
-    return uuid.replace('-', '')
-
-def inflate_uuid(uuid):
-    if len(uuid) == 32:
-        return uuid[0:8] + '-' + uuid[8:12] + '-' + uuid[12:16] + '-' + uuid[16:20] + '-' + uuid[20:32]
-    else:
-        return None
 
 def redirect_if_not_logged_in(target, show_flash=True):
     def wrap(func):
@@ -247,6 +239,26 @@ def delete_account():
         return redirect(url_for('index'))
     else:
         return "Malformed request"
+
+@app.route('/confirm/email/<url_id>', methods=['GET'])
+@redirect_if_not_logged_in("welcome")
+def confirm_email(url_id=None):
+    if url_id:
+        url_id = inflate_uuid(url_id)
+        if url_id:
+            uid = uuid.UUID(session['uid'])
+            if get_temporary_url(uuid.UUID(url_id), uid, TEMP_URL_EMAIL_CONFIRM)[0]:
+                update_user_email_confirmed(uid, True)
+                return redirect(url_for('settings'))
+    return redirect(url_for('index'))
+
+@app.route('/confirm/send/email', methods=['POST'])
+@redirect_if_not_logged_in("welcome")
+def send_confirm_email():
+    uid = uuid.UUID(session['uid'])
+    url_id = deflate_uuid(str(add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)[1]))
+    # TODO send email here
+    return "OK"
 
 @app.errorhandler(404)
 def page_not_found(error):

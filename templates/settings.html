@@ -23,13 +23,19 @@
                     <label for="email">Email</label>
                     <input type="email" id="new_email" class="validate" name="new_email" value="{{ user_data['email'] }}"></input>
                 </div>
-                {% if not user_data['email_confirmed'] %}
+                {% if not user_data['email_confirmed'] and not user_data['email_confirm_timeout_pending'] %}
                 <span id="email_confirm_warning" class="col s12 red-text">
                     <i class="mdi-alert-warning prefix red-text"></i>
                     Your email has not been confirmed.
                     <br/>
-                    Please click <a href="#">here</a>
+                    Please click <a href="#" id="confirm_email_link">here</a>
                     to receive a confirmation email with more details.
+                </span>
+                {% elif user_data['email_confirm_timeout_pending'] %}
+                <span id="email_confirm_pending" class="col s12 black-text">
+                    <i class="mdi-alert-warning prefix black-text"></i>
+                    A confirmation email has been sent to the email you
+                    provided.
                 </span>
                 {% else %}
                 <span id="email_confirm_acknowledge" class="col s12 green-text">
@@ -112,5 +118,6 @@
 </div>
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock scripts %}
 {% endblock bodycontent %}

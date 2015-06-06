@@ -1,6 +1,7 @@
 import psycopg2, psycopg2.extras
-from flask import flash, session
+from flask import flash, session, url_for
 from constants import *
+from utils import *
 import validate
 import uuid
 import os.path
@@ -62,7 +63,7 @@ def auth(type, email, password, phone=None, bio=None):
             conn.close()
 
 def add_user(uid, email, password, phone, bio):
-    global UPLOAD_FOLDER
+    global UPLOAD_FOLDER, WEBSITE_URL_BASE
     conn = connect()
     if conn == None:
         return "Database Error"
@@ -83,8 +84,8 @@ def add_user(uid, email, password, phone, bio):
                 box_size=12,
                 border=4,
             )
-            # TODO make this a link to the profile
-            qr.add_data(str(uid))
+            qr_data = 'http://' + WEBSITE_URL_BASE + url_for('profile_with_id', userid=deflate_uuid(str(uid)))
+            qr.add_data(qr_data)
             qr.make(fit=True)
             img1 = qr.make_image()
             img2 = img1.copy()
@@ -433,6 +434,8 @@ def get_user_data(_uid):
     user_lastname = get_user_lastname(_uid)
     user_bio = get_user_bio(_uid)
     user_email_confirmed = get_user_email_confirmed(_uid)
+    user_email_confirm_timeout_pending = get_temporary_url_timeout_pending(_uid,
+            TEMP_URL_EMAIL_CONFIRM)[0]
     user_phone_confirmed = get_user_phone_confirmed(_uid)
     user_profile_pic = get_user_profile_pic_url(_uid, 256)
     user_data = {
@@ -443,6 +446,7 @@ def get_user_data(_uid):
         'last_name' : user_lastname,
         'bio' : user_bio if user_bio else "",
         'email_confirmed' : user_email_confirmed,
+        'email_confirm_timeout_pending' : user_email_confirm_timeout_pending,
         'phone_confirmed' : user_phone_confirmed,
         'profile_pic' : user_profile_pic,
     }
@@ -700,6 +704,8 @@ def expire_temporary_urls():
 def add_temporary_url(uid, url_type):
     global TEMP_URL_EXPIRY_TIME
     expire_temporary_urls()
+    if get_temporary_url_timeout_pending(uid, url_type)[0]:
+        return (False, "The temporary url timeout has not expired")
     uuid = generate_id(ID_USER)
     if not uuid[0]:
         return (False, "UUID error")
@@ -738,3 +744,24 @@ def get_temporary_url(uuid, uid, url_type):
         if conn:
             conn.close()
 
+def get_temporary_url_timeout_pending(uid, url_type):
+    # Returns whether there is a timeout on creating a temporary url because one
+    # is still pending
+    global TEMP_URL_TIMEOUT_PENDING
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM TemporaryUrls WHERE UserID =
+                  %s AND UrlType = %s AND CreationTime >= NOW() - INTERVAL %s
+                  LIMIT 1""", (uid, url_type, TEMP_URL_TIMEOUT_PENDING))
+        if c.fetchone():
+            return (True, "Temporary url pending")
+        else:
+            return (False, "No temporary url pending")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
