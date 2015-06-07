@@ -703,7 +703,10 @@ def expire_temporary_urls():
 
 def add_temporary_url(uid, url_type):
     global TEMP_URL_EXPIRY_TIME
+    print get_temporary_url_timeout_pending(uid, url_type)
+    print "Deleting"
     expire_temporary_urls()
+    print get_temporary_url_timeout_pending(uid, url_type)
     if get_temporary_url_timeout_pending(uid, url_type)[0]:
         return (False, "The temporary url timeout has not expired")
     uuid = generate_id(ID_USER)

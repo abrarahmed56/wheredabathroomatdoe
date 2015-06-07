@@ -258,8 +258,13 @@ def confirm_email(url_id=None):
 def send_confirm_email():
     uid = uuid.UUID(session['uid'])
     url_id = deflate_uuid(str(add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)[1]))
-    send_email_confirmation(session['email'], get_user_firstname(uid), url_id)
+    can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
+    if can_send_email[0]:
+        send_confirmation_email(session['email'], get_user_firstname(uid), url_id)
+    else:
+        return "Fail"
     return "OK"
+    
 
 @app.errorhandler(404)
 def page_not_found(error):

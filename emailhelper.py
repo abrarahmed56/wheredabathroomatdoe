@@ -38,6 +38,3 @@ def send_confirmation_email(receiver, first_name, url_id):
                                      }
     send_email(receiver, "wheredabathroomatdoe Account Confirmation", email_body)
 
-#send_email("erickolbusz@gmail.com","TEST1","hey its works bub")
-#send_email("trunkatedpig@gmail.com","TEST2","hey its still works bub")
-send_confirmation_email("erickolbusz@gmail.com","Eric","testurl")
