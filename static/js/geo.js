@@ -108,12 +108,34 @@ function markUtil(util) {
 function getUtilInfo(util) {
     console.log(util);
     $(".utilImage")[0].src = UTILITY_TYPES[util['type']];
+    $(".utilImage")[0].height = "100";
+    $(".utilImage")[0].width = "2000";
     $(".utilTitle")[0].innerHTML = util['type'] + " Info";
     $(".utilTitle")[1].innerHTML = util['type'] + " Info";
     $(".utilDescription")[0].innerHTML =
-	'Here are the reviews about this ' + util['type'];
+	"Here are the reviews about this " + util['type'] +
+	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
     moocow = $('#infoWindow')[0].innerHTML;
     return $('#infoWindow')[0].innerHTML;
+}
+
+function addReview(placeType, locationX, locationY) {
+    console.log("method called");
+    console.log("placetype: " + placeType);
+    console.log("locationx: " + locationX);
+    review = $("#review").val();
+    rating = $("#rating").val();
+    $.post("/api/review", {"review" : review
+			 , "placeType": placeType
+			 , "locationX": locationX
+			 , "locationY": locationY
+			 , "rating": rating
+			  })
+        .done(function(data) {
+	    console.log(data);
+	});
+    console.log("add review");
+    console.log($("#review"));
 }
 
 function showError(error) {

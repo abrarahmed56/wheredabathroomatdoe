@@ -63,6 +63,7 @@ display_places(get_local_places(3, 3, 4), "local places 4 units from (3, 3)--sho
 print "\n"
 display_places(get_local_places(1, 1, 0), "local places 0 units from (1, 1)")
 print "ID of bench that was added: " + get_local_places(1, 1, 0)[0]['ID']
+print "ID of bench that was added again: " + str(get_place_id("bench", 1, 1))
 print "adding review:"
 add_review(get_local_places(1, 1, 0)[0]['ID'], "test@www.chesley.party", 10, "10/10 would sit again")
 print get_reviews(get_local_places(1, 1, 0)[0]['ID'])

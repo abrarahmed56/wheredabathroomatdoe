@@ -556,6 +556,26 @@ def get_places():
         if conn:
             conn.close()
 
+def get_place_id(place_type, location_x, location_y):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        print "placetype: " + place_type
+        print "locationx: " + str(location_x)
+        print "locationy: " + str(location_y)
+        print get_places()
+        q = c.execute("SELECT * FROM Places WHERE PlaceType = %s AND LocationX - %s < 0.0000000001 AND LocationY - %s < 0.000000001 LIMIT 1""", (place_type, location_x, location_y))
+        conn.commit()
+        print q == None
+        return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def dictionarify(places_list):
     ans = []
     for place in places_list:
@@ -655,7 +675,7 @@ def add_review(placeID, user, rating, review):
         uuid = generate_id(ID_REVIEW)
         if not uuid[0]:
             return uuid[1]
-        c.execute("SELECT * FROM Reviews WHERE Username=%s", (user,))
+        c.execute("SELECT * FROM Reviews WHERE Username=%s AND PlacesID=%s", (user, placeID))
         conn.commit()
         exists = c.fetchone()
         if not exists:
@@ -664,11 +684,13 @@ def add_review(placeID, user, rating, review):
                       (uuid[1], uuid[1], placeID, user, rating, review))
         else:
             print "review exists"
-            c.execute("UPDATE Reviews SET Rating=%s, Review=%s WHERE Username=%s",
-                      (rating, review, user))
+            c.execute("UPDATE Reviews SET Rating=%s, Review=%s WHERE Username=%s AND PlacesID=%s",
+                      (rating, review, user, placeID))
         conn.commit()
+        return "Done"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
+        return "error"
     finally:
         if conn:
             conn.close()
