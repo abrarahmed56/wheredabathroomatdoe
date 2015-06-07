@@ -185,6 +185,7 @@ def update_user_email(uid, new_email, verify_password=None):
                  (new_email, uid))
         conn.commit()
         session['email'] = new_email
+        update_user_email_confirmed(uid, False)
         return (True, "Successfully updated email")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
