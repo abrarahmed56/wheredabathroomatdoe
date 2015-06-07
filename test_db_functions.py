@@ -17,6 +17,11 @@ def get_users_list():
         if conn:
             conn.close()
 
+def display_places(places, s):
+    print "Displaying " + s + ":"
+    for place in places:
+        print place
+
 if not email_exists("test@www.chesley.party"):
     print "email1 no exist (should always occur)"
     _uuid = generate_id(ID_USER)
@@ -37,23 +42,25 @@ if email_exists("test2@www.chesley.party"):
 print "users:"
 for user in get_users_list():
     print user
+
 add_place("bench", 1, 1, "test@www.chesley.party")
 print "added bench at 1, 1\n"
-print get_places()
-print "added another bench at 1, 1-- should print location already added\n"
+print "added another bench at 1, 1-- should print location already added in next line"
 print add_place("bench", 1, 1, "test@www.chesley.party")
-print get_places()
-remove_place("bench", 1, 1)
-print get_places()
-print "removed bench at 1,1\n"
+display_places(get_places(), "all places")
+print "\n"
+print "remove bench at 1,1:"
+print remove_place("bench", 1, 1)
+display_places(get_places(), "all places")
+print "\n"
+print "re-add bench at 1, 1:"
 print add_place("bench", 1, 1, "test@www.chesley.party")
-print get_places()
-print "re-added bench at 1, 1\n"
-print get_places()
-print "get local places 1 unit away from 3, 3:\n"
-print get_local_places(3, 3, 1)
-print "get local places 4 units away from 3, 3:\n"
-print get_local_places(3, 3, 4)
+display_places(get_places(), "all places")
+print "\n"
+display_places(get_local_places(3, 3, 1), "local places 1 unit from (3, 3)--should display no results")
+print "\n"
+display_places(get_local_places(3, 3, 4), "local places 4 units from (3, 3)--should display added bench, and nothing else, assuming nobody uses the app who lives at (1, 1)")
+print "\n"
 print get_local_places(1, 1, 0)[0]['ID']
 print "adding review:"
 add_review(get_local_places(1, 1, 0)[0]['ID'], "test@www.chesley.party", 10, "10/10 would sit again")
