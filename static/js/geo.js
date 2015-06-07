@@ -7,6 +7,7 @@ var UTILITY_TYPES = {
     "bathroom" : "static/img/bathroom.gif",
     "bench"    : "static/img/bench.gif"
 }
+var infowindow = new google.maps.InfoWindow();
 
 function getUtilityName(name) {
     return (_.invert(UTILITY_TYPES))[name];
@@ -92,11 +93,14 @@ function markUtil(util) {
 	icon: img});
     google.maps.event.addListener(marker, 'click', function() {
 	console.log('util clicked'); 
-	var infowindow = new google.maps.InfoWindow({
+	infowindow.close();
+/*	infowindow = new google.maps.InfoWindow({
 	    map: map,
 	    position: latlng,
 	    content: getUtilInfo(util)
-	});
+	});*/
+	infowindow.setContent(getUtilInfo(util));
+	infowindow.open(map, marker);
     });
     console.log('UTILITY MARKED');
 }
