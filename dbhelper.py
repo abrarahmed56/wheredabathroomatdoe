@@ -574,8 +574,8 @@ def get_local_places(location_x, location_y, radius):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""SELECT * FROM PLACES WHERE |/((LocationX-%s)^2 +
-        (LocationY-%s)^2) <= %s^2""", (location_x, location_y, radius))
+        c.execute("""SELECT * FROM PLACES WHERE (LocationX-%s)^2 +
+        (LocationY-%s)^2 <= %s""", (location_x, location_y, radius**2))
         #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""", ('3', '3'))
         conn.commit()
         return dictionarify(c.fetchall())
