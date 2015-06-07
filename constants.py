@@ -1,4 +1,4 @@
-DB_NAME = "users-abrar"
+DB_NAME = "users"
 DB_USER = "softdev"
 
 WEBSITE_URL_BASE = "http://www.chesley.party:8000"
