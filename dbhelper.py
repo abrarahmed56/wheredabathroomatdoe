@@ -574,9 +574,10 @@ def get_local_places(location_x, location_y, radius):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""SELECT * FROM PLACES WHERE (LocationX-%s)^2 +
-        (LocationY-%s)^2 <= %s""", (location_x, location_y, radius**2))
-        #c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= 1 AND abs(LocationY-%s) <= 1""", ('3', '3'))
+        c.execute("""SELECT * FROM PLACES WHERE abs(LocationX-%s) <= %s AND
+        abs(LocationY-%s) <= %s AND (LocationX-%s)^2 +
+        (LocationY-%s)^2 <= %s""",
+        (location_x, radius, location_y, radius, location_x, location_y, radius**2))
         conn.commit()
         return dictionarify(c.fetchall())
     except psycopg2.DatabaseError, e:
