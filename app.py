@@ -174,6 +174,8 @@ def upload():
 @app.route('/settings/', methods=['GET', 'POST'])
 @redirect_if_not_logged_in("welcome")
 def settings():
+    global TEMP_URL_TIMEOUT_PENDING
+    uid = uuid.UUID(session['uid'])
     if request.method == 'POST':
         required_keys = [ 'new_email'
                         , 'new_phone'
@@ -184,7 +186,6 @@ def settings():
                         , 'verify_password'
                         ]
         if is_valid_request(request.form, required_keys):
-            uid = uuid.UUID(session['uid'])
             old_password = get_user_password(uid=uid)
             if old_password:
                 if not validate.check_password(old_password,
@@ -218,13 +219,12 @@ def settings():
                             request.form['new_lastname'])[1])
                     if request.form['new_bio'] != get_user_bio(uid):
                         flash(update_user_bio(uid, request.form['new_bio'])[1])
-            return render_template('settings.html', user_data=get_user_data(uid))
         else:
             flash("Malformed request")
-    else:
-        return render_template('settings.html',
-                               user_data=get_user_data(uuid.UUID(session['uid'])),
-                               loggedin=True)
+    return render_template('settings.html',
+                            user_data=get_user_data(uid),
+                            loggedin=True,
+                            temp_url_timeout_pending=TEMP_URL_TIMEOUT_PENDING)
 
 @app.route('/delete_account', methods=['POST'])
 @redirect_if_not_logged_in("welcome")
