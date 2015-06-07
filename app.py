@@ -257,7 +257,7 @@ def confirm_email(url_id=None):
 def send_confirm_email():
     uid = uuid.UUID(session['uid'])
     url_id = deflate_uuid(str(add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)[1]))
-    # TODO send email here
+    send_email_confirmation(session['email'], get_user_firstname(uid), url_id)
     return "OK"
 
 @app.errorhandler(404)
@@ -278,4 +278,4 @@ def clear_session_login_data(session):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0', port=8000)
+    app.run(host='0.0.0.0', port=8001)
