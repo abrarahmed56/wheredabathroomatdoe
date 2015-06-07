@@ -132,6 +132,28 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
+@app.route('/api/review', methods=['POST'])
+def add_review_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    , 'rating'
+                    , 'review'
+                    ]
+    if is_valid_request(request.form, required_keys):
+       try:
+           rating = int(request.form['rating'])
+       except:
+           return "Plase enter a whole number <= 5"
+       placeid = get_place_id(request.form["placeType"], float(request.form["locationX"]), float(request.form["locationY"]))
+       if rating <= 5:
+           return add_review(placeid, user, rating, request.form["review"])
+       else:
+           return "Plase enter a whole number <= 5"
+    else:
+        return "Required keys not submitted"
+
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
     return json.dumps(get_places())
