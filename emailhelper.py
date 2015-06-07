@@ -1,6 +1,7 @@
 import smtplib
 import socket
 from email.MIMEText import MIMEText
+from email.MIMEMultipart import MIMEMultipart
 
 def send_email(receiver, subject, body):
     HOST = "smtp.gmail.com"
@@ -10,10 +11,13 @@ def send_email(receiver, subject, body):
     with open('emailpassword', 'r') as f:
         password = f.read().strip()
    
-    msg = MIMEText(body)
+    msg = MIMEMultipart('alternative')    
     msg['Subject'] = subject
     msg['From'] = sender
     msg['To'] = receiver
+
+    html = MIMEText(body, 'html')
+    msg.attach(html)
 
     server = smtplib.SMTP()
     server.connect(HOST, PORT)
@@ -24,9 +28,9 @@ def send_email(receiver, subject, body):
 
 def send_confirmation_email(receiver, first_name, url_id):
     email_body_template = '''
-    Dear %(name)s,
-    Please click <a href="%(url)s target="_blank"">here</a> to confirm your email address.
-    Alternatively, here is a direct link: %(url)s
+    Dear %(name)s,<br>
+    Please click <a href="%(url)s target="_blank"">here</a> to confirm your email address.<br>
+    Alternatively, here is a direct link: %(url)s<br>
     Thank you for registering for wheredabathroomatdoe?!
     '''
     email_body = email_body_template%{ 'name': first_name
