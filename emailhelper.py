@@ -46,3 +46,22 @@ def send_confirmation_email(receiver, first_name, url_id):
     send_email(receiver, "wheredabathroomatdoe?! Account Confirmation", email_body)
     return True
 
+def send_password_reset_email(receiver, first_name, url_id):
+    global WEBSITE_URL_BASE
+    if not first_name:
+        first_name = "Anonymous"
+    email_body_template = '''
+    Dear %(name)s,<br><br>
+    Please click <a href="%(url)s" target="_blank">here</a> to reset your password.<br>
+    Alternatively, here is a direct link: %(url)s<br>
+    If you have not requested a password reset, please disregard this message.<br><br>
+    Thank you for using wheredabathroomatdoe?!,<br><br>
+    The wheredabathroomatdoe?! Team
+    '''
+    email_body = email_body_template%{ 'name': first_name
+                                     , 'url':
+                                     "%s/passwordreset/%s"%
+                                     (WEBSITE_URL_BASE, url_id)
+                                     }
+    send_email(receiver, "wheredabathroomatdoe?! Password Reset", email_body)
+    return True
