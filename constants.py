@@ -1,7 +1,7 @@
 DB_NAME = "users"
 DB_USER = "softdev"
 
-WEBSITE_URL_BASE = "www.chesley.party"
+WEBSITE_URL_BASE = "http://www.chesley.party:8000"
 
 ID_USER = 0
 ID_PLACE = 1

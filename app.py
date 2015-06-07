@@ -248,8 +248,10 @@ def confirm_email(url_id=None):
         url_id = inflate_uuid(url_id)
         if url_id:
             uid = uuid.UUID(session['uid'])
-            if get_temporary_url(uuid.UUID(url_id), uid, TEMP_URL_EMAIL_CONFIRM)[0]:
+            url_id = uuid.UUID(url_id)
+            if get_temporary_url(url_id, uid, TEMP_URL_EMAIL_CONFIRM)[0]:
                 update_user_email_confirmed(uid, True)
+                remove_temporary_url(url_id)
                 return redirect(url_for('settings'))
     return redirect(url_for('index'))
 
@@ -257,13 +259,13 @@ def confirm_email(url_id=None):
 @redirect_if_not_logged_in("welcome")
 def send_confirm_email():
     uid = uuid.UUID(session['uid'])
-    url_id = deflate_uuid(str(add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)[1]))
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
-        send_confirmation_email(session['email'], get_user_firstname(uid), url_id)
-    else:
-        return "Fail"
-    return "OK"
+        url_id = deflate_uuid(str(can_send_email[1]))
+        if send_confirmation_email(session['email'], get_user_firstname(uid),
+                url_id):
+            return "OK"
+    return "Fail"
     
 
 @app.errorhandler(404)
@@ -284,4 +286,4 @@ def clear_session_login_data(session):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0', port=8001)
+    app.run(host='0.0.0.0', port=8000)

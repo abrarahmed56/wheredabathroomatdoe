@@ -1,3 +1,4 @@
+from constants import *
 import smtplib
 import socket
 from email.MIMEText import MIMEText
@@ -27,14 +28,21 @@ def send_email(receiver, subject, body):
     server.close()
 
 def send_confirmation_email(receiver, first_name, url_id):
+    global WEBSITE_URL_BASE
+    if not first_name:
+        first_name = "Anonymous"
     email_body_template = '''
-    Dear %(name)s,<br>
-    Please click <a href="%(url)s target="_blank"">here</a> to confirm your email address.<br>
-    Alternatively, here is a direct link: %(url)s<br>
-    Thank you for registering for wheredabathroomatdoe?!
+    Dear %(name)s,<br><br>
+    Please click <a href="%(url)s" target="_blank">here</a> to confirm your email address.<br>
+    Alternatively, here is a direct link: %(url)s<br><br>
+    Thank you for registering for wheredabathroomatdoe?!,<br><br>
+    The wheredabathroomatdoe?! Team
     '''
     email_body = email_body_template%{ 'name': first_name
-                                     , 'url': "http://www.chesley.party:8000/confirm/email/%s"%url_id
+                                     , 'url':
+                                     "%s/confirm/email/%s"%
+                                     (WEBSITE_URL_BASE, url_id)
                                      }
-    send_email(receiver, "wheredabathroomatdoe Account Confirmation", email_body)
+    send_email(receiver, "wheredabathroomatdoe?! Account Confirmation", email_body)
+    return True
 

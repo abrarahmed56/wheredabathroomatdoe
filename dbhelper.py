@@ -84,7 +84,7 @@ def add_user(uid, email, password, phone, bio):
                 box_size=12,
                 border=4,
             )
-            qr_data = 'http://' + WEBSITE_URL_BASE + url_for('profile_with_id', userid=deflate_uuid(str(uid)))
+            qr_data = WEBSITE_URL_BASE + url_for('profile_with_id', userid=deflate_uuid(str(uid)))
             qr.add_data(qr_data)
             qr.make(fit=True)
             img1 = qr.make_image()
@@ -703,10 +703,7 @@ def expire_temporary_urls():
 
 def add_temporary_url(uid, url_type):
     global TEMP_URL_EXPIRY_TIME
-    print get_temporary_url_timeout_pending(uid, url_type)
-    print "Deleting"
     expire_temporary_urls()
-    print get_temporary_url_timeout_pending(uid, url_type)
     if get_temporary_url_timeout_pending(uid, url_type)[0]:
         return (False, "The temporary url timeout has not expired")
     uuid = generate_id(ID_USER)
@@ -741,6 +738,21 @@ def get_temporary_url(uuid, uid, url_type):
             return (True, "Valid temporary url")
         else:
             return (False, "Invalid temporary url")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def remove_temporary_url(uuid):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""DELETE FROM TemporaryUrls WHERE UrlID = %s""", (uuid,))
+        conn.commit()
+        return (True, "Successfully deleted temporary url")
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
