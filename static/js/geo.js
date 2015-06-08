@@ -63,10 +63,10 @@ function getPosition(show) {
 }
 
 function markActiveUtil() {
-    console.log(activeMarker.position['F']);
     $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})
         .done(function(data) {
 	    console.log(data);
+	    getPosition(SHOW);
 	    Materialize.toast('Location marked', 3000);
    	});
 }
@@ -78,12 +78,13 @@ function getNearbyUtils(lati,longi) {
     $.post("/api/get", {"longitude" : longi, "latitude" : lati})
         .done(function(data) {
 	    utilList = eval(data); // TODO Should be JSON data
-            console.log(data);
+            console.log("getNearbyUtils data: ");
 	    for (var i = 0; i < utilList.length; ++i) {markUtil(utilList[i]);};
 	});
 }
 
 function markUtil(util) {
+    console.log("markutil util: " + util);
     //marks utility. format of util: {type:"bench", position:[40.324342, 29.432423]}
     var latlng = new google.maps.LatLng(util['position'][1], util['position'][0]);
     var img = UTILITY_TYPES[util['type']];

@@ -685,20 +685,24 @@ def add_review(placeID, user, rating, review):
     try:
         uuid = generate_id(ID_REVIEW)
         if not uuid[0]:
-            return uuid[1]
+            return (False, uuid[1])
         c.execute("SELECT * FROM Reviews WHERE Username=%s AND PlacesID=%s", (user, placeID))
         conn.commit()
         exists = c.fetchone()
+        ret_str = ""
         if not exists:
             print "review doesnt exist"
             c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s, %s, %s)",
                       (uuid[1], uuid[1], placeID, user, rating, review))
+            ret_str = "Successfully added review"
         else:
             print "review exists"
             c.execute("UPDATE Reviews SET Rating=%s, Review=%s WHERE Username=%s AND PlacesID=%s",
                       (rating, review, user, placeID))
+            ret_str = "Successfully updated review"
         conn.commit()
         print "Done"
+        return (True, ret_str)
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

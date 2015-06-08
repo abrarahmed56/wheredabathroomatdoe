@@ -198,7 +198,7 @@ def add_review_front_end():
            return "Malformed request"
        placeid = get_place_id(request.form["placeType"], location_x, location_y)
        if rating <= 5:
-           return add_review(placeid, user, rating, request.form["review"])
+           return add_review(placeid, user, rating, request.form["review"])[1]
        else:
            return "Malformed request"
     else:
