@@ -59,12 +59,14 @@ def welcome():
                             ]
             if is_valid_request(request.form, required_keys):
                 email = request.form['forgotEmail']
-                uid = get_user_id(email)
-                if uid:
+                if email_exists(email):
+                    uid = get_user_id(email)
                     can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
                     if can_send_email[0]:
                         url_id = deflate_uuid(str(can_send_email[1]))
                         flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
+                else:
+                    flash("Username not found")
             else:
                 flash("Malformed request")
         elif request.form.has_key("login"):
@@ -145,27 +147,7 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
-@app.route('/api/getreviews', methods=['POST'])
-def get_reviews_front_end():
-    user = session['email']
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        reviews = get_reviews(get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY']))
-        data = [];
-        for review in reviews:
-           data.append({ "User": review[3]
-                      , "Rating": review[4]
-                      , "Review": review[5]
-         });
-        return json.dumps(data)
-    else:
-        return "Malformed request"
-
-
-@app.route('/api/addreview', methods=['POST'])
+@app.route('/api/review', methods=['POST'])
 def add_review_front_end():
     user = session['email']
     required_keys = [ 'placeType'
@@ -177,15 +159,13 @@ def add_review_front_end():
     if is_valid_request(request.form, required_keys):
        try:
            rating = int(request.form['rating'])
-           location_x = float(request.form["locationX"])
-           location_y = float(request.form["locationY"])
        except:
-           return "Malformed request"
-       placeid = get_place_id(request.form["placeType"], location_x, location_y)
+           return "Plase enter a whole number <= 5"
+       placeid = get_place_id(request.form["placeType"], float(request.form["locationX"]), float(request.form["locationY"]))
        if rating <= 5:
            return add_review(placeid, user, rating, request.form["review"])
        else:
-           return "Malformed request"
+           return "Plase enter a whole number <= 5"
     else:
         return "Required keys not submitted"
 
@@ -319,15 +299,30 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        response = send_confirmation_email(session['email'],
-                get_user_firstname(uid),
-                url_id)
-        if response:
-            flash(response)
+        if flash(send_confirmation_email(session['email'], get_user_firstname(uid),
+                url_id)):
             return "OK"
-    flash("An error occurred while sending your confirmation email. Please try"
-          " again later.")
     return "Fail"
+
+@app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
+def password_reset(url_id=None):
+    if url_id:
+        required_keys = [ 'resetEmail'
+                        , 'new_password'
+                        , 'confirm_password'
+                        ]
+        if is_valid_request(request.form, required_keys):
+            email = request.form['resetEmail']
+            password = request.form['new_password']
+            response = auth(AUTH_PASSRESET, email, password, None, None, url_id)
+            flash(response[1])
+            if response[0]:
+                return redirect(url_for('index'))
+        #Flashes upon first time loading the page...
+        #else:
+            #flash("Malformed request")
+        return render_template('password_reset_page.html')
+    return redirect(url_for('index'))
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -16,7 +16,7 @@ def connect():
         print "Error: %s" % e
         return None
 
-def auth(type, email, password, phone=None, bio=None):
+def auth(type, email, password, phone=None, bio=None, url_id=None):
     global ID_USER
     conn = connect()
     if conn == None:
@@ -56,6 +56,17 @@ def auth(type, email, password, phone=None, bio=None):
                         return (True, "Verification successful")
             if not success:
                 return (False, "Incorrect credentials")
+        elif type == AUTH_PASSRESET:
+            if email_exists(email):
+                uid = get_user_id(email)
+                if get_temporary_url(url_id, uid, TEMP_URL_PASSWORD_RESET)[0]:
+                    update_user_password(uid, password)
+                    return (True, "Password successfully reset")
+                else:
+                    return (False, "Invalid url")
+            else:
+                return (False, "User not found")
+            
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
