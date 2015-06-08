@@ -154,17 +154,15 @@ def get_reviews_front_end():
                     ]
     if is_valid_request(request.form, required_keys):
         reviews = get_reviews(get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY']))
-        ans = [];
-        i = 0;
+        data = [];
         for review in reviews:
-           ans.append({ "User": review[3]
+           data.append({ "User": review[3]
                       , "Rating": review[4]
                       , "Review": review[5]
          });
-        return json.dumps(ans)
-        #return str(ans)
+        return json.dumps(data)
     else:
-        return "Required keys not submitted"
+        return "Malformed request"
 
 
 @app.route('/api/addreview', methods=['POST'])
@@ -179,9 +177,11 @@ def add_review_front_end():
     if is_valid_request(request.form, required_keys):
        try:
            rating = int(request.form['rating'])
+           location_x = float(request.form["locationX"])
+           location_y = float(request.form["locationY"])
        except:
            return "Malformed request"
-       placeid = get_place_id(request.form["placeType"], float(request.form["locationX"]), float(request.form["locationY"]))
+       placeid = get_place_id(request.form["placeType"], location_x, location_y)
        if rating <= 5:
            return add_review(placeid, user, rating, request.form["review"])
        else:

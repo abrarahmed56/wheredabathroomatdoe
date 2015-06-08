@@ -94,11 +94,6 @@ function markUtil(util) {
     google.maps.event.addListener(marker, 'click', function() {
 	console.log('util clicked'); 
 	infowindow.close();
-/*	infowindow = new google.maps.InfoWindow({
-	    map: map,
-	    position: latlng,
-	    content: getUtilInfo(util)
-	});*/
 	infowindow.setContent(getUtilInfo(util));
 	infowindow.open(map, marker);
     });
@@ -114,7 +109,7 @@ function getUtilInfo(util) {
     $(".utilTitle")[1].innerHTML = util['type'] + " Info";
     $(".utilDescription")[0].innerHTML =
 	"Here are the reviews for this " + util['type'] + 
-	"<div id='reviews'>Hello</div>" +
+	"<div id='reviews'></div>" +
 	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
     moocow = $('#infoWindow')[0].innerHTML;
     getReviews(util['type'], util['position'][0], util['position'][1]);
@@ -130,7 +125,6 @@ function getReviews(placeType, locationX, locationY) {
 	    console.log("data" + data);
 	    console.log($("#reviews"));
 	    $("#reviews")[0].innerHTML = data;
-	    //console.log($("#reviews")[0].innerHTML);
 	});
 }
 
@@ -146,8 +140,6 @@ function addReview(placeType, locationX, locationY) {
         .done(function(data) {
 	    console.log(data);
 	});
-    console.log("add review");
-    console.log($("#review"));
 }
 
 function showError(error) {

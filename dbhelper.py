@@ -563,13 +563,8 @@ def get_place_id(place_type, location_x, location_y):
         return "Database Error"
     c = conn.cursor()
     try:
-        print "placetype: " + place_type
-        print "locationx: " + str(location_x)
-        print "locationy: " + str(location_y)
-        print get_places()
-        q = c.execute("SELECT * FROM Places WHERE PlaceType = %s AND LocationX - %s < 0.0000000001 AND LocationY - %s < 0.000000001 LIMIT 1""", (place_type, location_x, location_y))
+        c.execute("SELECT * FROM Places WHERE PlaceType = %s AND LocationX - %s < 0.0000000001 AND LocationY - %s < 0.000000001 LIMIT 1""", (place_type, location_x, location_y))
         conn.commit()
-        print q == None
         return c.fetchone()[0]
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
@@ -688,10 +683,9 @@ def add_review(placeID, user, rating, review):
             c.execute("UPDATE Reviews SET Rating=%s, Review=%s WHERE Username=%s AND PlacesID=%s",
                       (rating, review, user, placeID))
         conn.commit()
-        return "Done"
+        print "Done"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
-        return "error"
     finally:
         if conn:
             conn.close()
