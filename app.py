@@ -59,14 +59,11 @@ def welcome():
                             ]
             if is_valid_request(request.form, required_keys):
                 email = request.form['forgotEmail']
-                if email_exists(email):
-                    uid = get_user_id(email)
-                    can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
-                    if can_send_email[0]:
-                        url_id = deflate_uuid(str(can_send_email[1]))
-                        flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
-                else:
-                    flash("Username not found")
+                uid = get_user_id(email)
+                can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                if can_send_email[0]:
+                    url_id = deflate_uuid(str(can_send_email[1]))
+                    flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
             else:
                 flash("Malformed request")
         elif request.form.has_key("login"):
@@ -147,7 +144,6 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
-<<<<<<< HEAD
 @app.route('/api/getreviews', methods=['POST'])
 def get_reviews_front_end():
     user = session['email']
@@ -322,9 +318,14 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        if flash(send_confirmation_email(session['email'], get_user_firstname(uid),
-                url_id)):
+        response = send_confirmation_email(session['email'],
+                get_user_firstname(uid),
+                url_id)
+        if response:
+            flash(response)
             return "OK"
+    flash("An error occurred while sending your confirmation email. Please try"
+          " again later.")
     return "Fail"
 
 @app.errorhandler(404)

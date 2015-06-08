@@ -64,4 +64,4 @@ def send_password_reset_email(receiver, first_name, url_id):
                                      (WEBSITE_URL_BASE, url_id)
                                      }
     send_email(receiver, "wheredabathroomatdoe?! Password Reset", email_body)
-    return "Email sent"
+    return "A recovery email has been sent to the email you provided, if it exists."

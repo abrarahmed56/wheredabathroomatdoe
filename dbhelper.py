@@ -420,7 +420,8 @@ def get_user_id(email):
     try:
         c.execute("""SELECT UserID FROM Users WHERE Email = %s LIMIT 1""",
                         (email,))
-        return c.fetchone()[0]
+        result = c.fetchone()
+        return result[0] if result else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
