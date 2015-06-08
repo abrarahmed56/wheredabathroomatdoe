@@ -50,7 +50,6 @@ https://www.python.org/dev/peps/pep-0008/
 See `dependencies.md`  
 
 ## To-do List
-- Email reset password feature
 - Update utility review feature
 - Delete utility review feature
 - Upload utility picture
