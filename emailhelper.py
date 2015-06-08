@@ -44,7 +44,7 @@ def send_confirmation_email(receiver, first_name, url_id):
                                      (WEBSITE_URL_BASE, url_id)
                                      }
     send_email(receiver, "wheredabathroomatdoe?! Account Confirmation", email_body)
-    return True
+    return "Email sent"
 
 def send_password_reset_email(receiver, first_name, url_id):
     global WEBSITE_URL_BASE
@@ -64,4 +64,4 @@ def send_password_reset_email(receiver, first_name, url_id):
                                      (WEBSITE_URL_BASE, url_id)
                                      }
     send_email(receiver, "wheredabathroomatdoe?! Password Reset", email_body)
-    return True
+    return "Email sent"

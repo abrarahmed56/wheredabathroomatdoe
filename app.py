@@ -54,6 +54,25 @@ def welcome():
                 flash(auth(AUTH_REGISTER, email, password, phone)[1])
             else:
                 flash("Malformed request")
+        elif request.form.has_key("reset_password"):
+            required_keys = [ 'forgotEmail'
+                            ]
+            print '1'
+            if is_valid_request(request.form, required_keys):
+                print '2'
+                email = request.form['forgotEmail']
+                if email_exists(email):
+                    print '3'
+                    uid = get_user_id(email)
+                    can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                    print can_send_email
+                    if can_send_email[0]:
+                        url_id = deflate_uuid(str(can_send_email[1]))
+                        flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
+                else:
+                    flash("Username not found")
+            else:
+                flash("Malformed request")
         elif request.form.has_key("login"):
             required_keys = [ 'loginEmail'
                             , 'loginPassword'
@@ -131,28 +150,6 @@ def add():
     else:
         return "Malformed Request"
     return 'Utility marked!'
-
-@app.route('/api/review', methods=['POST'])
-def add_review_front_end():
-    user = session['email']
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    , 'rating'
-                    , 'review'
-                    ]
-    if is_valid_request(request.form, required_keys):
-       try:
-           rating = int(request.form['rating'])
-       except:
-           return "Plase enter a whole number <= 5"
-       placeid = get_place_id(request.form["placeType"], float(request.form["locationX"]), float(request.form["locationY"]))
-       if rating <= 5:
-           return add_review(placeid, user, rating, request.form["review"])
-       else:
-           return "Plase enter a whole number <= 5"
-    else:
-        return "Required keys not submitted"
 
 @app.route('/api/get', methods=['POST'])
 def get():#eventually will get nearby places
@@ -284,11 +281,14 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        if send_confirmation_email(session['email'], get_user_firstname(uid),
-                url_id):
-            return "OK"
+        flash(send_confirmation_email(session['email'], get_user_firstname(uid),
+                url_id))
+        return "OK"
     return "Fail"
-    
+
+@app.route('/test')
+def test():
+    return render_template('password_reset.html')
 
 @app.errorhandler(404)
 def page_not_found(error):
