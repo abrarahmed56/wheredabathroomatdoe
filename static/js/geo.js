@@ -35,9 +35,6 @@ function getPosition(show) {
         }
         else if (activeMarker) {
 	    markActiveUtil();
-	    activeMarker.draggable = false;
-	    activeMarker = false;
-	    $('input[type="button"]')[0].value = 'Utility Spotted';
 	}
 	else {
             console.log("button pressed");
@@ -63,10 +60,18 @@ function getPosition(show) {
 }
 
 function markActiveUtil() {
-    $.post("/api/add", {"longitude" : activeMarker.position['F'], "latitude" : activeMarker.position['A'], "type" : activeType})
+    var util = {
+        position : [activeMarker.position['F'], activeMarker.position['A']],
+        type : activeType
+    }
+    $.post("/api/add", {"longitude" : util['position'][0], "latitude" : util['position'][1], "type" : util['type']})
         .done(function(data) {
 	    console.log(data);
-	    getPosition(SHOW);
+	    //getPosition(SHOW);
+	    markUtil(util);
+	    activeMarker.setMap(null);
+	    activeMarker = false;
+	    $('input[type="button"]')[0].value = 'Utility Spotted';
 	    Materialize.toast('Location marked', 3000);
    	});
 }
