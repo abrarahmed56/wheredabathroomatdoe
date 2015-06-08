@@ -3,24 +3,23 @@ console.log('hi');
 var App = new Marionette.Application();
 
 App.addRegions({
-    homeworkRegion: '#homework'
+    placeRegion: '#place'
 });
 
 App.on("start", function() {
     console.log("started");
-    var homeworksview = new App.CompositeView({collection:hws});
-    //console.log(App.homeworkRegion);
-    App.homeworkRegion.show(homeworksview);
+    var placesview = new App.CompositeView({collection:places});
+    App.placeRegion.show(placesview);
 });
 
-App.HomeworkView = Marionette.ItemView.extend({
+App.PlaceView = Marionette.ItemView.extend({
     template: "#t",
     tagName: "tr",
     events: {
 	//var that = this;
 	"click #delete": function() {
 	    //this.save(this.toJSON());
-	    var h = new HW({clas:'c', homework:'a', deadline: 'd'})
+	    var h = new Place({type:'bench', address:'bs', rating: 5})
 	    console.log(this.model);
 	    //console.log(h);
 	    this.model.save(this.model.toJSON());
@@ -29,14 +28,14 @@ App.HomeworkView = Marionette.ItemView.extend({
     }
 });
 
-App.HomeworksView = Marionette.CollectionView.extend({
+App.PlacesView = Marionette.CollectionView.extend({
     childView: App.HomeworkView,
     /*events: {
 	"click #add": function() {
-	    var h = $("#newhw").val();
-	    if ( h.length > 0 ) {
-		this.collection.add(new HW({clas:h, homework:'a', deadline: 'now'}));
-		$("#newhw").val("");
+	    //var h = $("#newhw").val();
+	    //if ( h.length > 0 ) {
+	    this.collection.add(new Place({type:'bench', address:'bs', rating: 5}));
+	    //$("#newhw").val("");
 	    }
 	}
     }*/
@@ -44,53 +43,43 @@ App.HomeworksView = Marionette.CollectionView.extend({
 
 App.CompositeView = Marionette.CompositeView.extend({
     template: "#comptemp",
-    childView: App.HomeworkView,
+    childView: App.PlaceView,
     childViewContainer: "tbody",
     events: {
 	"click #add": function() {
-	    var c = $("#newclass").val();
-	    var a = $("#newassignment").val();
-	    var d = $("#newdeadline").val();
-	    if ( c.length > 0 ) {
-		if ( a.length == 0 ) {
-		    a = "stuff"
-		}
-		if ( d != parseInt(d) || d.length == 0) {
-		    d = 9001;
-		}
-		else {
-		    d = parseInt(d);
-		}
-		var that = this;
-		var h = new HW({clas:c, homework:a, deadline: d})
-		/*h.save(h.toJSON(), {success: function(m, r) {
-		    if (r.result.n==1) {
-			that.collection.add(h);
-			that.render();
-		    }
-		}
-		})*/
-		console.log(h.toJSON());
-		h.save(h.toJSON());
-		this.collection.add(h);
-		$("#newhw").val("");
-	    }
+	    console.log("add clicked");
+	    var c = "bench";
+	    var a = "bs";
+	    var d = 5;
+	    var that = this;
+	    var h = new Place({type:c, address:a, rating: d})
+	    /*h.save(h.toJSON(), {success: function(m, r) {
+	      if (r.result.n==1) {
+	      that.collection.add(h);
+	      that.render();
+	      }
+	      }
+	      })*/
+	    console.log(h.toJSON());
+	    h.save(h.toJSON());
+	    this.collection.add(h);
+	    //$("#newhw").val("");
 	},
     }
 });
 
-var HW = Backbone.Model.extend({
+var Place = Backbone.Model.extend({
     idAttribute: "_id",
     //id: "_id",
     urlRoot: "/hw",
     defaults: {
-	homework: "stuff",
-	deadline: "ehh"
+	/*homework: "stuff",
+	deadline: "ehh"*/
     }
 });
-var HWs = Backbone.Collection.extend({
-    model: HW,
-    url: "/hw",
+var Places = Backbone.Collection.extend({
+    model: Place,
+    url: "/favorites",
     initialize: function() {
 	this.fetch();
 	this.on("change: d", function(){console.log('hi');}, this);
@@ -100,16 +89,16 @@ var HWs = Backbone.Collection.extend({
 	}, 10000);*/
     }
 });
-var hw = new HW({
-    clas: 'Softdev',
-    homework: 'marionette',
-    deadline: 'tomorrow'
+var place = new Place({
+    type: 'Softdev',
+    address: 'marionette',
+    rating: 3
 });
-var hw2 = new HW({
-    clas: 'WPT',
-    homework: 'questions',
-    deadline: 'yesteday'
+var place2 = new Place({
+    type: 'WPT',
+    address: 'questions',
+    rating: 5
 });
-var hws = new HWs([hw, hw2]);
+var places = new Places([place, place2]);
 
 App.start();

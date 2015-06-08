@@ -298,6 +298,11 @@ def delete_account():
     else:
         return "Malformed request"
 
+@app.route("/favorites", methods=['GET', 'POST', 'DELETE', 'PUT'])
+def favorites():
+    print request.method
+    return "BS"
+
 @app.route('/confirm/email/<url_id>', methods=['GET'])
 @redirect_if_not_logged_in("welcome")
 def confirm_email(url_id=None):
