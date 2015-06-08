@@ -113,19 +113,31 @@ function getUtilInfo(util) {
     $(".utilTitle")[0].innerHTML = util['type'] + " Info";
     $(".utilTitle")[1].innerHTML = util['type'] + " Info";
     $(".utilDescription")[0].innerHTML =
-	"Here are the reviews about this " + util['type'] +
+	"Here are the reviews for this " + util['type'] + 
+	"<div id='reviews'>Hello</div>" +
 	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
     moocow = $('#infoWindow')[0].innerHTML;
+    getReviews(util['type'], util['position'][0], util['position'][1]);
     return $('#infoWindow')[0].innerHTML;
 }
 
+function getReviews(placeType, locationX, locationY) {
+    $.post("/api/getreviews", {"placeType": placeType
+			     , "locationX": locationX
+			     , "locationY": locationY
+			      })
+	.done(function(data) {
+	    console.log("data" + data);
+	    console.log($("#reviews"));
+	    $("#reviews")[0].innerHTML = data;
+	    //console.log($("#reviews")[0].innerHTML);
+	});
+}
+
 function addReview(placeType, locationX, locationY) {
-    console.log("method called");
-    console.log("placetype: " + placeType);
-    console.log("locationx: " + locationX);
     review = $("#review").val();
     rating = $("#rating").val();
-    $.post("/api/review", {"review" : review
+    $.post("/api/addreview", {"review" : review
 			 , "placeType": placeType
 			 , "locationX": locationX
 			 , "locationY": locationY
