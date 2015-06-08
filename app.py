@@ -147,6 +147,7 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
+<<<<<<< HEAD
 @app.route('/api/getreviews', methods=['POST'])
 def get_reviews_front_end():
     user = session['email']
@@ -321,14 +322,10 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        flash(send_confirmation_email(session['email'], get_user_firstname(uid),
-                url_id))
-        return "OK"
+        if flash(send_confirmation_email(session['email'], get_user_firstname(uid),
+                url_id)):
+            return "OK"
     return "Fail"
-
-@app.route('/test')
-def test():
-    return render_template('password_reset.html')
 
 @app.errorhandler(404)
 def page_not_found(error):
