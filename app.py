@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
+from flask_limiter import Limiter
 from functools import wraps
 from validate import *
 from dbhelper import *
@@ -19,6 +20,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
 
+limiter = Limiter(app)
+
 def redirect_if_not_logged_in(target, show_flash=True):
     def wrap(func):
         @wraps(func)
@@ -35,11 +38,13 @@ def redirect_if_not_logged_in(target, show_flash=True):
     return wrap
 
 @app.route('/')
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome", show_flash=False)
 def index():
     return render_template('index.html', loggedin=True)
 
 @app.route('/welcome', methods=['GET', 'POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def welcome():
     if request.method=="POST":
         if request.form.has_key("register"):
@@ -84,6 +89,7 @@ def welcome():
         return render_template('welcome.html', loggedin=session.has_key("email"))
 
 @app.route('/geo', methods=['GET', 'POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def geo():
     return render_template('geo.html', loggedin=session.has_key("email"))
 
@@ -95,19 +101,23 @@ def logout():
     return redirect(url_for("index"))
 
 @app.route('/about', methods=['GET'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def about():
     return render_template('about.html', loggedin=session.has_key("email"))
 
 @app.route('/donate', methods=['GET'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def donate():
     return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/profile', methods=['GET'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def profile():
     return redirect('/profile/' + deflate_uuid(session['uid']))
 
 @app.route('/profile/<userid>', methods=['GET'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def profile_with_id(userid):
     try:
@@ -125,6 +135,7 @@ def profile_with_id(userid):
         return redirect(url_for('index'))
 
 @app.route('/api/add', methods=['POST'])
+@limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def add():
     email = session['email']
@@ -148,6 +159,7 @@ def add():
     return 'Utility marked!'
 
 @app.route('/api/getreviews', methods=['POST'])
+@limiter.limit("60 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get_reviews_front_end():
     user = session['email']
     required_keys = [ 'placeType'
@@ -168,6 +180,7 @@ def get_reviews_front_end():
 
 
 @app.route('/api/addreview', methods=['POST'])
+@limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 def add_review_front_end():
     user = session['email']
     required_keys = [ 'placeType'
@@ -192,6 +205,7 @@ def add_review_front_end():
         return "Required keys not submitted"
 
 @app.route('/api/get', methods=['POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get():#eventually will get nearby places
     return json.dumps(get_places())
     #return json.dumps(get_local_places(location_x, location_y, radius))
@@ -200,6 +214,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['GET', 'POST'])
+@limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def upload():
     if request.method == 'POST' and request.files.has_key('pic'):
@@ -231,6 +246,7 @@ def upload():
     return redirect(url_for('settings'))
 
 @app.route('/settings/', methods=['GET', 'POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def settings():
     global TEMP_URL_TIMEOUT_PENDING
@@ -286,6 +302,7 @@ def settings():
                             temp_url_timeout_pending=TEMP_URL_TIMEOUT_PENDING)
 
 @app.route('/delete_account', methods=['POST'])
+@limiter.limit("1 per 10 minutes", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def delete_account():
     required_keys = ['password']
@@ -301,6 +318,7 @@ def delete_account():
         return "Malformed request"
 
 @app.route('/confirm/email/<url_id>', methods=['GET'])
+@limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def confirm_email(url_id=None):
     if url_id:
@@ -315,6 +333,7 @@ def confirm_email(url_id=None):
     return redirect(url_for('index'))
 
 @app.route('/confirm/send/email', methods=['POST'])
+@limiter.limit("1 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def send_confirm_email():
     uid = uuid.UUID(session['uid'])
@@ -332,6 +351,7 @@ def send_confirm_email():
     return "Fail"
 
 @app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
+@limiter.limit("1 per minute", error_message="BRO, YOU GOTTA CHILL")
 def password_reset(url_id=None):
     if url_id:
         required_keys = [ 'resetEmail'

@@ -19,6 +19,7 @@ Now we can connect to the database with: `psql` and create a new database: `crea
 `pip install psycopg2`  
 `pip install Pillow`  
 `pip install qrencode`  
+`pip install flask_limiter`  
 
 #Install libjpeg-dev for image manipulation
 `sudo apt-get install libjpeg-dev`

@@ -243,7 +243,7 @@ def get_user_firstname(uid=None, email=None):
             c.execute("""SELECT FirstName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0]
+        return results[0] if results else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -265,7 +265,7 @@ def get_user_lastname(uid=None, email=None):
             c.execute("""SELECT LastName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0]
+        return results[0] if results else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -287,7 +287,7 @@ def get_user_bio(uid=None, email=None):
             c.execute("""SELECT Bio FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0]
+        return results[0] if results else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -302,7 +302,8 @@ def get_user_email(uid):
     try:
         c.execute("""SELECT Email FROM Users WHERE ID = %s LIMIT 1""",
                         (uid,))
-        return c.fetchone()[0]
+        result = c.fetchone()
+        return result[0] if result else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -416,7 +417,8 @@ def get_user_phone(uid):
     try:
         c.execute("""SELECT Phone FROM Users WHERE ID = %s LIMIT 1""",
                         (uid,))
-        return c.fetchone()[0]
+        result = c.fetchone()
+        return result[0] if result else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -488,7 +490,8 @@ def get_user_email_confirmed(uid):
     try:
         c.execute("SELECT EmailConfirmed FROM USERS WHERE ID = %s LIMIT 1",
                  (uid,))
-        return c.fetchone()[0]
+        result = c.fetchone()
+        return result[0] if result else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -503,7 +506,8 @@ def get_user_phone_confirmed(uid):
     try:
         c.execute("SELECT PhoneConfirmed FROM USERS WHERE ID = %s LIMIT 1",
                  (uid,))
-        return c.fetchone()[0]
+        result = c.fetchone()
+        return result[0] if result else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
