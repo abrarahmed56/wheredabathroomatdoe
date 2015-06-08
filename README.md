@@ -50,17 +50,15 @@ https://www.python.org/dev/peps/pep-0008/
 See `dependencies.md`  
 
 ## To-do List
-- Set up email for website
 - Email reset password feature
-- Post utility review feature
 - Update utility review feature
 - Delete utility review feature
 - Upload utility picture
 - Report utility feature
 - Favorite utility feature
-- Upload user profile picture
+- User search feature
 - Report user feature
 - Disable account feature (report threshold)
 - User ranking feature
 - Sms confirmation
-- User search feature
+- Get domain email for website
