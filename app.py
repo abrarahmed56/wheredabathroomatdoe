@@ -60,10 +60,11 @@ def welcome():
             if is_valid_request(request.form, required_keys):
                 email = request.form['forgotEmail']
                 uid = get_user_id(email)
-                can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
-                if can_send_email[0]:
-                    url_id = deflate_uuid(str(can_send_email[1]))
-                    flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
+                if uid:
+                    can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                    if can_send_email[0]:
+                        url_id = deflate_uuid(str(can_send_email[1]))
+                        flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
             else:
                 flash("Malformed request")
         elif request.form.has_key("login"):
