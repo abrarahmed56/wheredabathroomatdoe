@@ -147,7 +147,27 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
-@app.route('/api/review', methods=['POST'])
+@app.route('/api/getreviews', methods=['POST'])
+def get_reviews_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        reviews = get_reviews(get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY']))
+        data = [];
+        for review in reviews:
+           data.append({ "User": review[3]
+                      , "Rating": review[4]
+                      , "Review": review[5]
+         });
+        return json.dumps(data)
+    else:
+        return "Malformed request"
+
+
+@app.route('/api/addreview', methods=['POST'])
 def add_review_front_end():
     user = session['email']
     required_keys = [ 'placeType'
@@ -159,13 +179,15 @@ def add_review_front_end():
     if is_valid_request(request.form, required_keys):
        try:
            rating = int(request.form['rating'])
+           location_x = float(request.form["locationX"])
+           location_y = float(request.form["locationY"])
        except:
-           return "Plase enter a whole number <= 5"
-       placeid = get_place_id(request.form["placeType"], float(request.form["locationX"]), float(request.form["locationY"]))
+           return "Malformed request"
+       placeid = get_place_id(request.form["placeType"], location_x, location_y)
        if rating <= 5:
            return add_review(placeid, user, rating, request.form["review"])
        else:
-           return "Plase enter a whole number <= 5"
+           return "Malformed request"
     else:
         return "Required keys not submitted"
 
@@ -278,11 +300,6 @@ def delete_account():
     else:
         return "Malformed request"
 
-@app.route("/favorites", methods=['GET', 'POST', 'DELETE', 'PUT'])
-def favorites():
-    print request.method
-    return "BS"
-
 @app.route('/confirm/email/<url_id>', methods=['GET'])
 @redirect_if_not_logged_in("welcome")
 def confirm_email(url_id=None):
@@ -304,9 +321,14 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        if flash(send_confirmation_email(session['email'], get_user_firstname(uid),
-                url_id)):
+        response = send_confirmation_email(session['email'],
+                get_user_firstname(uid),
+                url_id)
+        if response:
+            flash(response)
             return "OK"
+    flash("An error occurred while sending your confirmation email. Please try"
+          " again later.") 
     return "Fail"
 
 @app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
