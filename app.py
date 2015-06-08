@@ -54,6 +54,21 @@ def welcome():
                 flash(auth(AUTH_REGISTER, email, password, phone)[1])
             else:
                 flash("Malformed request")
+        elif request.form.has_key("reset_password"):
+            required_keys = [ 'forgotEmail'
+                            ]
+            if is_valid_request(request.form, required_keys):
+                email = request.form['forgotEmail']
+                if email_exists(email):
+                    uid = get_user_id(email)
+                    can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                    if can_send_email[0]:
+                        url_id = deflate_uuid(str(can_send_email[1]))
+                        flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
+                else:
+                    flash("Username not found")
+            else:
+                flash("Malformed request")
         elif request.form.has_key("login"):
             required_keys = [ 'loginEmail'
                             , 'loginPassword'
@@ -306,11 +321,14 @@ def send_confirm_email():
     can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        if send_confirmation_email(session['email'], get_user_firstname(uid),
-                url_id):
-            return "OK"
+        flash(send_confirmation_email(session['email'], get_user_firstname(uid),
+                url_id))
+        return "OK"
     return "Fail"
-    
+
+@app.route('/test')
+def test():
+    return render_template('password_reset.html')
 
 @app.errorhandler(404)
 def page_not_found(error):

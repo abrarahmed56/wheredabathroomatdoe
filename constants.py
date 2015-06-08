@@ -1,7 +1,7 @@
-DB_NAME = "users-abrar"
+DB_NAME = "users"
 DB_USER = "softdev"
 
-APP_PORT = 8021
+APP_PORT = 8000
 WEBSITE_URL_BASE = "http://www.chesley.party:%d" % APP_PORT
 
 ID_USER = 0
@@ -15,7 +15,7 @@ AUTH_VERIFY = 2
 
 TEMP_URL_EMAIL_CONFIRM = 'email-confirm'
 TEMP_URL_PHONE_CONFIRM = 'phone-confirm'
-TEMP_URL_RESET_PASSWORD = 'reset-password'
+TEMP_URL_PASSWORD_RESET = 'reset-password'
 
 TEMP_URL_EXPIRY_TIME = "1 day"
 TEMP_URL_TIMEOUT_PENDING = "10 minutes"
