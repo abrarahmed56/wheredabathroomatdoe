@@ -57,6 +57,13 @@ var toggleLogoDisplay = function() {
     logo.style.visibility = 'visible';
 }
 
+var switchModalFocus = function(fromModal, toModal) {
+    $(fromModal).closeModal();
+    setTimeout(function() {
+        $(toModal).openModal();
+    }, 300);
+}
+
 $(document).ready(function() {
     $(".button-collapse").sideNav();
     $(".modal-trigger").leanModal();
