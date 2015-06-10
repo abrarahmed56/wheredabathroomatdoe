@@ -84,13 +84,15 @@ def welcome():
                 flash(auth(AUTH_LOGIN, email, password)[1])
             else:
                 flash("Malformed request")
-        return redirect(url_for("index"))
+        return redirect(url_for(session['currentPage']))
     else:
+        session['currentPage'] = 'welcome'
         return render_template('welcome.html', loggedin=session.has_key("email"))
 
 @app.route('/geo', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def geo():
+    session['currentPage'] = 'geo'
     return render_template('geo.html', loggedin=session.has_key("email"))
 
 @app.route('/logout', methods=['POST'])
@@ -103,11 +105,13 @@ def logout():
 @app.route('/about', methods=['GET'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def about():
+    session['currentPage'] = 'about'
     return render_template('about.html', loggedin=session.has_key("email"))
 
 @app.route('/donate', methods=['GET'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def donate():
+    session['currentPage'] = 'donate'
     return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/profile', methods=['GET'])
@@ -352,6 +356,7 @@ def send_confirm_email():
 
 @app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
 @limiter.limit("1 per minute", error_message="BRO, YOU GOTTA CHILL")
+@redirect_if_not_logged_in("welcome")
 def password_reset(url_id=None):
     if url_id:
         required_keys = [ 'resetEmail'
