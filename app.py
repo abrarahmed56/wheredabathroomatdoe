@@ -51,18 +51,25 @@ def welcome():
             required_keys = [ 'registerEmail1'
                             , 'registerPassword1'
                             , 'registerPhone'
+                            , 'sourceUrl'
                             ]
-            if is_valid_request(request.form, required_keys):
+            if is_valid_request(request.form, required_keys) and\
+              request.form['sourceUrl']:
                 email = request.form['registerEmail1']
                 password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
-                flash(auth(AUTH_REGISTER, email, password, phone)[1])
+                result = auth(AUTH_REGISTER, email, password, phone)
+                flash(result[1])
+                if result[0]:
+                    return redirect(url_for('welcome'))
             else:
                 flash("Malformed request")
         elif request.form.has_key("reset_password"):
             required_keys = [ 'forgotEmail'
+                            , 'sourceUrl'
                             ]
-            if is_valid_request(request.form, required_keys):
+            if is_valid_request(request.form, required_keys) and\
+              request.form['sourceUrl']:
                 email = request.form['forgotEmail']
                 if email_exists(email):
                     uid = get_user_id(email)
@@ -77,22 +84,25 @@ def welcome():
         elif request.form.has_key("login"):
             required_keys = [ 'loginEmail'
                             , 'loginPassword'
+                            , 'sourceUrl'
                             ]
-            if is_valid_request(request.form, required_keys):
+            if is_valid_request(request.form, required_keys) and\
+              request.form['sourceUrl']:
                 email = request.form['loginEmail']
                 password = request.form['loginPassword']
-                flash(auth(AUTH_LOGIN, email, password)[1])
+                result = auth(AUTH_LOGIN, email, password)
+                flash(result[1])
+                if result[0]:
+                    return redirect(url_for('index'))
             else:
                 flash("Malformed request")
-        return redirect(url_for(session['currentPage']))
+        return render_template('redirect.html', url=request.form['sourceUrl'])
     else:
-        session['currentPage'] = 'welcome'
         return render_template('welcome.html', loggedin=session.has_key("email"))
 
 @app.route('/geo', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def geo():
-    session['currentPage'] = 'geo'
     return render_template('geo.html', loggedin=session.has_key("email"))
 
 @app.route('/logout', methods=['POST'])
@@ -105,13 +115,11 @@ def logout():
 @app.route('/about', methods=['GET'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def about():
-    session['currentPage'] = 'about'
     return render_template('about.html', loggedin=session.has_key("email"))
 
 @app.route('/donate', methods=['GET'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def donate():
-    session['currentPage'] = 'donate'
     return render_template('donate.html', loggedin=session.has_key("email"))
 
 @app.route('/profile', methods=['GET'])

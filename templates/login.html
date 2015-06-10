@@ -8,7 +8,8 @@
             Forgot your password? Reset it <a href="#reset_password"
 	        onclick="switchModalFocus('#login', '#reset_password')">here.</a>
             <form method="POST" action="{{ url_for('welcome') }}">
-                <input type="hidden" name="login">
+                <input type="hidden" name="login"/>
+                <input type="hidden" name="sourceUrl" id="sourceUrl" value=""/>
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="mdi-communication-email prefix"></i>
@@ -29,3 +30,6 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById("sourceUrl").value = window.location.href;
+</script>
