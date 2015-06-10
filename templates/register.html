@@ -2,8 +2,9 @@
     <div class="modal-content white">
         <div>
             <h4>Register</h4>
-            <form method="POST" onsubmit="return matchEmails('registerEmail1', 'registerEmail2') && matchPasswords('registerPassword1', 'registerPassword2')">
+            <form method="POST" action="{{ url_for('welcome') }}" onsubmit="return matchEmails('registerEmail1', 'registerEmail2') && matchPasswords('registerPassword1', 'registerPassword2')">
                 <input type="hidden" name="register">
+                <input type="hidden" name="sourceUrl" id="sourceUrlRegister" value=""/>
                 <div class="row">
                     <div class="input-field col s6">
                         <i class="mdi-communication-email prefix"></i>
@@ -42,3 +43,6 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById("sourceUrlRegister").value = window.location.href;
+</script>

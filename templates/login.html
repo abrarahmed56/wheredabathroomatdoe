@@ -9,7 +9,7 @@
 	        onclick="switchModalFocus('#login', '#reset_password')">here.</a>
             <form method="POST" action="{{ url_for('welcome') }}">
                 <input type="hidden" name="login"/>
-                <input type="hidden" name="sourceUrl" id="sourceUrl" value=""/>
+                <input type="hidden" name="sourceUrl" id="sourceUrlLogin" value=""/>
                 <div class="row">
                     <div class="input-field col s12">
                         <i class="mdi-communication-email prefix"></i>
@@ -31,5 +31,5 @@
     </div>
 </div>
 <script>
-document.getElementById("sourceUrl").value = window.location.href;
+document.getElementById("sourceUrlLogin").value = window.location.href;
 </script>

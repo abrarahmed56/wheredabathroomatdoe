@@ -63,7 +63,7 @@ def welcome():
                 if result[0]:
                     return redirect(url_for('welcome'))
             else:
-                flash("Malformed request")
+                return "Malformed request"
         elif request.form.has_key("reset_password"):
             required_keys = [ 'forgotEmail'
                             , 'sourceUrl'
@@ -71,16 +71,13 @@ def welcome():
             if is_valid_request(request.form, required_keys) and\
               request.form['sourceUrl']:
                 email = request.form['forgotEmail']
-                if email_exists(email):
-                    uid = get_user_id(email)
-                    can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
-                    if can_send_email[0]:
-                        url_id = deflate_uuid(str(can_send_email[1]))
-                        flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
-                else:
-                    flash("Username not found")
+                uid = get_user_id(email)
+                can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                if can_send_email[0]:
+                    url_id = deflate_uuid(str(can_send_email[1]))
+                    flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
             else:
-                flash("Malformed request")
+                return "Malformed request"
         elif request.form.has_key("login"):
             required_keys = [ 'loginEmail'
                             , 'loginPassword'
