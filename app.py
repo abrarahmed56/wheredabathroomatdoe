@@ -37,6 +37,18 @@ def redirect_if_not_logged_in(target, show_flash=True):
         return inner
     return wrap
 
+def redirect_if_logged_in(target):
+    def wrap(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if session.has_key('email') and session['email'] != None:
+                return redirect(url_for(target))
+            else:
+                pass
+            return func(*args, **kwargs)
+        return inner
+    return wrap
+
 @app.route('/')
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome", show_flash=False)
@@ -45,6 +57,7 @@ def index():
 
 @app.route('/welcome', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
+@redirect_if_logged_in("index")
 def welcome():
     if request.method=="POST":
         if request.form.has_key("register"):
