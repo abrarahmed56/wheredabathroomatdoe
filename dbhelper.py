@@ -66,7 +66,7 @@ def auth(type, email, password, phone=None, bio=None, url_id=None):
                     return (False, "Invalid url")
             else:
                 return (False, "User not found")
-            
+
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
