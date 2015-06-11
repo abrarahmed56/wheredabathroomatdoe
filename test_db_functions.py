@@ -30,7 +30,7 @@ if not email_exists("test@www.chesley.party"):
 else:
     print("test email1 added again (you screwed something up, unless you dropped users)")
 
-if not email_exists("test2@www.chesley.party"):
+'''if not email_exists("test2@www.chesley.party"):
     print "email2 no exist (correct, should be here)"
     _uuid = generate_id(ID_USER)
     if not _uuid[0]:
@@ -71,4 +71,18 @@ tmp_url_uuid = add_temporary_url(get_user_id("test@www.chesley.party"),
         TEMP_URL_EMAIL_CONFIRM)[1]
 print "Temporary url uuid: " + str(tmp_url_uuid)
 print get_temporary_url(tmp_url_uuid,
-        get_user_id("test@www.chesley.party"), TEMP_URL_EMAIL_CONFIRM)
+        get_user_id("test@www.chesley.party"), TEMP_URL_EMAIL_CONFIRM)'''
+print "Users: "
+for user in get_users_list():
+    print user
+
+add_place("bench", 2, 4, "test@www.chesley.party")
+print add_favorite(get_user_id("test@www.chesley.party"), get_place_id("bench", 2, 4))
+
+print "All favorites of test@www.chesley.party:"
+for favorite in get_favorites(get_user_id("test@www.chesley.party")):
+    print favorite
+
+print "Places:"
+for place in get_places():
+    print place

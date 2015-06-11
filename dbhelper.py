@@ -616,6 +616,45 @@ def get_local_places(location_x, location_y, radius):
     finally:
         if conn:
             conn.close()
+#TODO test favorites
+def add_favorite(user_id, place_id):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT * FROM FAVORITES WHERE UserID = %s AND PlacesID = %s LIMIT 1""", (user_id, place_id))
+        conn.commit()
+        exists = c.fetchone()
+        print exists
+        if not exists:
+            c.execute("""INSERT INTO FAVORITES VALUES (%s, %s)""", (user_id, place_id))
+            c.execute("""UPDATE Places SET FAVORITES = FAVORITES + 1 WHERE PlaceID = %s""", (place_id,))
+            conn.commit()
+            return "Location added to favorites"
+        else:
+            return "Location already in favorites"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_favorites(user_id):
+    print "user_id: " + str(user_id)
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT * FROM USERS WHERE UserID = %s""", (user_id,))
+        conn.commit()
+        return c.fetchall()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
 
 def email_exists(email):
     conn = connect()
@@ -686,7 +725,7 @@ def add_review(placeID, user, rating, review):
         uuid = generate_id(ID_REVIEW)
         if not uuid[0]:
             return (False, uuid[1])
-        c.execute("SELECT * FROM Reviews WHERE Username=%s AND PlacesID=%s", (user, placeID))
+        c.execute("SELECT * FROM Reviews WHERE Username=%s AND PlacesID=%s LIMIT 1", (user, placeID))
         conn.commit()
         exists = c.fetchone()
         ret_str = ""
