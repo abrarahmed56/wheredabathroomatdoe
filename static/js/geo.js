@@ -128,7 +128,10 @@ function getReviews(placeType, locationX, locationY) {
 			     , "locationY": locationY
 			      })
 	.done(function(data) {
+	    _data = eval(data);
+	    _data = _data ? _data[0] : null;
 	    console.log("data" + data);
+	    console.log(_data);
 	    console.log($("#reviews"));
 	    $("#reviews")[0].innerHTML = data;
 	});
