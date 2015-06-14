@@ -154,7 +154,6 @@ function addReview(placeType, locationX, locationY) {
 	});
 }
 
-<<<<<<< HEAD
 function addFavorite(placeType, locationX, locationY) {
     $.post("/api/addfavorite", {"placeType": placeType
 			      , "locationX": locationX
@@ -200,7 +199,7 @@ function inFavorites(util, placeType, locationX, locationY) {
 	    getReviews(util['type'], util['position'][0], util['position'][1]);
 
 	});
-=======
+
 function toggleView(type) {
     var btnName = '#'+type+'Toggle'
     var name= $(btnName)[0].value;
@@ -219,7 +218,6 @@ function toggleView(type) {
 	    markedUtils[i].setVisible(!markedUtils[i].getVisible());
 	}
     }
->>>>>>> 45b2777b6586c4a1cb7fc189aac8f2f27fdd20b5
 }
 
 function showError(error) {
