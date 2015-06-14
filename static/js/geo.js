@@ -7,7 +7,9 @@ var UTILITY_TYPES = {
     "bathroom" : "static/img/bathroom.gif",
     "bench"    : "static/img/bench.gif"
 }
+
 var infowindow = new google.maps.InfoWindow();
+var markedUtils = [];
 
 function getUtilityName(name) {
     return (_.invert(UTILITY_TYPES))[name];
@@ -74,6 +76,7 @@ function markActiveUtil() {
 	    $('input[type="button"]')[0].value = 'Utility Spotted';
 	    Materialize.toast('Location marked', 3000);
    	});
+    markedUtils.push(util);
 }
 
 function getNearbyUtils(lati,longi) {
@@ -103,19 +106,20 @@ function markUtil(util) {
 	infowindow.setContent(getUtilInfo(util));
 	infowindow.open(map, marker);
     });
+    markedUtils.push(marker);
     console.log('UTILITY MARKED');
 }
 
 function getUtilInfo(util) {
     console.log(util);
-    $(".utilImage")[0].src = UTILITY_TYPES[util['type']];
-    $(".utilImage")[0].height = "100";
-    $(".utilImage")[0].width = "2000";
-    $(".utilTitle")[0].innerHTML = util['type'] + " Info";
-    $(".utilTitle")[1].innerHTML = util['type'] + " Info";
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
+    $(".utilImage")[0].src = UTILITY_TYPES[utilType];
+    $(".utilImage")[0].height = "100";
+    $(".utilImage")[0].width = "2000";
+    $(".utilTitle")[0].innerHTML = utilType + " Info";
+    $(".utilTitle")[1].innerHTML = utilType + " Info";
     inFavorites(util, utilType, utilPositionZero, utilPositionOne)
     return $('#infoWindow')[0].innerHTML;
 }
@@ -128,6 +132,7 @@ function getReviews(placeType, locationX, locationY) {
 	.done(function(data) {
 	    _data = eval(data);
 	    _data = _data ? _data[0] : null;
+	    console.log("data" + data);
 	    console.log("data" + data);
 	    console.log(_data);
 	    console.log($("#reviews"));
@@ -149,6 +154,7 @@ function addReview(placeType, locationX, locationY) {
 	});
 }
 
+<<<<<<< HEAD
 function addFavorite(placeType, locationX, locationY) {
     $.post("/api/addfavorite", {"placeType": placeType
 			      , "locationX": locationX
@@ -194,6 +200,26 @@ function inFavorites(util, placeType, locationX, locationY) {
 	    getReviews(util['type'], util['position'][0], util['position'][1]);
 
 	});
+=======
+function toggleView(type) {
+    var btnName = '#'+type+'Toggle'
+    var name= $(btnName)[0].value;
+    if (name[0] == 'S') {
+	var newName = 'Hide '+name.charAt(5).toUpperCase()+name.slice(6);
+	$(btnName)[0].value = newName;
+    }
+    else {
+	var newName = 'Show '+name.charAt(5).toUpperCase()+name.slice(6);
+	$(btnName)[0].value = newName;
+    }
+    console.log(name);
+    type = UTILITY_TYPES[type];
+    for(var i = 0; i < markedUtils.length; i++) {
+	if (markedUtils[i].icon == type) {
+	    markedUtils[i].setVisible(!markedUtils[i].getVisible());
+	}
+    }
+>>>>>>> 45b2777b6586c4a1cb7fc189aac8f2f27fdd20b5
 }
 
 function showError(error) {

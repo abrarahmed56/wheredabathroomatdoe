@@ -1,7 +1,7 @@
 DB_NAME = "users"
 DB_USER = "softdev"
 
-APP_PORT = 8000
+APP_PORT = 8002
 WEBSITE_URL_BASE = "http://www.chesley.party:%d" % APP_PORT
 
 ID_USER = 0

@@ -18,9 +18,9 @@
 {% endblock navbar_right %}
 {% block bodycontent %}
 {% if loggedin %}
-<div class="row" id="inputForm">
+<div id="inputForm" class="row">
   <form>
-    <div class="input-field col s6">
+    <div class="input-field col s6">    
       <select name="utils" id="utilType" class="white">
 	<option value="NONE" disabled selected>Select Utility Type</option>
 	<option value="bench">Bench</option>
@@ -35,6 +35,11 @@
 </div>
 {% endif %}
 <div id="map-canvas"></div>
+<div id="toggleButtons" class="row">
+  <input type="button" id="benchToggle" value="Hide Benches" onclick="toggleView('bench');" class="btn green darken-3"/>
+  <input type="button" id="bathroomToggle" value="Hide Bathrooms" onclick="toggleView('bathroom');" class="btn green darken-3"/>
+  <input type="button" id="fountainToggle" value="Hide Fountains" onclick="toggleView('fountain');" class="btn green darken-3"/>
+</div>
 {% include 'util_info.html' %} 
 {% endblock bodycontent %}
 {% block scripts %}
