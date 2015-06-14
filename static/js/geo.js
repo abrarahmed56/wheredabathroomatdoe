@@ -199,6 +199,7 @@ function inFavorites(util, placeType, locationX, locationY) {
 	    getReviews(util['type'], util['position'][0], util['position'][1]);
 
 	});
+}
 
 function toggleView(type) {
     var btnName = '#'+type+'Toggle'
