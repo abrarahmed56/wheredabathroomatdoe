@@ -223,7 +223,7 @@ def remove_favorite_front_end():
                     ]
     if is_valid_request(request.form, required_keys):
         user_id = get_user_id(user)
-        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
+        place_id = get_place_id(request.form['placeType'], float(request.form['locationX']), float(request.form['locationY']))
         return remove_favorite(user_id, place_id)
     else:
         return "Malformed request"
@@ -245,9 +245,9 @@ def in_favorites_front_end():
 @app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @app.route('/api/marionette/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
 def marionette(id=None):
+    user = session['email']
+    user_id = get_user_id(user)
     if request.method == "GET":
-        user = session['email']
-        user_id = get_user_id(user)
         ans = []
         for favorite in get_favorites(user_id):
             fav = {"type": get_place_type(favorite[1])
@@ -257,7 +257,9 @@ def marionette(id=None):
             ans.append(fav)
         return json.dumps(ans)
     if request.method == "POST":
-        print request
+        place = request.get_json()
+        place_id = get_place_id(place['type'], place['address'][0], place['address'][1])
+        return remove_favorite(user_id, place_id)
     return "hello"
 
 @app.route('/api/directions/<origin>/<destination>')

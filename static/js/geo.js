@@ -197,7 +197,6 @@ function inFavorites(util, placeType, locationX, locationY) {
 		"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>" + favoritesButton;
 	    moocow = $('#infoWindow')[0].innerHTML;
 	    getReviews(util['type'], util['position'][0], util['position'][1]);
-
 	});
 }
 

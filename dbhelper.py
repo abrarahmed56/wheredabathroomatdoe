@@ -578,7 +578,7 @@ def get_place_id(place_type, location_x, location_y):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM Places WHERE PlaceType = %s AND LocationX - %s < 0.0000000001 AND LocationY - %s < 0.000000001 LIMIT 1""", (place_type, location_x, location_y))
+        c.execute("SELECT * FROM Places WHERE PlaceType = %s AND abs(LocationX - %s) < 0.0000000000001 AND abs(LocationY - %s) < 0.0000000000001 LIMIT 1""", (place_type, location_x, location_y))
         conn.commit()
         return c.fetchone()[0]
     except psycopg2.DatabaseError, e:
@@ -716,7 +716,11 @@ def remove_favorite(user_id, place_id):
     try:
         c.execute("DELETE FROM FAVORITES WHERE UserID = %s AND PlacesID = %s", (user_id, place_id))
         conn.commit()
-        return "Removal from My Places successful"
+        success = c.rowcount
+        if success:
+            return "Favorite doesn't exist"
+        else:
+            return "Removal from My Places successful"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
