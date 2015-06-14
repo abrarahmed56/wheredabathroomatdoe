@@ -7,7 +7,9 @@ var UTILITY_TYPES = {
     "bathroom" : "static/img/bathroom.gif",
     "bench"    : "static/img/bench.gif"
 }
+
 var infowindow = new google.maps.InfoWindow();
+var markedUtils = [];
 
 function getUtilityName(name) {
     return (_.invert(UTILITY_TYPES))[name];
@@ -74,6 +76,7 @@ function markActiveUtil() {
 	    $('input[type="button"]')[0].value = 'Utility Spotted';
 	    Materialize.toast('Location marked', 3000);
    	});
+    markedUtils.push(util);
 }
 
 function getNearbyUtils(lati,longi) {
@@ -103,6 +106,7 @@ function markUtil(util) {
 	infowindow.setContent(getUtilInfo(util));
 	infowindow.open(map, marker);
     });
+    markedUtils.push(marker);
     console.log('UTILITY MARKED');
 }
 
@@ -116,7 +120,7 @@ function getUtilInfo(util) {
     $(".utilDescription")[0].innerHTML =
 	"Here are the reviews for this " + util['type'] + 
 	"<div id='reviews'></div>" +
-	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
+	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><input class='btn green darken-3' type='button' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
     moocow = $('#infoWindow')[0].innerHTML;
     getReviews(util['type'], util['position'][0], util['position'][1]);
     return $('#infoWindow')[0].innerHTML;
@@ -130,6 +134,7 @@ function getReviews(placeType, locationX, locationY) {
 	.done(function(data) {
 	    _data = eval(data);
 	    _data = _data ? _data[0] : null;
+	    console.log("data" + data);
 	    console.log("data" + data);
 	    console.log(_data);
 	    console.log($("#reviews"));
@@ -149,6 +154,26 @@ function addReview(placeType, locationX, locationY) {
         .done(function(data) {
 	    console.log(data);
 	});
+}
+
+function toggleView(type) {
+    var btnName = '#'+type+'Toggle'
+    var name= $(btnName)[0].value;
+    if (name[0] == 'S') {
+	var newName = 'Hide '+name.charAt(5).toUpperCase()+name.slice(6);
+	$(btnName)[0].value = newName;
+    }
+    else {
+	var newName = 'Show '+name.charAt(5).toUpperCase()+name.slice(6);
+	$(btnName)[0].value = newName;
+    }
+    console.log(name);
+    type = UTILITY_TYPES[type];
+    for(var i = 0; i < markedUtils.length; i++) {
+	if (markedUtils[i].icon == type) {
+	    markedUtils[i].setVisible(!markedUtils[i].getVisible());
+	}
+    }
 }
 
 function showError(error) {

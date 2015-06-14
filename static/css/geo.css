@@ -19,8 +19,16 @@ body, html {
 #inputForm {
         position: absolute;
         top: 100px;
+	margin-left: -200px;
         left: 50%;
-        margin-left: -180px;
         z-index: 5;
-        background-color: transparent;
+        background-color: transparent
+}
+
+#toggleButtons {
+    position: absolute;
+    margin-left: 55px;
+    right: 50px;
+    bottom: 20px;
+    background-color: transparent
 }
