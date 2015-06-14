@@ -587,6 +587,74 @@ def get_place_id(place_type, location_x, location_y):
         if conn:
             conn.close()
 
+def get_place_type(pid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT PlaceType FROM Places WHERE ID = %s LIMIT 1", (pid,))
+        result = c.fetchone()
+        return result[0] if result else None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_place_location_x(pid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT LocationX FROM Places WHERE ID = %s LIMIT 1", (pid,))
+        result = c.fetchone()
+        return result[0] if result else None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_place_location_y(pid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT LocationY FROM Places WHERE ID = %s LIMIT 1", (pid,))
+        result = c.fetchone()
+        return result[0] if result else None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_place_rating(pid):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Rating FROM Reviews WHERE PlacesID = %s", (pid,))
+        result = c.fetchall()
+        print "get place rating: " + str(result)
+        if result:
+            ans = 0
+            count = 0
+            for val in result:
+                ans += val[0]
+                count += 1
+            return ans/count
+        return None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def dictionarify(places_list):
     ans = []
     for place in places_list:
@@ -631,9 +699,42 @@ def add_favorite(user_id, place_id):
             c.execute("""INSERT INTO FAVORITES VALUES (%s, %s)""", (user_id, place_id))
             c.execute("""UPDATE Places SET FAVORITES = FAVORITES + 1 WHERE PlaceID = %s""", (place_id,))
             conn.commit()
-            return "Location added to favorites"
+            return "Location added to My Places"
         else:
-            return "Location already in favorites"
+            return "Location already in My Places"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def remove_favorite(user_id, place_id):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("DELETE FROM FAVORITES WHERE UserID = %s AND PlacesID = %s", (user_id, place_id))
+        conn.commit()
+        return "Removal from My Places successful"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def in_favorites(user_id, place_id):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM FAVORITES WHERE UserID = %s AND PlacesID = %s LIMIT 1", (user_id, place_id))
+        conn.commit()
+        exists = c.fetchone()
+        if not exists:
+            return "False"
+        return "True"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -647,7 +748,7 @@ def get_favorites(user_id):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("""SELECT * FROM USERS WHERE UserID = %s""", (user_id,))
+        c.execute("""SELECT * FROM Favorites WHERE UserID = %s""", (user_id,))
         conn.commit()
         return c.fetchall()
     except psycopg2.DatabaseError, e:

@@ -200,6 +200,71 @@ def get_reviews_front_end():
     else:
         return "Malformed request"
 
+@app.route('/api/addfavorite', methods=['POST'])
+def add_favorite_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        user_id = get_user_id(user)
+        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
+        return add_favorite(user_id, place_id)
+    else:
+        return "Malformed request"
+
+@app.route('/api/removefavorite', methods=['POST'])
+def remove_favorite_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        user_id = get_user_id(user)
+        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
+        return remove_favorite(user_id, place_id)
+    else:
+        return "Malformed request"
+
+@app.route('/api/infavorites', methods=['POST'])
+def in_favorites_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        user_id = get_user_id(user)
+        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
+        return in_favorites(user_id, place_id)
+    else:
+        return "Malformed request"
+
+@app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@app.route('/api/marionette/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
+def marionette(id=None):
+    if request.method == "GET":
+        user = session['email']
+        user_id = get_user_id(user)
+        ans = []
+        for favorite in get_favorites(user_id):
+            fav = {"type": get_place_type(favorite[1])
+                 , "address": (get_place_location_x(favorite[1]), get_place_location_y(favorite[1]))
+                 , "rating": get_place_rating(favorite[1])
+            }
+            ans.append(fav)
+        return json.dumps(ans)
+    if request.method == "POST":
+        print request
+    return "hello"
+
+@app.route('/api/directions/<origin>/<destination>')
+def show_directions(origin, destination):
+    print "origin: " + origin
+    print "destination: " + destination
+    return render_template("directions.html", origin=origin, destination=destination)
 
 @app.route('/api/addreview', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")

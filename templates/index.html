@@ -10,7 +10,7 @@
 <div class="container">
     <h1>Places:</h1>
     <script type="text/template" id="t">
-    <td><%- type %></td><td><%- address %></td><td><%- rating %></td><td><button id="delete" class="pure-button">Delete</button>
+    <td><%- type %></td><td><%- address %></td><td><%- rating %></td><td><button id="delete" class="pure-button">Delete</button><button id="directions" class="pure-button">Directions</button>
     </script>
     <script type="text/template" id="comptemp">
     <button class="pure-button" id="add">Add</button>
@@ -29,5 +29,11 @@
 </div>
 {% endblock bodycontent %}
 {% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script>
+  {% for place in places %}
+  console.log({{place}});
+  {% endfor %}
+</script>
 {% endblock scripts %}

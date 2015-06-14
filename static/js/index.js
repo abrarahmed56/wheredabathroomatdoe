@@ -2,6 +2,21 @@ console.log('hi');
 
 var App = new Marionette.Application();
 
+function initialize() {
+    err = $('flashed_messages');
+    $('select').material_select();
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+            var mapOptions = {
+                zoom: 15,
+                center: myLatlng
+            }
+	})
+    }
+}
+
+
 App.addRegions({
     placeRegion: '#place'
 });
@@ -20,10 +35,30 @@ App.PlaceView = Marionette.ItemView.extend({
 	"click #delete": function() {
 	    //this.save(this.toJSON());
 	    var h = new Place({type:'bench', address:'bs', rating: 5})
-	    console.log(this.model);
+	    console.log(this);
 	    //console.log(h);
 	    this.model.save(this.model.toJSON());
 	    this.remove();
+	},
+	"click #directions": function() {
+	    var myLatlng;
+	    var locX = this.model.attributes.address[0];
+	    var locY = this.model.attributes.address[1];
+	    console.log(locX);
+	    console.log(locY);
+	    var address = [locY, locX];
+	    console.log("address: " + address)
+	    navigator.geolocation.getCurrentPosition(function(position) {
+                myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+		var replaceURL = "/api/directions/" + address + "/" + myLatlng
+		console.log(replaceURL);
+		replaceURL = replaceURL.replace("(", "").replace(")", "").replace(" ", "");
+		console.log(replaceURL);
+		window.location.replace(replaceURL);
+	    });
+	    //var replaceURL = "/api/directions/" + this.model.attributes.address + "/" + myLatlng;
+	    //console.log(replaceURL);
+	    console.log("dir");
 	}
     }
 });
@@ -71,7 +106,7 @@ App.CompositeView = Marionette.CompositeView.extend({
 var Place = Backbone.Model.extend({
     idAttribute: "_id",
     //id: "_id",
-    urlRoot: "/hw",
+    urlRoot: "/api/marionette",
     defaults: {
 	/*homework: "stuff",
 	deadline: "ehh"*/
@@ -79,7 +114,7 @@ var Place = Backbone.Model.extend({
 });
 var Places = Backbone.Collection.extend({
     model: Place,
-    url: "/favorites",
+    url: "/api/marionette",
     initialize: function() {
 	this.fetch();
 	this.on("change: d", function(){console.log('hi');}, this);
@@ -89,6 +124,7 @@ var Places = Backbone.Collection.extend({
 	}, 10000);*/
     }
 });
+
 var place = new Place({
     type: 'Softdev',
     address: 'marionette',
@@ -102,3 +138,4 @@ var place2 = new Place({
 var places = new Places([place, place2]);
 
 App.start();
+google.maps.event.addDomListener(window, 'load', initialize);

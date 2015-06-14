@@ -113,12 +113,10 @@ function getUtilInfo(util) {
     $(".utilImage")[0].width = "2000";
     $(".utilTitle")[0].innerHTML = util['type'] + " Info";
     $(".utilTitle")[1].innerHTML = util['type'] + " Info";
-    $(".utilDescription")[0].innerHTML =
-	"Here are the reviews for this " + util['type'] + 
-	"<div id='reviews'></div>" +
-	"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>";
-    moocow = $('#infoWindow')[0].innerHTML;
-    getReviews(util['type'], util['position'][0], util['position'][1]);
+    utilType = util['type'];
+    utilPositionZero = util['position'][0];
+    utilPositionOne = util['position'][1];
+    inFavorites(util, utilType, utilPositionZero, utilPositionOne)
     return $('#infoWindow')[0].innerHTML;
 }
 
@@ -148,6 +146,53 @@ function addReview(placeType, locationX, locationY) {
 			  })
         .done(function(data) {
 	    console.log(data);
+	});
+}
+
+function addFavorite(placeType, locationX, locationY) {
+    $.post("/api/addfavorite", {"placeType": placeType
+			      , "locationX": locationX
+			      , "locationY": locationY
+			       })
+	.done(function(data) {
+	    $("#favoritesButton").html("Remove from My Places");
+	    $("#favoritesButton").attr("onclick", "removeFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
+	    Materialize.toast(data, 4000);
+	});
+}
+
+function removeFavorite(placeType, locationX, locationY) {
+    $.post("/api/removefavorite", {"placeType": placeType
+	   		         , "locationX": locationX
+			         , "locationY": locationY
+			       })
+	.done(function(data) {
+	    $("#favoritesButton").html("Add to My Places");
+	    $("#favoritesButton").attr("onclick", "addFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
+	    Materialize.toast(data, 4000);
+	});
+}
+
+function inFavorites(util, placeType, locationX, locationY) {
+    $.post("/api/infavorites",  {"placeType": placeType
+			      , "locationX": locationX
+			      , "locationY": locationY
+			       })
+	.done(function(data) {
+	    console.log(data);
+	    if (new String(data).valueOf()===new String("False").valueOf()) {
+		favoritesButton = "<button id='favoritesButton' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places</button>";
+	    }
+	    else {
+		favoritesButton = "<button id='favoritesButton' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places</button>";
+	    }
+	    $(".utilDescription")[0].innerHTML =
+		"Here are the reviews for this " + util['type'] + 
+		"<div id='reviews'></div>" +
+		"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>" + favoritesButton;
+	    moocow = $('#infoWindow')[0].innerHTML;
+	    getReviews(util['type'], util['position'][0], util['position'][1]);
+
 	});
 }
 
