@@ -441,7 +441,6 @@ def send_confirm_email():
 
 @app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
 @limiter.limit("1 per minute", error_message="BRO, YOU GOTTA CHILL")
-@redirect_if_not_logged_in("welcome")
 def password_reset(url_id=None):
     if url_id:
         required_keys = [ 'resetEmail'
