@@ -131,12 +131,19 @@ function getReviews(placeType, locationX, locationY) {
 			      })
 	.done(function(data) {
 	    _data = eval(data);
-	    _data = _data ? _data[0] : null;
-	    console.log("data" + data);
-	    console.log("data" + data);
-	    console.log(_data);
-	    console.log($("#reviews"));
-	    $("#reviews")[0].innerHTML = data;
+	    //_data = _data ? _data[0] : null;
+	    console.log("data" + _data);
+	    reviews = ""
+	    for (var i=0; i<_data.length; i++) {
+		//console.log(i);
+		rating = _data[i]['Rating']
+		review = _data[i]['Review']
+		user = _data[i]['User']
+		reviews += "Rating: " + rating + "\nReview: " + review +
+		    "\nUser: " + user  + "<hr>"
+	    }
+	    console.log("reviews: " + reviews)
+	    $("#reviews")[0].innerHTML = reviews;
 	});
 }
 

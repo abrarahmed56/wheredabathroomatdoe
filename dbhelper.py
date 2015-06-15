@@ -647,7 +647,7 @@ def get_place_rating(pid):
             for val in result:
                 ans += val[0]
                 count += 1
-            return ans/count
+            return float(ans)/count
         return None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
