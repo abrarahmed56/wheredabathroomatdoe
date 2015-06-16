@@ -71,7 +71,7 @@ def welcome():
                 email = request.form['registerEmail1']
                 password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
-                result = auth(AUTH_REGISTER, email, password, phone)
+                result = auth(AUTH_REGISTER, session, email, password, phone)
                 flash(result[1])
                 if result[0]:
                     return redirect(url_for('welcome'))
@@ -100,7 +100,7 @@ def welcome():
               request.form['sourceUrl']:
                 email = request.form['loginEmail']
                 password = request.form['loginPassword']
-                result = auth(AUTH_LOGIN, email, password)
+                result = auth(AUTH_LOGIN, session, email, password)
                 flash(result[1])
                 if result[0]:
                     return redirect(url_for('index'))
@@ -150,6 +150,27 @@ def profile_with_id(userid):
                 return render_template('profile.html',
                         loggedin=True,
                         user_data = get_user_data(uid))
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
+    except ValueError, e:
+        flash("I c wut u did dere ;)")
+        return redirect(url_for('index'))
+
+@app.route('/profile/<userid>/report', methods=['POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
+@redirect_if_not_logged_in("welcome")
+def report_user(userid):
+    # TODO implement reason for report
+    try:
+        userid = inflate_uuid(userid)
+        if userid:
+            uid = uuid.UUID(userid)
+            reporter_id = uuid.UUID(session['uid'])
+            if uid_exists(uid):
+                if can_user_be_reported(reporter_id, uid):
+                    flash(add_user_report(reporter_id, uid, "No reason")[1])
+                    return redirect(url_for('profile_with_id',
+                        userid=deflate_uuid(userid)))
         flash("I c wut u did dere ;)")
         return redirect(url_for('index'))
     except ValueError, e:
@@ -350,39 +371,39 @@ def settings():
                         , 'verify_password'
                         ]
         if is_valid_request(request.form, required_keys):
-            old_password = get_user_password(uid=uid)
-            if old_password:
-                if not validate.check_password(old_password,
-                        request.form['verify_password']):
-                    flash("Invalid verification credentials")
-                else:
-                    if session['email'] != request.form['new_email']:
-                        validate_email = validate.is_valid_email(request.form['new_email'])
-                        if validate_email[0]:
-                            flash(update_user_email(uid,
-                                request.form['new_email'])[1])
-                        else:
-                            flash(validate_email[1])
-                    validate_phone = validate.is_valid_telephone(request.form['new_phone'])
-                    if validate_phone[0]:
-                        if validate_phone[1] != get_user_phone(uid):
-                            flash(update_user_phone(uid, validate_phone[1])[1])
+            result = auth(AUTH_VERIFY, session, session['email'],
+                        request.form['verify_password'])
+            if not result[0]:
+                flash(result[1])
+                return redirect(url_for('settings'))
+            else:
+                if session['email'] != request.form['new_email']:
+                    validate_email = validate.is_valid_email(request.form['new_email'])
+                    if validate_email[0]:
+                        flash(update_user_email(uid,
+                            request.form['new_email'])[1])
                     else:
                         flash(validate_email[1])
-                    if request.form['new_password']:
-                        validate_password = validate.is_valid_password(request.form['new_password'])
-                        if validate_password[0]:
-                            flash(update_user_password(uid, request.form['new_password'])[1])
-                        else:
-                            flash(validate_password[1])
-                    if request.form['new_firstname'] != get_user_firstname(uid):
-                        flash(update_user_firstname(uid,
-                            request.form['new_firstname'])[1])
-                    if request.form['new_lastname'] != get_user_lastname(uid):
-                        flash(update_user_lastname(uid,
-                            request.form['new_lastname'])[1])
-                    if request.form['new_bio'] != get_user_bio(uid):
-                        flash(update_user_bio(uid, request.form['new_bio'])[1])
+                validate_phone = validate.is_valid_telephone(request.form['new_phone'])
+                if validate_phone[0]:
+                    if validate_phone[1] != get_user_phone(uid):
+                        flash(update_user_phone(uid, validate_phone[1])[1])
+                else:
+                    flash(validate_email[1])
+                if request.form['new_password']:
+                    validate_password = validate.is_valid_password(request.form['new_password'])
+                    if validate_password[0]:
+                        flash(update_user_password(uid, request.form['new_password'])[1])
+                    else:
+                        flash(validate_password[1])
+                if request.form['new_firstname'] != get_user_firstname(uid):
+                    flash(update_user_firstname(uid,
+                        request.form['new_firstname'])[1])
+                if request.form['new_lastname'] != get_user_lastname(uid):
+                    flash(update_user_lastname(uid,
+                        request.form['new_lastname'])[1])
+                if request.form['new_bio'] != get_user_bio(uid):
+                    flash(update_user_bio(uid, request.form['new_bio'])[1])
         else:
             flash("Malformed request")
     return render_template('settings.html',
@@ -396,7 +417,7 @@ def settings():
 def delete_account():
     required_keys = ['password']
     if is_valid_request(request.form, required_keys):
-        result = auth(AUTH_VERIFY, session['email'], request.form['password'])
+        result = auth(AUTH_VERIFY, session, session['email'], request.form['password'])
         if result[0]:
             uid = uuid.UUID(session['uid'])
             remove_user(uid)
@@ -443,20 +464,20 @@ def send_confirm_email():
 @limiter.limit("1 per minute", error_message="BRO, YOU GOTTA CHILL")
 def password_reset(url_id=None):
     if url_id:
-        required_keys = [ 'resetEmail'
-                        , 'new_password'
-                        , 'confirm_password'
-                        ]
-        if is_valid_request(request.form, required_keys):
-            email = request.form['resetEmail']
-            password = request.form['new_password']
-            response = auth(AUTH_PASSRESET, email, password, None, None, url_id)
-            flash(response[1])
-            if response[0]:
-                return redirect(url_for('index'))
-        #Flashes upon first time loading the page...
-        #else:
-            #flash("Malformed request")
+        if request.method == 'POST':
+            required_keys = [ 'resetEmail'
+                            , 'new_password'
+                            , 'confirm_password'
+                            ]
+            if is_valid_request(request.form, required_keys):
+                email = request.form['resetEmail']
+                password = request.form['new_password']
+                response = auth(AUTH_PASSRESET, session, email, password, None, None, url_id)
+                flash(response[1])
+                if response[0]:
+                    return redirect(url_for('index'))
+            else:
+                flash("Malformed request")
         return render_template('password_reset_page.html')
     return redirect(url_for('index'))
 

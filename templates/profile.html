@@ -49,6 +49,13 @@
                         {{ user_data['email'] }}
                     </span>
                     <br/>
+                    <br/>
+                    {% if user_data['user_can_be_reported'] %}
+                        <form action="{{ url_for('report_user',
+                            userid=user_data['uid-deflated']) }}" method="POST" class="center-all">
+                            <button type="submit" class="btn waves-effect red">Report this user</button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
     </div>

@@ -1,5 +1,6 @@
 import psycopg2, psycopg2.extras
 from flask import flash, session, url_for
+from app import *
 from constants import *
 from utils import *
 import validate
@@ -16,7 +17,7 @@ def connect():
         print "Error: %s" % e
         return None
 
-def auth(type, email, password, phone=None, bio=None, url_id=None):
+def auth(type, session, email, password, phone=None, bio=None, url_id=None):
     global ID_USER
     conn = connect()
     if conn == None:
@@ -46,9 +47,13 @@ def auth(type, email, password, phone=None, bio=None, url_id=None):
             success = False
             if stored_pass:
                 if validate.check_password(stored_pass, password):
+                    uid = get_user_id(email)
+                    if get_user_disabled(uid):
+                        clear_session_login_data(session)
+                        return (False, "This account has been disabled")
                     if type == AUTH_LOGIN:
                         session['email'] = email
-                        session['uid'] = str(get_user_id(email))
+                        session['uid'] = str(uid)
                         success = True
                         return (True, "Login successful")
                     elif type == AUTH_VERIFY:
@@ -443,6 +448,7 @@ def get_user_id(email):
 
 def get_user_data(_uid):
     # TODO condense this to a single query... lmao
+    uid_str = str(_uid)
     user_email = get_user_email(_uid)
     user_phone = get_user_phone(_uid)
     user_firstname = get_user_firstname(_uid)
@@ -453,8 +459,15 @@ def get_user_data(_uid):
             TEMP_URL_EMAIL_CONFIRM)[0]
     user_phone_confirmed = get_user_phone_confirmed(_uid)
     user_profile_pic = get_user_profile_pic_url(_uid, 256)
+    user_can_be_reported = True
+    try:
+        user_can_be_reported = can_user_be_reported(uuid.UUID(session['uid']),
+                                                    _uid)
+    except ValueError, e:
+        user_can_be_reported = False
     user_data = {
-        'uid' : str(_uid),
+        'uid' : uid_str,
+        'uid-deflated' : deflate_uuid(uid_str),
         'email' : user_email,
         'phone' : user_phone,
         'first_name' : user_firstname,
@@ -464,6 +477,7 @@ def get_user_data(_uid):
         'email_confirm_timeout_pending' : user_email_confirm_timeout_pending,
         'phone_confirmed' : user_phone_confirmed,
         'profile_pic' : user_profile_pic,
+        'user_can_be_reported' : user_can_be_reported,
     }
     return user_data
 
@@ -800,6 +814,8 @@ def generate_id(datatype):
         query = "SELECT 1 FROM Reviews WHERE ID = %s LIMIT 1"
     elif datatype == ID_TEMPORARY_URL:
         query = "SELECT 1 FROM TemporaryUrls WHERE ID = %s LIMIT 1"
+    elif datatype == ID_REPORT:
+        query = "SELECT 1 FROM Reports WHERE ID = %s LIMIT 1"
     success = False
     u = uuid.uuid4()
     conn = connect()
@@ -962,3 +978,81 @@ def get_temporary_url_timeout_pending(uid, url_type):
     finally:
         if conn:
             conn.close()
+
+def add_user_report(reporter_id, reported_id, reason):
+    global ID_REPORT, USER_REPORT_LIMIT
+    uuid = generate_id(ID_REPORT)
+    if not uuid[0]:
+        return (False, "UUID error")
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""INSERT INTO Reports (ID, ReportID, ReporterId, ReportedId,
+                Reason)  VALUES (%s, %s, %s, %s, %s)""",
+                (uuid[1], uuid[1], reporter_id, reported_id, reason))
+        conn.commit()
+        if get_num_reports_for_user(reported_id) >= USER_REPORT_LIMIT:
+            update_user_disabled(reported_id, True)
+        return (True, "User report successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def remove_user_report(reporter_id, reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""REMOVE FROM Reports WHERE ReporterId = %s AND ReportedId =
+        %s
+                  """, (reporter_id, reported_id))
+        conn.commit()
+        return (True, "User report removal successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def is_user_reported_by(reporter_id, reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM Reports WHERE ReporterId = %s AND ReportedId
+        = %s LIMIT 1
+                  """, (reporter_id, reported_id))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def can_user_be_reported(reporter_id, reported_id):
+    return True
+    # Uncomment after debugging is complete
+    #return reported_id != reported_id and\
+    #        not is_user_reported_by(reporter_id, reported_id)
+
+def get_num_reports_for_user(reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM Reports WHERE ReportedId = %s""",
+                (reported_id,))
+        return len(c.fetchall())
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
