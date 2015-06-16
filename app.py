@@ -1,21 +1,24 @@
 from flask import Flask, render_template, request, session, flash, redirect, url_for
 from flask_limiter import Limiter
 from functools import wraps
-from validate import *
-from dbhelper import *
+import validate
+import users_dbhelper as usersdb
+import places_dbhelper as placesdb
+import reviews_dbhelper as reviewsdb
+import favorites_dbhelper as favoritesdb
+import temporaryurls_dbhelper as tmpurldb
+import dbhelper
+import emailhelper
 from constants import *
 from utils import *
-from emailhelper import *
 import json
 import uuid
 import os
 from werkzeug import secure_filename
 from PIL import Image
 
-ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
-ALLOWED_TYPES = set(["bench", "fountain", "bathroom"])
-
 app = Flask(__name__)
+app.debug = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
@@ -29,7 +32,7 @@ def redirect_if_not_logged_in(target, show_flash=True):
             if not session.has_key('email') or session['email'] == None:
                 clear_session_login_data(session)
                 if show_flash:
-                    flash ("You are not logged in!")
+                    flash("You are not logged in!")
                 return redirect(url_for(target))
             else:
                 pass
@@ -71,7 +74,8 @@ def welcome():
                 email = request.form['registerEmail1']
                 password = request.form['registerPassword1']
                 phone = request.form['registerPhone']
-                result = auth(AUTH_REGISTER, session, email, password, phone)
+                result = dbhelper.auth(AUTH_REGISTER, session, email, password,
+                        phone)
                 flash(result[1])
                 if result[0]:
                     return redirect(url_for('welcome'))
@@ -84,11 +88,13 @@ def welcome():
             if is_valid_request(request.form, required_keys) and\
               request.form['sourceUrl']:
                 email = request.form['forgotEmail']
-                uid = get_user_id(email)
-                can_send_email = add_temporary_url(uid, TEMP_URL_PASSWORD_RESET)
+                uid = usersdb.get_user_id(email)
+                can_send_email = tmpurldb.add_temporary_url(uid,
+                        TEMP_URL_PASSWORD_RESET)
                 if can_send_email[0]:
                     url_id = deflate_uuid(str(can_send_email[1]))
-                    flash(send_password_reset_email(email, get_user_firstname(uid), url_id))
+                    flash(emailhelper.send_password_reset_email(email,
+                        usersdb.get_user_firstname(uid), url_id))
             else:
                 return "Malformed request"
         elif request.form.has_key("login"):
@@ -100,7 +106,7 @@ def welcome():
               request.form['sourceUrl']:
                 email = request.form['loginEmail']
                 password = request.form['loginPassword']
-                result = auth(AUTH_LOGIN, session, email, password)
+                result = dbhelper.auth(AUTH_LOGIN, session, email, password)
                 flash(result[1])
                 if result[0]:
                     return redirect(url_for('index'))
@@ -108,7 +114,8 @@ def welcome():
                 flash("Malformed request")
         return render_template('redirect.html', url=request.form['sourceUrl'])
     else:
-        return render_template('welcome.html', loggedin=session.has_key("email"))
+        return render_template('welcome.html',
+                loggedin=session.has_key("email"))
 
 @app.route('/geo', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -146,10 +153,10 @@ def profile_with_id(userid):
         userid = inflate_uuid(userid)
         if userid:
             uid = uuid.UUID(userid)
-            if uid_exists(uid):
+            if usersdb.uid_exists(uid):
                 return render_template('profile.html',
                         loggedin=True,
-                        user_data = get_user_data(uid))
+                        user_data=usersdb.get_user_data(uid))
         flash("I c wut u did dere ;)")
         return redirect(url_for('index'))
     except ValueError, e:
@@ -157,7 +164,7 @@ def profile_with_id(userid):
         return redirect(url_for('index'))
 
 @app.route('/profile/<userid>/report', methods=['POST'])
-@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
+@limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def report_user(userid):
     # TODO implement reason for report
@@ -166,9 +173,10 @@ def report_user(userid):
         if userid:
             uid = uuid.UUID(userid)
             reporter_id = uuid.UUID(session['uid'])
-            if uid_exists(uid):
-                if can_user_be_reported(reporter_id, uid):
-                    flash(add_user_report(reporter_id, uid, "No reason")[1])
+            if usersdb.uid_exists(uid):
+                if usersdb.can_user_be_reported(reporter_id, uid):
+                    flash(usersdb.add_user_report(reporter_id, uid,
+                        "No reason")[1])
                     return redirect(url_for('profile_with_id',
                         userid=deflate_uuid(userid)))
         flash("I c wut u did dere ;)")
@@ -192,9 +200,9 @@ def add():
             longitude = float(request.form['longitude'])
             util_type = request.form['type']
             if util_type in ALLOWED_TYPES:
-               print add_place(util_type, longitude, latitude, email)
+                placesdb.add_place(util_type, longitude, latitude, email)
             else:
-               return "Malformed Request"
+                return "Malformed Request"
         except ValueError:
             return "Malformed Request"
     else:
@@ -204,19 +212,20 @@ def add():
 @app.route('/api/getreviews', methods=['POST'])
 @limiter.limit("60 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get_reviews_front_end():
-    user = session['email']
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        reviews = get_reviews(get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY']))
-        data = [];
+        reviews = reviewsdb.get_reviews(
+                placesdb.get_place_id(request.form['placeType'],
+                    request.form['locationX'], request.form['locationY']))
+        data = []
         for review in reviews:
-           data.append({ "User": review[3]
-                      , "Rating": review[4]
-                      , "Review": review[5]
-         });
+            data.append({ "User" : review[3]
+                        , "Rating" : review[4]
+                        , "Review" : review[5]
+                        })
         return json.dumps(data)
     else:
         return "Malformed request"
@@ -229,9 +238,11 @@ def add_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = get_user_id(user)
-        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
-        return add_favorite(user_id, place_id)
+        user_id = usersdb.get_user_id(user)
+        # FIXME needs float conversion of locationX and locationY
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return favoritesdb.add_favorite(user_id, place_id)
     else:
         return "Malformed request"
 
@@ -243,9 +254,12 @@ def remove_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = get_user_id(user)
-        place_id = get_place_id(request.form['placeType'], float(request.form['locationX']), float(request.form['locationY']))
-        return remove_favorite(user_id, place_id)
+        user_id = usersdb.get_user_id(user)
+        # FIXME wrap float conversion in a try-except block
+        place_id = placesdb.get_place_id(request.form['placeType'],
+               float(request.form['locationX']),
+               float(request.form['locationY']))
+        return favoritesdb.remove_favorite(user_id, place_id)
     else:
         return "Malformed request"
 
@@ -257,37 +271,47 @@ def in_favorites_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = get_user_id(user)
-        place_id = get_place_id(request.form['placeType'], request.form['locationX'], request.form['locationY'])
-        return in_favorites(user_id, place_id)
+        user_id = usersdb.get_user_id(user)
+        # FIXME needs float conversion
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return favoritesdb.in_favorites(user_id, place_id)
     else:
         return "Malformed request"
 
+# FIXME rename this route, "marionette" literally says nothing about what it
+# actually does/returns
 @app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
-@app.route('/api/marionette/<id>', methods=['GET', 'POST', 'DELETE', 'PUT'])
-def marionette(id=None):
+@app.route('/api/marionette/<thisisisneverusedwtf>',
+        methods=['GET', 'POST', 'DELETE', 'PUT'])
+def marionette(thisidisneverusedwtf=None):
     user = session['email']
-    user_id = get_user_id(user)
+    user_id = usersdb.get_user_id(user)
     if request.method == "GET":
         ans = []
-        for favorite in get_favorites(user_id):
-            fav = {"type": get_place_type(favorite[1])
-                 , "address": (get_place_location_x(favorite[1]), get_place_location_y(favorite[1]))
-                 , "rating": get_place_rating(favorite[1])
+        for favorite in favoritesdb.get_favorites(user_id):
+            fav = {"type": placesdb.get_place_type(favorite[1])
+                  , "address": (placesdb.get_place_location_x(favorite[1]),
+                      placesdb.get_place_location_y(favorite[1]))
+                  , "rating": placesdb.get_place_rating(favorite[1])
             }
             ans.append(fav)
         return json.dumps(ans)
-    if request.method == "POST":
+    elif request.method == "POST":
         place = request.get_json()
-        place_id = get_place_id(place['type'], place['address'][0], place['address'][1])
-        return remove_favorite(user_id, place_id)
+        # FIXME needs float conversion
+        place_id = placesdb.get_place_id(place['type'],
+                place['address'][0], place['address'][1])
+        return favoritesdb.remove_favorite(user_id, place_id)
+    # TODO finish this function
     return "hello"
 
 @app.route('/api/directions/<origin>/<destination>')
 def show_directions(origin, destination):
     print "origin: " + origin
     print "destination: " + destination
-    return render_template("directions.html", origin=origin, destination=destination)
+    return render_template("directions.html", origin=origin,
+            destination=destination)
 
 @app.route('/api/addreview', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -300,39 +324,38 @@ def add_review_front_end():
                     , 'review'
                     ]
     if is_valid_request(request.form, required_keys):
-       try:
-           rating = int(request.form['rating'])
-           location_x = float(request.form["locationX"])
-           location_y = float(request.form["locationY"])
-       except:
-           return "Malformed request"
-       placeid = get_place_id(request.form["placeType"], location_x, location_y)
-       if rating <= 5:
-           return add_review(placeid, user, rating, request.form["review"])[1]
-       else:
-           return "Malformed request"
+        try:
+            rating = int(request.form['rating'])
+            location_x = float(request.form["locationX"])
+            location_y = float(request.form["locationY"])
+        except ValueError, e:
+            return "Malformed request"
+        placeid = placesdb.get_place_id(request.form["placeType"],
+                location_x, location_y)
+        if validate.is_valid_rating(rating):
+            return reviewsdb.add_review(placeid, user, rating,
+                    request.form["review"])[1]
+        else:
+            return "Malformed request"
     else:
-        return "Required keys not submitted"
+        return "Malformed request"
 
 @app.route('/api/get', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
-def get():#eventually will get nearby places
-    return json.dumps(get_places())
-    #return json.dumps(get_local_places(location_x, location_y, radius))
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+#FIXME should get nearby places
+def get():
+    return json.dumps(placesdb.get_places())
+    #return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
 
 @app.route('/upload', methods=['GET', 'POST'])
 @limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")
 @redirect_if_not_logged_in("welcome")
 def upload():
     if request.method == 'POST' and request.files.has_key('pic'):
-        file = request.files['pic']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
+        fp = request.files['pic']
+        if fp and is_allowed_file_ext(fp.filename):
             try:
-                img1 = Image.open(file.stream)
+                img1 = Image.open(fp.stream)
                 img2 = img1.copy()
                 img1.thumbnail((256, 256))
                 img2.thumbnail((128, 128))
@@ -371,43 +394,50 @@ def settings():
                         , 'verify_password'
                         ]
         if is_valid_request(request.form, required_keys):
-            result = auth(AUTH_VERIFY, session, session['email'],
+            result = dbhelper.auth(AUTH_VERIFY, session, session['email'],
                         request.form['verify_password'])
             if not result[0]:
                 flash(result[1])
                 return redirect(url_for('settings'))
             else:
                 if session['email'] != request.form['new_email']:
-                    validate_email = validate.is_valid_email(request.form['new_email'])
-                    if validate_email[0]:
-                        flash(update_user_email(uid,
+                    valid_email = validate.is_valid_email(
+                            request.form['new_email'])
+                    if valid_email[0]:
+                        flash(usersdb.update_user_email(uid,
                             request.form['new_email'])[1])
                     else:
-                        flash(validate_email[1])
-                validate_phone = validate.is_valid_telephone(request.form['new_phone'])
-                if validate_phone[0]:
-                    if validate_phone[1] != get_user_phone(uid):
-                        flash(update_user_phone(uid, validate_phone[1])[1])
+                        flash(valid_email[1])
+                valid_phone = validate.is_valid_telephone(
+                        request.form['new_phone'])
+                if valid_phone[0]:
+                    if valid_phone[1] != usersdb.get_user_phone(uid):
+                        flash(usersdb.update_user_phone(uid, valid_phone[1])[1])
                 else:
-                    flash(validate_email[1])
+                    flash(valid_phone[1])
                 if request.form['new_password']:
-                    validate_password = validate.is_valid_password(request.form['new_password'])
-                    if validate_password[0]:
-                        flash(update_user_password(uid, request.form['new_password'])[1])
+                    valid_password = validate.is_valid_password(
+                            request.form['new_password'])
+                    if valid_password[0]:
+                        flash(usersdb.update_user_password(uid,
+                            request.form['new_password'])[1])
                     else:
-                        flash(validate_password[1])
-                if request.form['new_firstname'] != get_user_firstname(uid):
-                    flash(update_user_firstname(uid,
+                        flash(valid_password[1])
+                if request.form['new_firstname'] != \
+                  usersdb.get_user_firstname(uid):
+                    flash(usersdb.update_user_firstname(uid,
                         request.form['new_firstname'])[1])
-                if request.form['new_lastname'] != get_user_lastname(uid):
-                    flash(update_user_lastname(uid,
+                if request.form['new_lastname'] != \
+                        usersdb.get_user_lastname(uid):
+                    flash(usersdb.update_user_lastname(uid,
                         request.form['new_lastname'])[1])
-                if request.form['new_bio'] != get_user_bio(uid):
-                    flash(update_user_bio(uid, request.form['new_bio'])[1])
+                if request.form['new_bio'] != usersdb.get_user_bio(uid):
+                    flash(usersdb.update_user_bio(uid,
+                              request.form['new_bio'])[1])
         else:
             flash("Malformed request")
     return render_template('settings.html',
-                            user_data=get_user_data(uid),
+                            user_data=usersdb.get_user_data(uid),
                             loggedin=True,
                             temp_url_timeout_pending=TEMP_URL_TIMEOUT_PENDING)
 
@@ -417,10 +447,11 @@ def settings():
 def delete_account():
     required_keys = ['password']
     if is_valid_request(request.form, required_keys):
-        result = auth(AUTH_VERIFY, session, session['email'], request.form['password'])
+        result = dbhelper.auth(AUTH_VERIFY, session, session['email'],
+                request.form['password'])
         if result[0]:
             uid = uuid.UUID(session['uid'])
-            remove_user(uid)
+            usersdb.remove_user(uid)
         clear_session_login_data(session)
         flash("Account successfully deleted")
         return redirect(url_for('index'))
@@ -436,9 +467,10 @@ def confirm_email(url_id=None):
         if url_id:
             uid = uuid.UUID(session['uid'])
             url_id = uuid.UUID(url_id)
-            if get_temporary_url(url_id, uid, TEMP_URL_EMAIL_CONFIRM)[0]:
-                update_user_email_confirmed(uid, True)
-                remove_temporary_url(url_id)
+            if tmpurldb.get_temporary_url(url_id,
+              uid, TEMP_URL_EMAIL_CONFIRM)[0]:
+                usersdb.update_user_email_confirmed(uid, True)
+                tmpurldb.remove_temporary_url(url_id)
                 return redirect(url_for('settings'))
     return redirect(url_for('index'))
 
@@ -447,17 +479,17 @@ def confirm_email(url_id=None):
 @redirect_if_not_logged_in("welcome")
 def send_confirm_email():
     uid = uuid.UUID(session['uid'])
-    can_send_email = add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
+    can_send_email = tmpurldb.add_temporary_url(uid, TEMP_URL_EMAIL_CONFIRM)
     if can_send_email[0]:
         url_id = deflate_uuid(str(can_send_email[1]))
-        response = send_confirmation_email(session['email'],
-                get_user_firstname(uid),
+        response = emailhelper.send_confirmation_email(session['email'],
+                usersdb.get_user_firstname(uid),
                 url_id)
         if response:
             flash(response)
             return "OK"
     flash("An error occurred while sending your confirmation email. Please try"
-          " again later.") 
+          " again later.")
     return "Fail"
 
 @app.route('/passwordreset/<url_id>', methods=['GET', 'POST'])
@@ -472,7 +504,8 @@ def password_reset(url_id=None):
             if is_valid_request(request.form, required_keys):
                 email = request.form['resetEmail']
                 password = request.form['new_password']
-                response = auth(AUTH_PASSRESET, session, email, password, None, None, url_id)
+                response = dbhelper.auth(AUTH_PASSRESET, session, email,
+                        password, url_id=url_id)
                 flash(response[1])
                 if response[0]:
                     return redirect(url_for('index'))
@@ -485,18 +518,5 @@ def password_reset(url_id=None):
 def page_not_found(error):
     return redirect(url_for('index')), 404
 
-def is_valid_request(form, required_keys):
-    for key in required_keys:
-        if not form.has_key(key):
-            return False
-    return True
-
-def clear_session_login_data(session):
-    if session.has_key('email'):
-        del session['email']
-    if session.has_key('uid'):
-        del session['uid']
-
 if __name__ == '__main__':
-    app.debug = True
     app.run(host='0.0.0.0', port=APP_PORT)

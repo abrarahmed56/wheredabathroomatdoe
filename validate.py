@@ -3,7 +3,7 @@ import re
 #from jeopardy.final_jeopardy import music as the_bae
 from validate_email import validate_email
 from werkzeug.security import generate_password_hash, check_password_hash
-from dbhelper import *
+import users_dbhelper as usersdb
 
 PASSWORD_VALID_CHARS = string.ascii_letters + string.digits + string.punctuation
 # Source: http://www.diveintopython.net/regular_expressions/phone_numbers.html
@@ -20,7 +20,7 @@ PHONE_REGEX = re.compile(r'''
     ''', re.VERBOSE)
 
 def is_valid_email(email, check_db=False):
-    if check_db and emailExists(email):
+    if check_db and usersdb.email_exists(email):
         return (False, "A user with this email already exists")
     if validate_email(email):
         return (True, "Successful")
@@ -36,7 +36,7 @@ def is_valid_password(password):
         return (True, "Successful")
     else:
         return (False, "Invalid password length")
-    
+
 def is_valid_telephone(number):
     number = PHONE_REGEX.search(number)
     if number == None:
@@ -51,3 +51,5 @@ def hash_password(s):
 def check_password(hashed_password, try_password):
     return check_password_hash(hashed_password, try_password)
 
+def is_valid_rating(rating):
+    return 0 < rating <= 5

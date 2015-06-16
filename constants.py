@@ -27,3 +27,8 @@ UPLOAD_FOLDER = "static/uploads"
 
 USER_REPORT_LIMIT = 10
 PLACE_REPORT_LIMIT = 10
+
+ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
+ALLOWED_TYPES = set(["bench", "fountain", "bathroom"])
+def is_allowed_file_ext(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
