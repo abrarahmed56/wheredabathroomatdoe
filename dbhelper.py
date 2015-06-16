@@ -538,7 +538,6 @@ def add_place(place_type, location_x, location_y, finder):
         c.execute("SELECT 1 FROM Places WHERE PlaceType=%s AND LocationX=%s AND LocationY=%s LIMIT 1",
                  (place_type, location_x, location_y))
         exists = c.fetchone()
-        #if True:
         if not exists:
             uuid = generate_id(ID_PLACE)
             if not uuid[0]:
@@ -565,6 +564,38 @@ def remove_place(place_type, location_x, location_y):
         c.execute("""DELETE FROM Places WHERE PlaceType = %s AND LocationX = %s AND LocationY = %s""", (place_type, location_x, location_y))
         conn.commit()
         return "Location removed from map"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def remove_place_by_id(place_id):
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""DELETE FROM Places WHERE PlaceId = %s""", (place_id,))
+        conn.commit()
+        return "Location removed"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_place_finder(place_id):
+    global ID_PLACE
+    conn = connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Finder FROM Places WHERE PlaceId=%s LIMIT 1",
+                 (place_id,))
+        results = c.fetchone()
+        return results[0] if results else None
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -814,8 +845,8 @@ def generate_id(datatype):
         query = "SELECT 1 FROM Reviews WHERE ID = %s LIMIT 1"
     elif datatype == ID_TEMPORARY_URL:
         query = "SELECT 1 FROM TemporaryUrls WHERE ID = %s LIMIT 1"
-    elif datatype == ID_REPORT:
-        query = "SELECT 1 FROM Reports WHERE ID = %s LIMIT 1"
+    elif datatype == ID_REPORTS_USERS:
+        query = "SELECT 1 FROM ReportsUsers WHERE ID = %s LIMIT 1"
     success = False
     u = uuid.uuid4()
     conn = connect()
@@ -980,8 +1011,8 @@ def get_temporary_url_timeout_pending(uid, url_type):
             conn.close()
 
 def add_user_report(reporter_id, reported_id, reason):
-    global ID_REPORT, USER_REPORT_LIMIT
-    uuid = generate_id(ID_REPORT)
+    global ID_REPORTS_USERS, USER_REPORT_LIMIT
+    uuid = generate_id(ID_REPORTS_USERS)
     if not uuid[0]:
         return (False, "UUID error")
     conn = connect()
@@ -989,7 +1020,7 @@ def add_user_report(reporter_id, reported_id, reason):
         return (False, "Database Error")
     c = conn.cursor()
     try:
-        c.execute("""INSERT INTO Reports (ID, ReportID, ReporterId, ReportedId,
+        c.execute("""INSERT INTO ReportsUsers (ID, ReportID, ReporterId, ReportedId,
                 Reason)  VALUES (%s, %s, %s, %s, %s)""",
                 (uuid[1], uuid[1], reporter_id, reported_id, reason))
         conn.commit()
@@ -1008,7 +1039,7 @@ def remove_user_report(reporter_id, reported_id):
         return (False, "Database Error")
     c = conn.cursor()
     try:
-        c.execute("""REMOVE FROM Reports WHERE ReporterId = %s AND ReportedId =
+        c.execute("""REMOVE FROM ReportsUsers WHERE ReporterId = %s AND ReportedId =
         %s
                   """, (reporter_id, reported_id))
         conn.commit()
@@ -1025,7 +1056,7 @@ def is_user_reported_by(reporter_id, reported_id):
         return (False, "Database Error")
     c = conn.cursor()
     try:
-        c.execute("""SELECT 1 FROM Reports WHERE ReporterId = %s AND ReportedId
+        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReporterId = %s AND ReportedId
         = %s LIMIT 1
                   """, (reporter_id, reported_id))
         return c.fetchone()
@@ -1036,10 +1067,8 @@ def is_user_reported_by(reporter_id, reported_id):
             conn.close()
 
 def can_user_be_reported(reporter_id, reported_id):
-    return True
-    # Uncomment after debugging is complete
-    #return reported_id != reported_id and\
-    #        not is_user_reported_by(reporter_id, reported_id)
+    return reporter_id != reported_id and\
+            not is_user_reported_by(reporter_id, reported_id)
 
 def get_num_reports_for_user(reported_id):
     conn = connect()
@@ -1047,7 +1076,84 @@ def get_num_reports_for_user(reported_id):
         return (False, "Database Error")
     c = conn.cursor()
     try:
-        c.execute("""SELECT 1 FROM Reports WHERE ReportedId = %s""",
+        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReportedId = %s""",
+                (reported_id,))
+        return len(c.fetchall())
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def add_place_report(reporter_id, reported_id, reason):
+    global ID_REPORTS_PLACES, PLACE_REPORT_LIMIT
+    uuid = generate_id(ID_REPORTS_PLACES)
+    if not uuid[0]:
+        return (False, "UUID error")
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""INSERT INTO ReportsPlaces (ID, ReportID, ReporterId, ReportedId,
+                Reason)  VALUES (%s, %s, %s, %s, %s)""",
+                (uuid[1], uuid[1], reporter_id, reported_id, reason))
+        conn.commit()
+        if get_num_reports_for_place(reported_id) >= PLACE_REPORT_LIMIT:
+            remove_place(reported_id, True)
+            # TODO perhaps, add an intermediary disabled state, rather than
+            # automatically removing the place
+        return (True, "Place report successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def remove_place_report(reporter_id, reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""REMOVE FROM ReportsPlaces WHERE ReporterId = %s AND ReportedId =
+        %s
+                  """, (reporter_id, reported_id))
+        conn.commit()
+        return (True, "Place report removal successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def is_place_reported_by(reporter_id, reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM ReportsPlaces WHERE ReporterId = %s AND ReportedId
+        = %s LIMIT 1
+                  """, (reporter_id, reported_id))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def can_place_be_reported(reporter_id, reported_id):
+    return get_place_finder(reported_id) != reporter_id and\
+            not is_place_reported_by(reporter_id, reported_id)
+
+def get_num_reports_for_place(reported_id):
+    conn = connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM ReportsPlaces WHERE ReportedId = %s""",
                 (reported_id,))
         return len(c.fetchall())
     except psycopg2.DatabaseError, e:

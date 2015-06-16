@@ -41,9 +41,13 @@ KEY, UrlID UUID, CreationTime TIMESTAMP NOT NULL DEFAULT NOW(), ExpiryTime
 INTERVAL NOT NULL DEFAULT INTERVAL '1 day', UrlType TEXT,
 UserID UUID REFERENCES Users (ID) ON DELETE CASCADE)"""
 
-REPORTS_TABLE_CREATE = """CREATE TABLE Reports (ID UUID PRIMARY KEY, ReportID
+REPORTS_USERS_TABLE_CREATE = """CREATE TABLE ReportsUsers (ID UUID PRIMARY KEY, ReportID
 UUID, ReporterID UUID REFERENCES Users (ID) ON DELETE CASCADE, ReportedID UUID
 REFERENCES Users (ID) ON DELETE CASCADE, Reason varchar(250))"""
+
+REPORTS_PLACES_TABLE_CREATE = """CREATE TABLE ReportsPlaces (ID UUID PRIMARY KEY, ReportID
+UUID, ReporterID UUID REFERENCES Users (ID) ON DELETE CASCADE, ReportedID UUID
+REFERENCES Places (ID) ON DELETE CASCADE, Reason varchar(250))"""
 
 def drop(dbname):
     c.execute("DROP TABLE %s CASCADE" % dbname)
@@ -99,10 +103,15 @@ if ("temporaryurls",) in tables_list:
 else:
     c.execute(TEMPORARY_URLS_TABLE_CREATE)
 
-if ("reports",) in tables_list:
-    migrate('Reports', REPORTS_TABLE_CREATE)
+if ("reportsusers",) in tables_list:
+    migrate('ReportsUsers', REPORTS_USERS_TABLE_CREATE)
 else:
-    c.execute(REPORTS_TABLE_CREATE)
+    c.execute(REPORTS_USERS_TABLE_CREATE)
+
+if ("reportsplaces",) in tables_list:
+    migrate('ReportsPlaces', REPORTS_PLACES_TABLE_CREATE)
+else:
+    c.execute(REPORTS_PLACES_TABLE_CREATE)
 
 conn.commit()
 
