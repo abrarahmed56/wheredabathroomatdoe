@@ -14,6 +14,7 @@ from utils import *
 import json
 import uuid
 import os
+import sys
 from werkzeug import secure_filename
 from PIL import Image
 
@@ -22,6 +23,10 @@ app.debug = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 with open('key', 'r') as f:
    app.secret_key = f.read().strip()
+
+if not os.path.isfile('emailpassword'):
+    print "emailpassword file is missing!"
+    sys.exit(1)
 
 limiter = Limiter(app)
 
@@ -530,3 +535,4 @@ def page_not_found(error):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=APP_PORT)
+
