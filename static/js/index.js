@@ -1,5 +1,3 @@
-console.log('hi');
-
 var App = new Marionette.Application();
 
 function initialize() {
@@ -22,7 +20,6 @@ App.addRegions({
 });
 
 App.on("start", function() {
-    console.log("started");
     var placesview = new App.CompositeView({collection:places});
     App.placeRegion.show(placesview);
 });

@@ -142,8 +142,10 @@ function getReviews(placeType, locationX, locationY) {
             userFirstName = _data[i]['UserFirstName'];
             userProfile = _data[i]['UserProfile'];
             userPic = _data[i]['UserPic'];
-            reviews += "<a href='" + userProfile + "'>" + userFirstName + "</a>" +
-                " rated this a <b>" + rating + "</b>.<br/><br/>" +
+            reviews += "<div style='display:inline-block'>" +
+                "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
+                "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
+                "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
                 "<i>" + review + "</i><br/><br/>" +
                 "<div class='input field'>" +
                 "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
