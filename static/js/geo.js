@@ -1,4 +1,5 @@
 var map, err, button, utilList, activeType;
+var activeUtil;
 var activeMarker = false;
 var SHOW = true;
 var MARK = false;
@@ -33,7 +34,7 @@ function getPosition(show) {
                     center: myLatlng
                 }
                 map = new google.maps.Map($('#map-canvas')[0], mapOptions);
-		getNearbyUtils(position.coords.latitude,position.coords.longitude);
+                getNearbyUtils(position.coords.latitude,position.coords.longitude);
             }, showError);
         }
         else if (activeMarker) {
@@ -105,7 +106,8 @@ function markUtil(util) {
         // Hide input form and toggle buttons
         $('#inputForm').fadeOut(700);
         $('#toggleButtons').fadeOut(700);
-        infoWindow.setContent(getUtilInfo(util));
+        activeUtil = util;
+        infoWindow.setContent(getUtilInfo(activeUtil));
         infoWindow.open(map, marker);
     });
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
@@ -141,14 +143,15 @@ function getReviews(placeType, locationX, locationY) {
             user = _data[i]['User'];
             reviews += user + " rated this a <b>" + rating + "</b>.<br/><br/><i>" + review + "</i><br/><br/><div class='input field'><button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button> <button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button></div><hr>";
         }
-        console.log("reviews: " + reviews);
         $("#reviews")[0].innerHTML = reviews;
 	});
 }
 
 function addReview(placeType, locationX, locationY) {
     review = $("#review").val();
+    $("#review").val('');
     rating = $("#rating").val();
+    $("#rating").val(5);
     $.post("/api/addreview", {"review" : review
 			 , "placeType": placeType
 			 , "locationX": locationX
@@ -157,7 +160,8 @@ function addReview(placeType, locationX, locationY) {
 			  })
         .done(function(data) {
 	    Materialize.toast(data, 4000);
-	    console.log(data);
+	    // Refresh the reviews for the active util
+        getReviews(activeUtil['type'], activeUtil['position'][0], activeUtil['position'][1]);
 	});
 }
 
