@@ -50,15 +50,11 @@ var toggleLogoDisplay = function() {
     if (menuCoords.x != 0) { // menu.x is 0 when the menu icon is not visible
         if (Math.abs(logoCoords.x - menuCoords.x) <= 250) {
             logo.style.visibility = 'hidden';
-	    $("#homeside").show()
-	    console.log("hidden");
             return;
         }
     }
     // Default to visible for logo, hidden for home
     logo.style.visibility = 'visible';
-    $("#hometop").hide();
-    $("#homeside").hide();
 }
 
 var switchModalFocus = function(fromModal, toModal) {

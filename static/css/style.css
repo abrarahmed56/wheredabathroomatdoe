@@ -38,3 +38,11 @@ input[type="email"] {
     -ms-user-select: none;
     user-select: none;
 }
+
+#home-link {
+    display: none;
+}
+
+.side-nav #home-link {
+    display: inherit;
+}
