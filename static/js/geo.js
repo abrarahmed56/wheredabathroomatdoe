@@ -139,8 +139,11 @@ function getReviews(placeType, locationX, locationY) {
         for (var i=0; i<_data.length; i++) {
             rating = _data[i]['Rating'];
             review = _data[i]['Review'];
-            user = _data[i]['User'];
-            reviews += user + " rated this a <b>" + rating + "</b>.<br/><br/>" +
+            userFirstName = _data[i]['UserFirstName'];
+            userProfile = _data[i]['UserProfile'];
+            userPic = _data[i]['UserPic'];
+            reviews += "<a href='" + userProfile + "'>" + userFirstName + "</a>" +
+                " rated this a <b>" + rating + "</b>.<br/><br/>" +
                 "<i>" + review + "</i><br/><br/>" +
                 "<div class='input field'>" +
                 "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +

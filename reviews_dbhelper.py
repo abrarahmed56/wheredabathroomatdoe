@@ -3,7 +3,7 @@ import dbhelper
 from constants import *
 from utils import *
 
-def add_review(placeID, user, rating, review):
+def add_review(placeID, reviewer, rating, review):
     global ID_REVIEW
     conn = dbhelper.connect()
     if conn == None:
@@ -13,24 +13,21 @@ def add_review(placeID, user, rating, review):
         uuid = dbhelper.generate_id(ID_REVIEW)
         if not uuid[0]:
             return (False, uuid[1])
-        c.execute("""SELECT * FROM Reviews WHERE Username=%s AND PlacesID=%s
-            LIMIT 1""", (user, placeID))
+        c.execute("""SELECT * FROM Reviews WHERE Reviewer=%s AND PlacesID=%s
+            LIMIT 1""", (reviewer, placeID))
         conn.commit()
         exists = c.fetchone()
         ret_str = ""
         if not exists:
-            print "review doesnt exist"
             c.execute("INSERT INTO Reviews VALUES(%s, %s, %s, %s, %s, %s)",
-                      (uuid[1], uuid[1], placeID, user, rating, review))
+                      (uuid[1], uuid[1], placeID, reviewer, rating, review))
             ret_str = "Successfully added review"
         else:
-            print "review exists"
             c.execute("""UPDATE Reviews SET Rating=%s, Review=%s WHERE
-                Username=%s AND PlacesID=%s""",
-                (rating, review, user, placeID))
+                Reviewer=%s AND PlacesID=%s""",
+                (rating, review, reviewer, placeID))
             ret_str = "Successfully updated review"
         conn.commit()
-        print "Done"
         return (True, ret_str)
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e

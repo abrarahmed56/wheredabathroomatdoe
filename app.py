@@ -222,9 +222,12 @@ def get_reviews_front_end():
                     request.form['locationX'], request.form['locationY']))
         data = []
         for review in reviews:
-            data.append({ "User" : review[3]
+            data.append({ "UserFirstName" : usersdb.get_user_firstname(review[3])
                         , "Rating" : review[4]
                         , "Review" : review[5]
+                        , "UserProfile" : usersdb.get_user_profile_url(review[3])
+                        , "UserPic" : usersdb.get_user_profile_pic_url(review[3],
+                                                                       128)
                         })
         return json.dumps(data)
     else:
@@ -316,7 +319,7 @@ def show_directions(origin, destination):
 @app.route('/api/addreview', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 def add_review_front_end():
-    user = session['email']
+    user = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'

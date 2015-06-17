@@ -30,8 +30,8 @@ PLACES_TABLE_CREATE = """CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID,
 # TODO user deletion should not cascade places
 
 REVIEWS_TABLE_CREATE = """CREATE TABLE Reviews (ID UUID PRIMARY KEY, ReviewID
-    UUID, PlacesID UUID REFERENCES Places (ID) ON DELETE CASCADE, Username TEXT,
-    Rating INT, Review varchar(500))"""
+    UUID, PlacesID UUID REFERENCES Places (ID) ON DELETE CASCADE, Reviewer UUID
+    REFERENCES Users (ID), Rating INT, Review varchar(500))"""
 
 FAVORITES_TABLE_CREATE = """CREATE TABLE Favorites (UserID UUID REFERENCES Users
     (ID) ON DELETE CASCADE, PlacesID UUID REFERENCES Places (ID) ON DELETE

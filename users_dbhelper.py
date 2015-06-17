@@ -182,7 +182,7 @@ def get_user_firstname(uid=None, email=None):
             c.execute("""SELECT FirstName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0] if results else None
+        return results[0] if results else 'Anonymous'
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -204,7 +204,7 @@ def get_user_lastname(uid=None, email=None):
             c.execute("""SELECT LastName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0] if results else None
+        return results[0] if results else 'Anonymous'
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -251,6 +251,9 @@ def get_user_email(uid):
 
 def get_user_profile_pic_url(uid, size):
     return "/static/uploads/" + str(uid) + "/profile" + str(size) + ".jpg"
+
+def get_user_profile_url(uid):
+    return "/profile/" + deflate_uuid(str(uid))
 
 def update_user_firstname(uid, new_firstname):
     conn = dbhelper.connect()
