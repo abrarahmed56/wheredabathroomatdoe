@@ -72,7 +72,6 @@ def in_favorites(user_id, place_id):
             conn.close()
 
 def get_favorites(user_id):
-    print "user_id: " + str(user_id)
     conn = dbhelper.connect()
     if conn == None:
         return "Database Error"
