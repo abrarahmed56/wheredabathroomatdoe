@@ -2,11 +2,13 @@ var map, err, button, utilList, activeType;
 var activeMarker = false;
 var SHOW = true;
 var MARK = false;
-var UTILITY_TYPES = {
-    "fountain" : "static/img/fountain.gif",
-    "bathroom" : "static/img/bathroom.gif",
-    "bench"    : "static/img/bench.gif"
-}
+var UTILITY_TYPES = {"fountain" : {'small' : "static/img/fountain.gif"
+                                  ,'large' : "static/img/fountain.png"}
+                    ,"bathroom" : {'small' : "static/img/bathroom.gif"
+                                  ,'large' : "static/img/bathroom.png"}
+                    ,"bench"    : {'small' : "static/img/bench.gif"
+                                  ,'large' : "static/img/bench.png"}
+                    };
 
 var infoWindow = new google.maps.InfoWindow();
 var markedUtils = [];
@@ -47,7 +49,7 @@ function getPosition(show) {
                     activeMarker = new google.maps.Marker({
 			position: latlng,
 			map: map,
-			icon: UTILITY_TYPES[activeType],//change color
+			icon: UTILITY_TYPES[activeType]['small'],
 			draggable: true
 		    });
 		    $('input[type="button"]')[0].value = 'Mark Location';
@@ -92,7 +94,7 @@ function getNearbyUtils(lati,longi) {
 function markUtil(util) {
     //marks utility. format of util: {type:"bench", position:[40.324342, 29.432423]}
     var latlng = new google.maps.LatLng(util['position'][1], util['position'][0]);
-    var img = UTILITY_TYPES[util['type']];
+    var img = UTILITY_TYPES[util['type']]['small'];
     var marker = new google.maps.Marker({
         position: latlng,
         map: map,
@@ -118,7 +120,7 @@ function getUtilInfo(util) {
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
-    $(".utilImage")[0].src = UTILITY_TYPES[utilType];
+    $(".utilImage")[0].src = UTILITY_TYPES[utilType]['large'];
     $(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     inFavorites(util, utilType, utilPositionZero, utilPositionOne)
@@ -226,9 +228,9 @@ function toggleView(type) {
         $(btnId).toggleClass('darken-3');
     }
     /* Toggle visibility of the markers */
-    type = UTILITY_TYPES[type];
+    var utilImg = UTILITY_TYPES[type]['small'];
     for(var i = 0; i < markedUtils.length; ++i) {
-        if (markedUtils[i].icon == type) {
+        if (markedUtils[i].icon == utilImg) {
             markedUtils[i].setVisible(!markedUtils[i].getVisible());
         }
     }
