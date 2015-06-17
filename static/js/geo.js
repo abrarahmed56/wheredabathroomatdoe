@@ -210,6 +210,7 @@ function inFavorites(util, placeType, locationX, locationY) {
         $(".utilDescription")[0].innerHTML =
             "Here are the reviews for this " + util['type']  + ". " +
             "<hr><div id='reviews'></div>" +
+            "<div id='add-review' class='no-select'>" +
             "<h6 class='center-text'>Add a Review</h6>" +
             "<div class='input-field'>" +
             "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
@@ -219,7 +220,7 @@ function inFavorites(util, placeType, locationX, locationY) {
             "<input type='range' id='rating' min='1' max='5'/>" +
             "</p></div><div class='input-field center-all'>" +
             "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review<i class='mdi-editor-border-color left'></i></button>" +
-            "<br/><br/>" + favoritesButton + "</div>";
+            "<br/><br/>" + favoritesButton + "</div></div>";
         // Populate info window with reviews
         getReviews(util['type'], util['position'][0], util['position'][1]);
     });

@@ -182,7 +182,7 @@ def get_user_firstname(uid=None, email=None):
             c.execute("""SELECT FirstName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        if results[0]:
+        if results and results[0]:
             return results[0]
         else:
             return 'Anonymous'
@@ -207,7 +207,7 @@ def get_user_lastname(uid=None, email=None):
             c.execute("""SELECT LastName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        if results[0]:
+        if results and results[0]:
             return results[0]
         else:
             return ''
