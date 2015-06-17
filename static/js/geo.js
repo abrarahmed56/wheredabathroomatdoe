@@ -42,7 +42,7 @@ function getPosition(show) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 activeType = $('#utilType')[0].value;
 		if (activeType != 'NONE') {
-		    Materialize.toast('Drag icon to confirm location', 4000);
+		    Materialize.toast('Drag icon to confirm location. Then click Mark Location.', 4000);
 		    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     activeMarker = new google.maps.Marker({
 			position: latlng,
@@ -190,15 +190,15 @@ function inFavorites(util, placeType, locationX, locationY) {
     })
     .done(function(data) {
         if (new String(data).valueOf()===new String("False").valueOf()) {
-            favoritesButton = "<button id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' >Add Favorite</button> <input type='button' class='btn red darken-2 waves-effect waves-light' value='Report'></input>";
+            favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' >Add Favorite<i class='mdi-action-stars left'></i></button> <br/><br/><button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
         }
         else {
-            favoritesButton = "<input type='button' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' value='Remove Favorite'></input> <input type='button' class='btn red darken-2 waves-effect waves-light' value='Report'></input>";
+            favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove Favorite<i class='mdi-navigation-close left'></i></button>";
         }
         $(".utilDescription")[0].innerHTML =
             "Here are the reviews for this " + util['type']  + ". " +
             "<hr><div id='reviews'></div>" +
-            "<h6 class='center-text'>Add a Review</h6><div class='input-field'><textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea><label for='review'>Review</label></div><div class='input-field'><label>Rating (1 to 5)</label><br/><p class='range-field'><input type='range' id='rating' min='1' max='5'/></p></div><div class='input-field center-all'><input type='button' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")' value='Add Review'></input> " + favoritesButton +'</div>';
+            "<h6 class='center-text'>Add a Review</h6><div class='input-field'><textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea><label for='review'>Review</label></div><div class='input-field'><label>Rating (1 to 5)</label><br/><p class='range-field'><input type='range' id='rating' min='1' max='5'/></p></div><div class='input-field center-all'><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review<i class='mdi-editor-border-color left'></i></button><br/><br/>" + favoritesButton +'</div>';
         getReviews(util['type'], util['position'][0], util['position'][1]);
         $('select').material_select();
     });
