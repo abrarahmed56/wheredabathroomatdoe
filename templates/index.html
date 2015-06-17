@@ -1,4 +1,8 @@
 {% extends "base.html" %}
+{% block headcontent %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css')
+}}"></link>
+{% endblock headcontent %}
 {% block navbar_right %}
     {% include 'home_link_active.html' %}
     {% include 'profile_link.html' %}
@@ -9,10 +13,11 @@
 {% endblock navbar_right %}
 {% block bodycontent %}
 <div class="container">
-    <h1>Places:</h1>
+    <h1>My Places:</h1>
     <script type="text/template" id="t">
-    <td><%- type %></td><td><%- address %></td><td><%- rating %></td><td><button
-    id="delete" class="btn waves-effect red">Delete<i
+    <td><%- type[0].toUpperCase() + type.substring(1) %></td><td
+    style="text-align: left"><%- address %></td><td><%- rating %></td>
+    <td><button id="delete" class="btn waves-effect red">Delete<i
     class="mdi-action-delete left"></i></button></td><td><button
     id="directions" class="btn waves-effect teal">Directions<i
     class="mdi-maps-directions left"></i></button>
@@ -20,7 +25,7 @@
     <script type="text/template" id="comptemp">
     <table class="pure-table pure-table-bordered">
         <thead>
-        <tr><th>Type</th><th>Address</th><th>Rating</th><th>Remove</th><th>Directions</th></tr>
+        <tr><th>Type</th><th style="text-align:left">Address</th><th>Rating</th><th>Remove</th><th>Directions</th></tr>
         </thead>
         <tbody>
         </tbody>
