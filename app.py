@@ -316,8 +316,6 @@ def marionette(thisidisneverusedwtf=None):
 
 @app.route('/api/directions/<origin>/<destination>')
 def show_directions(origin, destination):
-    print "origin: " + origin
-    print "destination: " + destination
     return render_template("directions.html", origin=origin,
             destination=destination)
 

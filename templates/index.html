@@ -11,7 +11,11 @@
 <div class="container">
     <h1>Places:</h1>
     <script type="text/template" id="t">
-    <td><%- type %></td><td><%- address %></td><td><%- rating %></td><td><button id="delete" class="pure-button">Delete</button></td><td><button id="directions" class="pure-button">Directions</button>
+    <td><%- type %></td><td><%- address %></td><td><%- rating %></td><td><button
+    id="delete" class="btn waves-effect red">Delete<i
+    class="mdi-action-delete left"></i></button></td><td><button
+    id="directions" class="btn waves-effect teal">Directions<i
+    class="mdi-maps-directions left"></i></button>
     </script>
     <script type="text/template" id="comptemp">
     <table class="pure-table pure-table-bordered">
@@ -23,7 +27,7 @@
     </table>
     </script>
 
-    <table class="pure-table pure-table-bordered" id="place">
+    <table id="place">
     </table>
 
 </div>
@@ -31,9 +35,4 @@
 {% block scripts %}
 <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
-<script>
-  {% for place in places %}
-  console.log({{place}});
-  {% endfor %}
-</script>
 {% endblock scripts %}
