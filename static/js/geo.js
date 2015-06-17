@@ -140,7 +140,7 @@ function getReviews(placeType, locationX, locationY) {
 		review = _data[i]['Review']
 		user = _data[i]['User']
 		reviews += "Rating: " + rating + "\nReview: " + review +
-		    "\nUser: " + user  + "<button>Upvote</button><button>Downvote</button><hr>"
+		    "\nUser: " + user  + "<div class='input field'><button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button> <button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button></div><hr>"
 	    }
 	    console.log("reviews: " + reviews)
 	    $("#reviews")[0].innerHTML = reviews;
@@ -168,7 +168,7 @@ function addFavorite(placeType, locationX, locationY) {
 			      , "locationY": locationY
 			       })
 	.done(function(data) {
-	    $("#favoritesButton").html("Remove from My Places");
+	    $("#favoritesButton").html("Remove Favorite");
 	    $("#favoritesButton").attr("onclick", "removeFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
 	    Materialize.toast(data, 4000);
 	});
@@ -180,7 +180,7 @@ function removeFavorite(placeType, locationX, locationY) {
 			         , "locationY": locationY
 			       })
 	.done(function(data) {
-	    $("#favoritesButton").html("Add to My Places");
+	    $("#favoritesButton").html("Add Favorite");
 	    $("#favoritesButton").attr("onclick", "addFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
 	    Materialize.toast(data, 4000);
 	});
@@ -194,16 +194,15 @@ function inFavorites(util, placeType, locationX, locationY) {
 	.done(function(data) {
 	    console.log(data);
 	    if (new String(data).valueOf()===new String("False").valueOf()) {
-		favoritesButton = "<button id='favoritesButton' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places</button><button>Utility does not exist</button>";
+		favoritesButton = "<button id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' >Add Favorite</button> <input type='button' class='btn red darken-2 waves-effect waves-light' value='Missing'></input>";
 	    }
 	    else {
-		favoritesButton = "<button id='favoritesButton' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places</button>";
+		favoritesButton = "<input type='button' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' value='Remove Favorite'></input> <input type='button' class='btn red darken-2 waves-effect waves-light' value='Missing'></input>";
 	    }
 	    $(".utilDescription")[0].innerHTML =
 		"Here are the reviews for this " + util['type'] + 
 		"<div id='reviews'></div>" +
-		"<input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><button onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review</button>" + favoritesButton;
-	    moocow = $('#infoWindow')[0].innerHTML;
+		"<row><div class='input-field'><input type='text' id='review' name='review' placeholder='Review'><br><input type='text' id='rating' name='rating' placeholder='Rating/5'><br><input type='button' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")' value='Add Review'></input> " + favoritesButton +'</div></row>';
 	    getReviews(util['type'], util['position'][0], util['position'][1]);
 	});
 }
