@@ -210,7 +210,7 @@ def get_user_lastname(uid=None, email=None):
         if results[0]:
             return results[0]
         else:
-            return 'Anonymous'
+            return ''
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
