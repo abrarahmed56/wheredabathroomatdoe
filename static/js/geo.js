@@ -40,21 +40,20 @@ function getPosition(show) {
         else if (activeMarker) {
 	    markActiveUtil();
 	}
-	else {
-            console.log("button pressed");
+        else {
             navigator.geolocation.getCurrentPosition(function(position) {
                 activeType = $('#utilType')[0].value;
-		if (activeType != 'NONE') {
-		    Materialize.toast('Drag icon to confirm location. Then click Mark Location.', 4000);
-		    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                if (activeType != 'NONE') {
+                    Materialize.toast('Drag icon to confirm location. Then click Mark Location.', 4000);
+                    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                     activeMarker = new google.maps.Marker({
-			position: latlng,
-			map: map,
-			icon: UTILITY_TYPES[activeType]['small'],
-			draggable: true
-		    });
-		    $('input[type="button"]')[0].value = 'Mark Location';
-		}
+                        position: latlng,
+                        map: map,
+                        icon: UTILITY_TYPES[activeType]['small'],
+                        draggable: true
+                    });
+                    $('input[type="button"]')[0].value = 'Mark Location';
+                }
             }, showError);
         }
     }
@@ -70,26 +69,23 @@ function markActiveUtil() {
     }
     $.post("/api/add", {"longitude" : util['position'][0], "latitude" : util['position'][1], "type" : util['type']})
         .done(function(data) {
-	    console.log(data);
-	    //getPosition(SHOW);
-	    markUtil(util);
-	    activeMarker.setMap(null);
-	    activeMarker = false;
-	    $('input[type="button"]')[0].value = 'Utility Spotted';
-	    Materialize.toast('Location marked', 3000);
-   	});
+            markUtil(util);
+            activeMarker.setMap(null);
+            activeMarker = false;
+            $('input[type="button"]')[0].value = 'Utility Spotted';
+            Materialize.toast('Location marked', 3000);
+        });
     markedUtils.push(util);
 }
 
 function getNearbyUtils(lati,longi) {
     $.post("/api/get", {"longitude" : longi, "latitude" : lati})
         .done(function(data) {
-	    utilList = eval(data); // TODO Should be JSON data
-        console.log("getNearbyUtils data: ");
-	    for (var i = 0; i < utilList.length; ++i) {
-	        markUtil(utilList[i]);
-	    }
-	});
+            utilList = eval(data); // TODO Should be JSON data
+            for (var i = 0; i < utilList.length; ++i) {
+                markUtil(utilList[i]);
+            }
+        });
 }
 
 function markUtil(util) {
@@ -125,16 +121,15 @@ function getUtilInfo(util) {
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['large'];
     $(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
-    inFavorites(util, utilType, utilPositionZero, utilPositionOne)
+    inFavorites(util, utilType, utilPositionZero, utilPositionOne);
     return $('#infoWindow')[0].innerHTML;
 }
 
 function getReviews(placeType, locationX, locationY) {
     $.post("/api/getreviews", {"placeType": placeType
-			     , "locationX": locationX
-			     , "locationY": locationY
-			      })
-	.done(function(data) {
+                              ,"locationX": locationX
+                              ,"locationY": locationY
+    }).done(function(data) {
         _data = eval(data);
         var reviews = "";
         for (var i=0; i<_data.length; i++) {
@@ -153,48 +148,44 @@ function addReview(placeType, locationX, locationY) {
     rating = $("#rating").val();
     $("#rating").val(5);
     $.post("/api/addreview", {"review" : review
-			 , "placeType": placeType
-			 , "locationX": locationX
-			 , "locationY": locationY
-			 , "rating": rating
-			  })
-        .done(function(data) {
-	    Materialize.toast(data, 4000);
-	    // Refresh the reviews for the active util
+                             ,"placeType": placeType
+                             ,"locationX": locationX
+                             ,"locationY": locationY
+                             ,"rating": rating
+    }).done(function(data) {
+        Materialize.toast(data, 4000);
+        // Refresh the reviews for the active util
         getReviews(activeUtil['type'], activeUtil['position'][0], activeUtil['position'][1]);
-	});
+    });
 }
 
 function addFavorite(placeType, locationX, locationY) {
     $.post("/api/addfavorite", {"placeType": placeType
-			      , "locationX": locationX
-			      , "locationY": locationY
-			       })
-	.done(function(data) {
-	    $("#favoritesButton").html("Remove Favorite");
-	    $("#favoritesButton").attr("onclick", "removeFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
-	    Materialize.toast(data, 4000);
-	});
+                                ,"locationX": locationX
+                                ,"locationY": locationY
+    }).done(function(data) {
+        Materialize.toast(data, 4000);
+        // Refresh the info window for the active util
+        getUtilInfo(activeUtil);
+    });
 }
 
 function removeFavorite(placeType, locationX, locationY) {
     $.post("/api/removefavorite", {"placeType": placeType
-	   		         , "locationX": locationX
-			         , "locationY": locationY
-			       })
-	.done(function(data) {
-	    $("#favoritesButton").html("Add Favorite");
-	    $("#favoritesButton").attr("onclick", "addFavorite('" + placeType + "', " + locationX + ", " + locationY + ")");
-	    Materialize.toast(data, 4000);
-	});
+                                  ,"locationX": locationX
+                                  ,"locationY": locationY
+    }).done(function(data) {
+        Materialize.toast(data, 4000);
+        // Refresh the info window for the active util
+        getUtilInfo(activeUtil);
+    });
 }
 
 function inFavorites(util, placeType, locationX, locationY) {
     $.post("/api/infavorites",  {"placeType": placeType
-        , "locationX": locationX
-            , "locationY": locationY
-    })
-    .done(function(data) {
+                                ,"locationX": locationX
+                                ,"locationY": locationY
+    }).done(function(data) {
         if (new String(data).valueOf()===new String("False").valueOf()) {
             favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' >Add Favorite<i class='mdi-action-stars left'></i></button> <br/><br/><button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
         }
