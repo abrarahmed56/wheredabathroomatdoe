@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block navbar_right %}
     {% if loggedin %}
+        {% include 'home_link.html' %}
         {% include 'profile_link.html' %}
         {% include 'geo_link.html' %}
         {% include 'donate_link.html' %}

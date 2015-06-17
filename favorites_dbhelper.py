@@ -42,9 +42,9 @@ def remove_favorite(user_id, place_id):
         conn.commit()
         success = c.rowcount
         if success:
-            return "Favorite doesn't exist"
-        else:
             return "Removal from My Places successful"
+        else:
+            return "Favorite doesn't exist"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

@@ -342,10 +342,14 @@ def add_review_front_end():
 
 @app.route('/api/get', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
-#FIXME should get nearby places
 def get():
-    return json.dumps(placesdb.get_places())
-    #return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
+    location_x = float(request.form['longitude'])
+    location_y = float(request.form['latitude'])
+    radius = .014
+    return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['GET', 'POST'])
 @limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")

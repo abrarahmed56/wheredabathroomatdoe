@@ -1,7 +1,20 @@
 {% extends "base.html" %}
+{% block navbar_right %}
+    {% include 'home_link.html' %}
+    {% include 'profile_link.html' %}
+    {% include 'geo_link.html' %}
+    {% include 'donate_link.html' %}
+    {% include 'settings_link.html' %}
+    {% include 'logout_link.html' %}
+{% endblock navbar_right %}
 {% block bodycontent %}
-<iframe width="600" height="450" frameborder="0" style="border:0"
+<center>
+  <br>
+  <br>
+  <br>
+  <iframe width="600" height="450" frameborder="0" style="border:0"
 src="https://www.google.com/maps/embed/v1/directions?origin={{origin}}&destination={{destination}}&key=AIzaSyAsCpdxgLvf4kGFJMdCi9BQD3MC4XjXI9o"</iframe>
+</center>
 {% endblock bodycontent %}
 {% block scripts %}
 	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>

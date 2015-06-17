@@ -140,7 +140,7 @@ function getReviews(placeType, locationX, locationY) {
 		review = _data[i]['Review']
 		user = _data[i]['User']
 		reviews += "Rating: " + rating + "\nReview: " + review +
-		    "\nUser: " + user  + "<hr>"
+		    "\nUser: " + user  + "<button>Upvote</button><button>Downvote</button><hr>"
 	    }
 	    console.log("reviews: " + reviews)
 	    $("#reviews")[0].innerHTML = reviews;
@@ -157,6 +157,7 @@ function addReview(placeType, locationX, locationY) {
 			 , "rating": rating
 			  })
         .done(function(data) {
+	    Materialize.toast(data, 4000);
 	    console.log(data);
 	});
 }
@@ -193,7 +194,7 @@ function inFavorites(util, placeType, locationX, locationY) {
 	.done(function(data) {
 	    console.log(data);
 	    if (new String(data).valueOf()===new String("False").valueOf()) {
-		favoritesButton = "<button id='favoritesButton' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places</button>";
+		favoritesButton = "<button id='favoritesButton' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places</button><button>Utility does not exist</button>";
 	    }
 	    else {
 		favoritesButton = "<button id='favoritesButton' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places</button>";
