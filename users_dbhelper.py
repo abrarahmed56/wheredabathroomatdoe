@@ -182,7 +182,10 @@ def get_user_firstname(uid=None, email=None):
             c.execute("""SELECT FirstName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0] if results else 'Anonymous'
+        if results[0]:
+            return results[0]
+        else:
+            return 'Anonymous'
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -204,7 +207,10 @@ def get_user_lastname(uid=None, email=None):
             c.execute("""SELECT LastName FROM Users WHERE Email = %s LIMIT 1""",
                             (email,))
             results = c.fetchone()
-        return results[0] if results else 'Anonymous'
+        if results[0]:
+            return results[0]
+        else:
+            return 'Anonymous'
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
