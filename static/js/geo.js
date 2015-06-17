@@ -208,22 +208,30 @@ function inFavorites(util, placeType, locationX, locationY) {
 }
 
 function toggleView(type) {
-    var btnName = '#'+type+'Toggle'
-    var name= $(btnName)[0].value;
-    if (name[0] == 'S') {
-	var newName = 'Hide '+name.charAt(5).toUpperCase()+name.slice(6);
-	$(btnName)[0].value = newName;
+    var btnId = '';
+    if (type === 'bench') {
+        btnId = '#benchToggle';
+    }
+    else if (type === 'fountain') {
+        btnId = '#fountainToggle';
+    }
+    else if (type === 'bathroom') {
+        btnId = '#bathroomToggle';
+    }
+    var displayText = $(btnId)[0].value;
+    var show = (displayText.indexOf('Show') != -1);
+    if (show) {
+        $(btnId)[0].value = displayText.replace('Show', 'Hide');
     }
     else {
-	var newName = 'Show '+name.charAt(5).toUpperCase()+name.slice(6);
-	$(btnName)[0].value = newName;
+        $(btnId)[0].value = displayText.replace('Hide', 'Show');
     }
-    console.log(name);
+    /* Toggle visibility of the markers */
     type = UTILITY_TYPES[type];
-    for(var i = 0; i < markedUtils.length; i++) {
-	if (markedUtils[i].icon == type) {
-	    markedUtils[i].setVisible(!markedUtils[i].getVisible());
-	}
+    for(var i = 0; i < markedUtils.length; ++i) {
+        if (markedUtils[i].icon == type) {
+            markedUtils[i].setVisible(!markedUtils[i].getVisible());
+        }
     }
 }
 
