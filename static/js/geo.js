@@ -28,7 +28,8 @@ function getPosition(show) {
     if (navigator.geolocation) {
         if (show) {
             navigator.geolocation.getCurrentPosition(function(position) {
-                var myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+                var myLatlng = new google.maps.LatLng(position.coords.latitude,
+                                                      position.coords.longitude);
                 var mapOptions = {
                     zoom: 15,
                     center: myLatlng
@@ -44,8 +45,10 @@ function getPosition(show) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 activeType = $('#utilType')[0].value;
                 if (activeType != 'NONE') {
-                    Materialize.toast('Drag icon to confirm location. Then click Mark Location.', 4000);
-                    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    Materialize.toast("Drag icon to confirm location." +
+                                      " Then click Mark Location.", 4000);
+                    var latlng = new google.maps.LatLng(position.coords.latitude,
+                                                        position.coords.longitude);
                     activeMarker = new google.maps.Marker({
                         position: latlng,
                         map: map,
@@ -67,7 +70,9 @@ function markActiveUtil() {
         position : [activeMarker.position['F'], activeMarker.position['A']],
         type : activeType
     }
-    $.post("/api/add", {"longitude" : util['position'][0], "latitude" : util['position'][1], "type" : util['type']})
+    $.post("/api/add", {"longitude" : util['position'][0],
+                        "latitude" : util['position'][1],
+                        "type" : util['type']})
         .done(function(data) {
             markUtil(util);
             activeMarker.setMap(null);
@@ -104,8 +109,7 @@ function markUtil(util) {
         $('#toggleButtons').fadeOut(700);
         activeUtil = util;
         infoWindow.setContent(getUtilInfo(activeUtil));
-        infoWindow.open(map, marker);
-    });
+        infoWindow.open(map, marker); });
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
         // Show input form and toggle buttons
         $('#inputForm').fadeIn(700);
@@ -136,7 +140,12 @@ function getReviews(placeType, locationX, locationY) {
             rating = _data[i]['Rating'];
             review = _data[i]['Review'];
             user = _data[i]['User'];
-            reviews += user + " rated this a <b>" + rating + "</b>.<br/><br/><i>" + review + "</i><br/><br/><div class='input field'><button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button> <button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button></div><hr>";
+            reviews += user + " rated this a <b>" + rating + "</b>.<br/><br/>" +
+                "<i>" + review + "</i><br/><br/>" +
+                "<div class='input field'>" +
+                "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
+                "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
+                "</div><hr>";
         }
         $("#reviews")[0].innerHTML = reviews;
 	});
@@ -187,7 +196,8 @@ function inFavorites(util, placeType, locationX, locationY) {
                                 ,"locationY": locationY
     }).done(function(data) {
         if (new String(data).valueOf()===new String("False").valueOf()) {
-            favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");' >Add Favorite<i class='mdi-action-stars left'></i></button> <br/><br/><button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
+            favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add Favorite<i class='mdi-action-stars left'></i></button><br/><br/>" +
+                "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
         }
         else {
             favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove Favorite<i class='mdi-navigation-close left'></i></button>";
@@ -195,9 +205,18 @@ function inFavorites(util, placeType, locationX, locationY) {
         $(".utilDescription")[0].innerHTML =
             "Here are the reviews for this " + util['type']  + ". " +
             "<hr><div id='reviews'></div>" +
-            "<h6 class='center-text'>Add a Review</h6><div class='input-field'><textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea><label for='review'>Review</label></div><div class='input-field'><label>Rating (1 to 5)</label><br/><p class='range-field'><input type='range' id='rating' min='1' max='5'/></p></div><div class='input-field center-all'><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review<i class='mdi-editor-border-color left'></i></button><br/><br/>" + favoritesButton +'</div>';
+            "<h6 class='center-text'>Add a Review</h6>" +
+            "<div class='input-field'>" +
+            "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
+            "<label for='review'>Review</label></div>" +
+            "<div class='input-field'><label>Rating (1 to 5)</label><br/>" +
+            "<p class='range-field'>" +
+            "<input type='range' id='rating' min='1' max='5'/>" +
+            "</p></div><div class='input-field center-all'>" +
+            "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>Add Review<i class='mdi-editor-border-color left'></i></button>" +
+            "<br/><br/>" + favoritesButton + "</div>";
+        // Populate info window with reviews
         getReviews(util['type'], util['position'][0], util['position'][1]);
-        $('select').material_select();
     });
 }
 
