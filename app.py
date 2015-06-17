@@ -343,8 +343,11 @@ def add_review_front_end():
 @app.route('/api/get', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get():
-    location_x = float(request.form['longitude'])
-    location_y = float(request.form['latitude'])
+    try:
+        location_x = float(request.form['longitude'])
+        location_y = float(request.form['latitude'])
+    except ValueError:
+        return "Malformed request"
     radius = .014
     return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
 
