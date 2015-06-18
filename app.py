@@ -240,13 +240,12 @@ def get_reviews_front_end():
 
 @app.route('/api/addfavorite', methods=['POST'])
 def add_favorite_front_end():
-    user = session['email']
+    user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = usersdb.get_user_id(user)
         # FIXME needs float conversion of locationX and locationY
         place_id = placesdb.get_place_id(request.form['placeType'],
                 request.form['locationX'], request.form['locationY'])
@@ -256,13 +255,12 @@ def add_favorite_front_end():
 
 @app.route('/api/removefavorite', methods=['POST'])
 def remove_favorite_front_end():
-    user = session['email']
+    user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = usersdb.get_user_id(user)
         # FIXME wrap float conversion in a try-except block
         place_id = placesdb.get_place_id(request.form['placeType'],
                float(request.form['locationX']),
@@ -273,13 +271,12 @@ def remove_favorite_front_end():
 
 @app.route('/api/infavorites', methods=['POST'])
 def in_favorites_front_end():
-    user = session['email']
+    user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = usersdb.get_user_id(user)
         # FIXME needs float conversion
         place_id = placesdb.get_place_id(request.form['placeType'],
                 request.form['locationX'], request.form['locationY'])
@@ -304,13 +301,12 @@ def review_from_user_exists():
 
 @app.route('/api/createdplace', methods=['POST'])
 def created_place_front_end():
-    user = session['email']
+    user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        user_id = usersdb.get_user_id(user)
         place_id = placesdb.get_place_id(request.form['placeType'],
                 request.form['locationX'], request.form['locationY'])
         return placesdb.created_place(user_id, place_id)
