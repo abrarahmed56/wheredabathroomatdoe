@@ -18,37 +18,6 @@ https://www.python.org/dev/peps/pep-0008/
 ## Link
 **https://youtu.be/VRVai1W7Sgk**
 
-## Organization of The Website
-- Home page will have a link to login if you are not logged in
-- If you are logged in, show personal locations/favorites
-- Have a link from the homepage (whether logged in or not) to browse popular locations
-- The search bar will be at the top of each page
-- After searching, a list of locations will appear
-  - Under each location, show the average rating, and a few of the most recent reviews
-- There will be a page for each location showing all the reviews, as well as pictures
-  - Also, show suggestions for other locations nearby
-
-## Database Schema
-### User database
-- Unique User ID -> String/ID
-- Email -> String
-- Email confirmed -> Boolean
-- Password -> String
-- Phone number -> String
-
-### Game database
-- Unique User ID -> String/ID
-- Points
-  - Caching layer to generate the rankings scoreboard
-- List of listings with their associated lister rating -> [(Listing, Lister rating)]
-
-### Listing database
-- Unique User ID of lister -> String/ID
-- Location -> (???)
-- Reviews -> [String]
-- Rating -> Integer
-- Last updated date -> Date
-
 ## Set up dependencies
 See `dependencies.md`  
 
