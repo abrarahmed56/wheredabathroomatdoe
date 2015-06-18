@@ -157,7 +157,7 @@ function getReviews(placeType, locationX, locationY) {
                     placeType + " yet. That means you can be the first to write one!");
         }
         else {
-            $('#descriptionHeader').html("Here are the reviews for this " + placeType + ".");
+            $('#descriptionHeader').html("Here are the reviews for this " + placeType + ":");
             for (var i=0; i<_data.length; i++) {
                 rating = _data[i]['Rating'];
                 review = _data[i]['Review'];
@@ -248,10 +248,12 @@ function inFavorites(util, placeType, locationX, locationY) {
                 "<div class='input-field'>" +
                 "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
                 "<label for='review'>Review</label></div>" +
-                "<div class='input-field'><label>Rating (1 to 5)</label><br/>" +
-                "<p class='range-field'>" +
+		"<div class='row'><div class='input-field col s3'><label>1</label></div>" +
+		"<div class='input-field col s7'><label>Rating (1 to 5)</label></div>" +
+		"<div class='input-field col s2'><label>5</label></div><br/>" +
+                "<div class='input-field col s12'><p class='range-field'>" +
                 "<input type='range' id='rating' min='1' max='5'/>" +
-                "</p></div><div class='input-field center-all'>" +
+		"</p></div></div><div class='input-field center-all'>" +
                 "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" +
                 util['type'] + "&quot;, " + util['position'][0] + ", " +
                 util['position'][1] +")'>" + reviewStr +
