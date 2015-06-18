@@ -1,3 +1,4 @@
+
 import psycopg2, psycopg2.extras
 import dbhelper
 import validate
@@ -189,7 +190,7 @@ def get_place_description(pid):
         return "Database Error"
     c = conn.cursor()
     try:
-        c.execute("SELECT Description FROM Places WHERE PlacesID = %s LIMIT 1",
+        c.execute("SELECT Description FROM Places WHERE PlaceID = %s LIMIT 1",
                                                                         (pid,))
         result = c.fetchone()
         if result and result[0]:
@@ -211,6 +212,7 @@ def update_place_description(pid, description):
         c.execute("UPDATE Places SET Description = %s WHERE PlaceID = %s",
                                                        (description, pid))
         conn.commit()
+        return "Update of description successful"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
@@ -324,3 +326,20 @@ def get_num_reports_for_place(reported_id):
         if conn:
             conn.close()
 
+def created_place(user_id, place_id):
+    conn = dbhelper.connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM PLACES WHERE FINDER=%s AND ID=%s LIMIT 1", (user_id, place_id))
+        exists = c.fetchone()
+        if exists:
+            return "True"
+        else:
+            return "False"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()

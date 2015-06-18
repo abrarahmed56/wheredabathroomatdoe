@@ -302,6 +302,50 @@ def review_from_user_exists():
     else:
         return "Malformed request"
 
+@app.route('/api/createdplace', methods=['POST'])
+def created_place_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        user_id = usersdb.get_user_id(user)
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return placesdb.created_place(user_id, place_id)
+    else:
+        return "Malformed request"
+
+@app.route('/api/getdescription', methods=['POST'])
+def get_description_front_end():
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return placesdb.get_place_description(place_id)
+    else:
+        return "Malformed request"
+
+@app.route('/api/adddescription', methods=['POST'])
+def add_description_front_end():
+    user_id = uuid.UUID(session['uid'])
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    , 'description'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        description = request.form['description']
+        return placesdb.update_place_description(place_id, description)
+    else:
+        return "Malformed request"
+
 # FIXME rename this route, "marionette" literally says nothing about what it
 # actually does/returns
 @app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])

@@ -90,13 +90,14 @@ function markActiveUtil() {
             $('#inputForm').fadeOut(700);
             $('#toggleButtons').fadeOut(700);
             // Open info window for newly created marker
-            infoWindow.setContent(getUtilInfo(util));
+            infoWindow.setContent(getUtilInfo(util, "new"));
             infoWindow.open(map, newMarker);
             activeUtil = util;
             activeMarker.setMap(null);
             activeMarker = false;
             $('#addButton')[0].value = 'Utility Spotted';
             Materialize.toast('Location marked', 3000);
+            Materialize.toast('Please add a description', 5000);
         });
     markedUtils.push(util);
 }
@@ -126,7 +127,7 @@ function markUtil(util) {
         $('#inputForm').fadeOut(700);
         $('#toggleButtons').fadeOut(700);
         activeUtil = util;
-        infoWindow.setContent(getUtilInfo(activeUtil));
+        infoWindow.setContent(getUtilInfo(activeUtil, "old"));
         infoWindow.open(map, marker); });
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
         // Show input form and toggle buttons
@@ -137,15 +138,25 @@ function markUtil(util) {
     return marker;
 }
 
-function getUtilInfo(util) {
+function getUtilInfo(util, newOrOld) {
+    console.log("getutilinfo");
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
-    $(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
-    inFavorites(util, utilType, utilPositionZero, utilPositionOne);
+    cardInfo(util, utilType, utilPositionZero, utilPositionOne, newOrOld);
     return $('#infoWindow')[0].innerHTML;
+}
+
+function addDescription() {
+    $.post("/api/adddescription", {"placeType": $("#placeType").val()
+				   ,"locationX": $("#locationX").val()
+				   ,"locationY": $("#locationY").val()
+				   ,"description": $("#description").val()
+    }).done(function(data) {
+	Materialize.toast(data, 4000);
+    });
 }
 
 function getReviews(placeType, locationX, locationY) {
@@ -196,7 +207,7 @@ function addReview(placeType, locationX, locationY) {
         Materialize.toast(data, 4000);
         // Refresh the reviews for the active util
         getReviews(activeUtil['type'], activeUtil['position'][0], activeUtil['position'][1]);
-        getUtilInfo(activeUtil);
+        getUtilInfo(activeUtil, "old");
     });
 }
 
@@ -207,7 +218,7 @@ function addFavorite(placeType, locationX, locationY) {
     }).done(function(data) {
         Materialize.toast(data, 4000);
         // Refresh the info window for the active util
-        getUtilInfo(activeUtil);
+        getUtilInfo(activeUtil, "old");
     });
 }
 
@@ -218,11 +229,22 @@ function removeFavorite(placeType, locationX, locationY) {
     }).done(function(data) {
         Materialize.toast(data, 4000);
         // Refresh the info window for the active util
-        getUtilInfo(activeUtil);
+        getUtilInfo(activeUtil, "old");
     });
 }
 
-function inFavorites(util, placeType, locationX, locationY) {
+function cardInfo(util, placeType, locationX, locationY, newOrOld) {
+    $.post("/api/createdplace",  {"placeType": placeType
+                                 ,"locationX": locationX
+                                 ,"locationY": locationY
+				 })
+    .done(function(data) {
+	if (new String(data).valueOf()===new String("False").valueOf()) {
+	    removeButton = "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
+	}
+	else {
+	    removeButton = "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Remove'>Remove<i class='mdi-alert-warning left'></i></button>";
+	}
     $.post("/api/infavorites",  {"placeType": placeType
                                 ,"locationX": locationX
                                 ,"locationY": locationY
@@ -266,6 +288,22 @@ function inFavorites(util, placeType, locationX, locationY) {
             getReviews(util['type'], util['position'][0], util['position'][1]);
         });
     });
+    });
+    if (newOrOld==="old") {
+	$.post("/api/getdescription",  {"placeType": placeType
+				       ,"locationX": locationX
+				       ,"locationY": locationY
+				       })
+	    .done(function(data) {
+		$(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
+		    utilType.substring(1) + "<br>" + data;
+	    });
+    }
+    else {
+	$(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
+	    utilType.substring(1) + "<br><input type='text' id='description'><input type='hidden' id='placeType' value='" + utilType + "'><input type='hidden' id='locationX' value='" + utilPositionZero + "'><input type='hidden' id='locationY' value='" + utilPositionOne + "'><button class='btn green darken-2 waves-effect waves-light' onclick='addDescription()' value='Add description'>Add description</button>";
+
+    }
 }
 
 function toggleView(type) {
