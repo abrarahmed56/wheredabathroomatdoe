@@ -6,7 +6,7 @@ import users_dbhelper as usersdb
 from constants import *
 from utils import *
 
-def add_place(place_type, location_x, location_y, finder):
+def add_place(place_type, location_x, location_y, finder, description):
     global ID_PLACE
     conn = dbhelper.connect()
     if conn == None:
@@ -21,9 +21,9 @@ def add_place(place_type, location_x, location_y, finder):
             puid = dbhelper.generate_id(ID_PLACE)
             if not puid[0]:
                 return puid[1]
-            c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, %s, 0, %s)",
+            c.execute("INSERT INTO Places VALUES(%s, %s, %s, %s, %s, 0, %s, %s)",
                       (puid[1], puid[1], place_type, location_x, location_y,
-                          usersdb.get_user_id(finder)))
+                          usersdb.get_user_id(finder), description))
             conn.commit()
             return "Location added to map"
         else:
@@ -183,6 +183,40 @@ def get_place_rating(pid):
         if conn:
             conn.close()
 
+def get_place_description(pid):
+    conn = dbhelper.connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Description FROM Places WHERE PlacesID = %s LIMIT 1",
+                                                                        (pid,))
+        result = c.fetchone()
+        if result and result[0]:
+            return result[0]
+        else:
+            return ''
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def update_place_description(pid, description):
+    conn = dbhelper.connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("UPDATE Places SET Description = %s WHERE PlaceID = %s",
+                                                       (description, pid))
+        conn.commit()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
 def dictionarify(places_list):
     ans = []
     for place in places_list:
@@ -191,6 +225,7 @@ def dictionarify(places_list):
             "type": place[2],
             "position": [place[3], place[4]],
             "finder": str(place[6]),
+            "description": str(place[7]),
         }
         ans.append(place_dict)
     return ans

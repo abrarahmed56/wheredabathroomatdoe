@@ -25,7 +25,7 @@ USER_TABLE_CREATE = """CREATE TABLE Users (ID UUID PRIMARY KEY, UserID UUID, Ema
 
 PLACES_TABLE_CREATE = """CREATE TABLE Places (ID UUID PRIMARY KEY, PlaceID UUID,
     PlaceType TEXT, LocationX DOUBLE PRECISION, LocationY DOUBLE PRECISION,
-    Favorites INT, Finder UUID REFERENCES Users(ID))"""
+    Favorites INT, Finder UUID REFERENCES Users(ID), Description varchar(250))"""
 
 # TODO user deletion should not cascade places
 
