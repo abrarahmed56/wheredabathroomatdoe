@@ -252,7 +252,7 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
     }).done(function(data) {
         if (new String(data).valueOf()===new String("False").valueOf()) {
             favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
-                "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
+		removeButton;
         }
         else {
             favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button>";
