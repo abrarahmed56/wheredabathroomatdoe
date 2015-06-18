@@ -49,3 +49,22 @@ def get_reviews(placeID):
     finally:
         if conn:
             conn.close()
+
+def review_exists(reviewer_id, place_id):
+    conn = dbhelper.connect()
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT * FROM Reviews WHERE Reviewer=%s AND PlacesID=%s LIMIT 1", (reviewer_id, place_id))
+        conn.commit()
+        exists = c.fetchone()
+        if exists:
+            return "Update Review"
+        else:
+            return "Add Review"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()

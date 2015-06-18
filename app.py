@@ -287,6 +287,21 @@ def in_favorites_front_end():
     else:
         return "Malformed request"
 
+@app.route('/api/reviewexists', methods=['POST'])
+def review_exists_front_end():
+    user = session['email']
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        reviewer_id = usersdb.get_user_id(user)
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return reviewsdb.review_exists(reviewer_id, place_id)
+    else:
+        return "Malformed request"
+
 # FIXME rename this route, "marionette" literally says nothing about what it
 # actually does/returns
 @app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
