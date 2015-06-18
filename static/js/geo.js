@@ -81,6 +81,7 @@ function markActiveUtil() {
             // Open info window for newly created marker
             infoWindow.setContent(getUtilInfo(util));
             infoWindow.open(map, newMarker);
+            activeUtil = util;
             activeMarker.setMap(null);
             activeMarker = false;
             $('input[type="button"]')[0].value = 'Utility Spotted';
@@ -184,6 +185,7 @@ function addReview(placeType, locationX, locationY) {
         Materialize.toast(data, 4000);
         // Refresh the reviews for the active util
         getReviews(activeUtil['type'], activeUtil['position'][0], activeUtil['position'][1]);
+        getUtilInfo(activeUtil);
     });
 }
 
@@ -221,29 +223,35 @@ function inFavorites(util, placeType, locationX, locationY) {
         else {
             favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove Favorite<i class='mdi-navigation-close left'></i></button>";
         }
-	$.post("/api/reviewexists",  {"placeType": placeType
-				     ,"locationX": locationX
-				     ,"locationY": locationY
-				     })
-	    .done(function(data) {
-		reviewStr = data;
-		$(".utilDescription")[0].innerHTML =
-		    "<span id='descriptionHeader'></span>" +
-		    "<hr><div id='reviews'></div>" +
-		    "<div id='add-review' class='no-select'>" +
-		    "<h6 class='center-text'>Add a Review</h6>" +
-		    "<div class='input-field'>" +
-		    "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
-		    "<label for='review'>Review</label></div>" +
-		    "<div class='input-field'><label>Rating (1 to 5)</label><br/>" +
-		    "<p class='range-field'>" +
-		    "<input type='range' id='rating' min='1' max='5'/>" +
-		    "</p></div><div class='input-field center-all'>" +
-		    "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] +")'>" + reviewStr + "<i class='mdi-editor-border-color left'></i></button>" +
-		    "<br/><br/>" + favoritesButton + "</div></div>";
-		// Populate info window with reviews
-		getReviews(util['type'], util['position'][0], util['position'][1]);
-	    });
+        $.post("/api/reviewfromuserexists",  {"placeType": placeType
+            ,"locationX": locationX
+                ,"locationY": locationY
+        })
+        .done(function(data) {
+            var reviewStr = "Add Review";
+            if (data === "True") {
+                reviewStr = "Update Review";
+            }
+            $(".utilDescription")[0].innerHTML =
+                "<span id='descriptionHeader'></span>" +
+                "<hr><div id='reviews'></div>" +
+                "<div id='add-review' class='no-select'>" +
+                "<h6 class='center-text'>Add a Review</h6>" +
+                "<div class='input-field'>" +
+                "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
+                "<label for='review'>Review</label></div>" +
+                "<div class='input-field'><label>Rating (1 to 5)</label><br/>" +
+                "<p class='range-field'>" +
+                "<input type='range' id='rating' min='1' max='5'/>" +
+                "</p></div><div class='input-field center-all'>" +
+                "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" +
+                util['type'] + "&quot;, " + util['position'][0] + ", " +
+                util['position'][1] +")'>" + reviewStr +
+                "<i class='mdi-editor-border-color left'></i></button>" +
+                "<br/><br/>" + favoritesButton + "</div></div>";
+            // Populate info window with reviews
+            getReviews(util['type'], util['position'][0], util['position'][1]);
+        });
     });
 }
 

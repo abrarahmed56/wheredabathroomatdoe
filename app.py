@@ -205,7 +205,7 @@ def add():
             longitude = float(request.form['longitude'])
             util_type = request.form['type']
             if util_type in ALLOWED_TYPES:
-                placesdb.add_place(util_type, longitude, latitude, email)
+                placesdb.add_place(util_type, longitude, latitude, email, '')
             else:
                 return "Malformed Request"
         except ValueError:
@@ -287,18 +287,18 @@ def in_favorites_front_end():
     else:
         return "Malformed request"
 
-@app.route('/api/reviewexists', methods=['POST'])
-def review_exists_front_end():
-    user = session['email']
+@app.route('/api/reviewfromuserexists', methods=['POST'])
+def review_from_user_exists():
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        reviewer_id = usersdb.get_user_id(user)
+        reviewer_id = uuid.UUID(session['uid'])
         place_id = placesdb.get_place_id(request.form['placeType'],
                 request.form['locationX'], request.form['locationY'])
-        return reviewsdb.review_exists(reviewer_id, place_id)
+        exists = reviewsdb.review_exists(reviewer_id, place_id)
+        return "True" if exists else "False"
     else:
         return "Malformed request"
 
