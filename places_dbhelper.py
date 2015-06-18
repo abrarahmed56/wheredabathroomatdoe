@@ -256,7 +256,7 @@ def add_place_report(reporter_id, reported_id, reason):
     ruid = dbhelper.generate_id(ID_REPORTS_PLACES)
     if not ruid[0]:
         return (False, "UUID error")
-    conn = connect()
+    conn = dbhelper.connect()
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -277,7 +277,7 @@ def add_place_report(reporter_id, reported_id, reason):
             conn.close()
 
 def remove_place_report(reporter_id, reported_id):
-    conn = connect()
+    conn = dbhelper.connect()
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -293,7 +293,7 @@ def remove_place_report(reporter_id, reported_id):
             conn.close()
 
 def is_place_reported_by(reporter_id, reported_id):
-    conn = connect()
+    conn = dbhelper.connect()
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()

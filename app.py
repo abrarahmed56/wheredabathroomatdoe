@@ -412,6 +412,31 @@ def get():
     radius = .014
     return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
 
+@app.route('/api/removeplace', methods=['POST'])
+def remove_place_front_end():
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+    return placesdb.remove_place_by_id(place_id)
+
+@app.route('/api/reportplace', methods=['POST'])
+def report_place_front_end():
+    user_id = uuid.UUID(session['uid'])
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    , 'reason'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        reason = request.form['reason']
+        return placesdb.add_place_report(user_id, place_id, reason)[1]
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 

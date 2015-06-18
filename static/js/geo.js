@@ -94,7 +94,7 @@ function markActiveUtil() {
             infoWindow.open(map, newMarker);
             activeUtil = util;
             activeMarker.setMap(null);
-            activeMarker = false;
+            activeMarker = newMarker;
             $('#addButton')[0].value = 'Utility Spotted';
             Materialize.toast('Location marked', 3000);
             Materialize.toast('Please add a description', 5000);
@@ -128,7 +128,8 @@ function markUtil(util) {
         $('#toggleButtons').fadeOut(700);
         activeUtil = util;
         infoWindow.setContent(getUtilInfo(activeUtil, "old"));
-        infoWindow.open(map, marker); });
+        infoWindow.open(map, marker);
+	activeMarker = marker;});
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
         // Show input form and toggle buttons
         $('#inputForm').fadeIn(700);
@@ -156,6 +157,8 @@ function addDescription() {
 				   ,"description": $("#description").val()
     }).done(function(data) {
 	Materialize.toast(data, 4000);
+        infoWindow.close();
+	activeMarker = false;
     });
 }
 
@@ -233,6 +236,38 @@ function removeFavorite(placeType, locationX, locationY) {
     });
 }
 
+function removePlace(placeType, locationX, locationY) {
+    $.post("/api/removeplace", {"placeType": placeType
+				,"locationX": locationX
+				,"locationY": locationY
+    }).done(function(data){
+	infoWindow.close();
+	activeMarker.setMap(null);
+	activeMarker = false;
+        $('#inputForm').fadeIn(700);
+        $('#toggleButtons').fadeIn(700);
+    });
+}
+
+function reportPlace(placeType, locationX, locationY) {
+    if ($("#reason").val()==="") {
+	Materialize.toast("Please enter a reason why you are reporting this location", 4000);
+    }
+    else {
+	$.post("/api/reportplace", {"placeType": placeType
+				    ,"locationX": locationX
+				    ,"locationY": locationY
+				    ,"reason": $("#reason").val()
+				   }).done(function(data){
+				       Materialize.toast(data, 4000);
+				   });
+    }
+}
+
+function letUserReportPlace(placeType, locationX, locationY) {
+    infoWindow.setContent("<input type='text' placeholder='Why are you reporting this place?' id='reason'><button type='submit' class='btn red darken-2 waves-effect waves-light' onclick='reportPlace(&quot;" + placeType + "&quot;, " + locationX + ", " + locationY + ")'>Report</button><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='infoWindow.setContent(getUtilInfo(activeUtil, &quot;old&quot;))'>Cancel</button>");
+}
+
 function cardInfo(util, placeType, locationX, locationY, newOrOld) {
     //TODO do this stuff in one post request, return tuples
     $.post("/api/createdplace",  {"placeType": placeType
@@ -241,10 +276,10 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
 				 })
     .done(function(data) {
 	if (new String(data).valueOf()===new String("False").valueOf()) {
-	    removeButton = "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
+	    removeButton = "<button type='submit' onclick='letUserReportPlace(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ")' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
 	}
 	else {
-	    removeButton = "<button type='submit' class='btn red darken-2 waves-effect waves-light' value='Remove'>Remove<i class='mdi-alert-warning left'></i></button>";
+	    removeButton = "<button type='submit' onclick='removePlace(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ")' class='btn red darken-2 waves-effect waves-light' value='Remove'>Remove<i class='mdi-alert-warning left'></i></button>";
 	}
     $.post("/api/infavorites",  {"placeType": placeType
                                 ,"locationX": locationX
