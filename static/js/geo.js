@@ -4,13 +4,13 @@ var activeMarker = false;
 var SHOW = true;
 var MARK = false;
 var UTILITY_TYPES = {"fountain" : {'small' : "static/img/fountain.gif"
-				  ,'card' : "static/img/fountain-card.png"
+                                  ,'card' : "static/img/fountain-card.png"
                                   ,'large' : "static/img/fountain.png"}
                     ,"bathroom" : {'small' : "static/img/bathroom.gif"
-				  ,'card' : "static/img/bathroom-card.png"
+                                  ,'card' : "static/img/bathroom-card.png"
                                   ,'large' : "static/img/bathroom.png"}
                     ,"bench"    : {'small' : "static/img/bench.gif"
-				  ,'card' : "static/img/bench-card.png"
+                                  ,'card' : "static/img/bench-card.png"
                                   ,'large' : "static/img/bench.png"}
                     };
 
@@ -143,7 +143,7 @@ function getUtilInfo(util, newOrOld) {
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
-    $(".utilImage")[0].src = UTILITY_TYPES[utilType]['large'];
+    $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     cardInfo(util, utilType, utilPositionZero, utilPositionOne, newOrOld);
     return $('#infoWindow')[0].innerHTML;
