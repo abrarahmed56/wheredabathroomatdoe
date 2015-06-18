@@ -74,7 +74,13 @@ function markActiveUtil() {
                         "latitude" : util['position'][1],
                         "type" : util['type']})
         .done(function(data) {
-            markUtil(util);
+            var newMarker = markUtil(util);
+            // Hide input form and toggle buttons
+            $('#inputForm').fadeOut(700);
+            $('#toggleButtons').fadeOut(700);
+            // Open info window for newly created marker
+            infoWindow.setContent(getUtilInfo(util));
+            infoWindow.open(map, newMarker);
             activeMarker.setMap(null);
             activeMarker = false;
             $('input[type="button"]')[0].value = 'Utility Spotted';
@@ -116,6 +122,7 @@ function markUtil(util) {
         $('#toggleButtons').fadeIn(700);
     });
     markedUtils.push(marker);
+    return marker;
 }
 
 function getUtilInfo(util) {
