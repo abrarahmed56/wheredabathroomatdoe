@@ -39,8 +39,8 @@ function getPosition(show) {
             }, showError);
         }
         else if (activeMarker) {
-	    markActiveUtil();
-	}
+            markActiveUtil();
+        }
         else {
             navigator.geolocation.getCurrentPosition(function(position) {
                 activeType = $('#utilType')[0].value;
@@ -55,7 +55,8 @@ function getPosition(show) {
                         icon: UTILITY_TYPES[activeType]['small'],
                         draggable: true
                     });
-                    $('input[type="button"]')[0].value = 'Mark Location';
+                    $('#addButton')[0].value = 'Mark Location';
+                    $('#cancelAddButton').show();
                 }
             }, showError);
         }
@@ -63,6 +64,13 @@ function getPosition(show) {
     else {
         err.innerHTML = "Geolocation is not supported by this browser.";//flash
     }
+}
+
+function cancelAddUtil() {
+    activeMarker.setMap(null);
+    activeMarker = false;
+    $('#addButton')[0].value = 'Utility Spotted';
+    $('#cancelAddButton').hide();
 }
 
 function markActiveUtil() {
@@ -84,7 +92,7 @@ function markActiveUtil() {
             activeUtil = util;
             activeMarker.setMap(null);
             activeMarker = false;
-            $('input[type="button"]')[0].value = 'Utility Spotted';
+            $('#addButton')[0].value = 'Utility Spotted';
             Materialize.toast('Location marked', 3000);
         });
     markedUtils.push(util);
