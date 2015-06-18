@@ -143,7 +143,12 @@ function getUtilInfo(util, newOrOld) {
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
+<<<<<<< HEAD
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
+=======
+    $(".utilImage")[0].src = UTILITY_TYPES[utilType]['large'];
+    getDescription(util, utilType, utilPositionZero, utilPositionOne);
+>>>>>>> Start getDescription for place description
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
     cardInfo(util, utilType, utilPositionZero, utilPositionOne, newOrOld);
     return $('#infoWindow')[0].innerHTML;
@@ -234,6 +239,7 @@ function removeFavorite(placeType, locationX, locationY) {
 }
 
 function cardInfo(util, placeType, locationX, locationY, newOrOld) {
+    //TODO do this stuff in one post request, return tuples
     $.post("/api/createdplace",  {"placeType": placeType
                                  ,"locationX": locationX
                                  ,"locationY": locationY
@@ -304,6 +310,15 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
 	    utilType.substring(1) + "<br><input type='text' id='description'><input type='hidden' id='placeType' value='" + utilType + "'><input type='hidden' id='locationX' value='" + utilPositionZero + "'><input type='hidden' id='locationY' value='" + utilPositionOne + "'><button class='btn green darken-2 waves-effect waves-light' onclick='addDescription()' value='Add description'>Add description</button>";
 
     }
+}
+
+function getDescription(util, placeType, locationX, locationY) {
+    $.post("/api/getdescription",  {"placeType": placeType
+                                 ,"locationX": locationX
+                                 ,"locationY": locationY
+				 })
+	.done(function(data) {
+	});
 }
 
 function toggleView(type) {
