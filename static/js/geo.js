@@ -295,9 +295,13 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
 				       ,"locationX": locationX
 				       ,"locationY": locationY
 				       })
-	    .done(function(data) {
-		$(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
-		    utilType.substring(1) + "<br>" + data;
+	    .done(function(description) {
+	        if (!description) {
+	            description = "No description available."
+	        }
+            $(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
+                utilType.substring(1) + "<br/><span style='font-size:60%'>" + description +
+                    "</span>";
 	    });
     }
     else {
