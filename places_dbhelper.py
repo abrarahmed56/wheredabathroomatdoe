@@ -212,7 +212,7 @@ def update_place_description(pid, description):
         c.execute("UPDATE Places SET Description = %s WHERE PlaceID = %s",
                                                        (description, pid))
         conn.commit()
-        return "Update of description successful"
+        return "Successfully updated description"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

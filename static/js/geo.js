@@ -302,7 +302,7 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
     }
     else {
 	$(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
-	    utilType.substring(1) + "<br><input type='text' id='description'><input type='hidden' id='placeType' value='" + utilType + "'><input type='hidden' id='locationX' value='" + utilPositionZero + "'><input type='hidden' id='locationY' value='" + utilPositionOne + "'><button class='btn green darken-2 waves-effect waves-light' onclick='addDescription()' value='Add description'>Add description</button>";
+	    utilType.substring(1) + "<br><input type='text' id='description' onBlur='addDescription()'><input type='hidden' id='placeType' value='" + utilType + "'><input type='hidden' id='locationX' value='" + utilPositionZero + "'><input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
 
     }
 }
