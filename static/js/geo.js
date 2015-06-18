@@ -143,23 +143,30 @@ function getReviews(placeType, locationX, locationY) {
     }).done(function(data) {
         _data = eval(data);
         var reviews = "";
-        for (var i=0; i<_data.length; i++) {
-            rating = _data[i]['Rating'];
-            review = _data[i]['Review'];
-            userFirstName = _data[i]['UserFirstName'];
-            userProfile = _data[i]['UserProfile'];
-            userPic = _data[i]['UserPic'];
-            reviews += "<div style='display:inline-block'>" +
-                "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
-                "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
-                "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
-                "<i>" + review + "</i><br/><br/>" +
-                "<div class='input field'>" +
-                "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
-                "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
-                "</div><hr>";
+        if (_data.length == 0) {
+            $('#descriptionHeader').html("Unfortunately there aren't any reviews for this " +
+                    placeType + " yet. That means you can be the first to write one!");
         }
-        $("#reviews")[0].innerHTML = reviews;
+        else {
+            $('#descriptionHeader').html("Here are the reviews for this " + placeType + ".");
+            for (var i=0; i<_data.length; i++) {
+                rating = _data[i]['Rating'];
+                review = _data[i]['Review'];
+                userFirstName = _data[i]['UserFirstName'];
+                userProfile = _data[i]['UserProfile'];
+                userPic = _data[i]['UserPic'];
+                reviews += "<div style='display:inline-block'>" +
+                    "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
+                    "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
+                    "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
+                    "<i>" + review + "</i><br/><br/>" +
+                    "<div class='input field'>" +
+                    "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
+                    "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
+                    "</div><hr>";
+            }
+            $("#reviews")[0].innerHTML = reviews;
+        }
 	});
 }
 
@@ -221,7 +228,7 @@ function inFavorites(util, placeType, locationX, locationY) {
 	    .done(function(data) {
 		reviewStr = data;
 		$(".utilDescription")[0].innerHTML =
-		    "Here are the reviews for this " + util['type']  + ". " +
+		    "<span id='descriptionHeader'></span>" +
 		    "<hr><div id='reviews'></div>" +
 		    "<div id='add-review' class='no-select'>" +
 		    "<h6 class='center-text'>Add a Review</h6>" +
