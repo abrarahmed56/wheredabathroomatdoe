@@ -18,7 +18,7 @@ var UTILITY_TYPES = {"fountain" : {'small' : "static/img/fountain.gif"
                     };
 
 var infoWindow = new google.maps.InfoWindow();
-var markedUtils = [];
+var mapMarkers = [];
 
 function getUtilityName(name) {
     return (_.invert(UTILITY_TYPES))[name];
@@ -143,7 +143,7 @@ function markUtil(util) {
         activeUtil = false;
         activeMarker = false;
     });
-    markedUtils.push(marker);
+    mapMarkers.push(marker);
     return marker;
 }
 
@@ -379,9 +379,9 @@ function toggleView(type) {
     }
     /* Toggle visibility of the markers */
     var utilImg = UTILITY_TYPES[type]['small'];
-    for(var i = 0; i < markedUtils.length; ++i) {
-        if (markedUtils[i].icon == utilImg) {
-            markedUtils[i].setVisible(show);
+    for(var i = 0; i < mapMarkers.length; ++i) {
+        if (mapMarkers[i].icon == utilImg) {
+            mapMarkers[i].setVisible(show);
         }
     }
 }
