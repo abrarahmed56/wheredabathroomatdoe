@@ -95,8 +95,9 @@ function putNewUtil() {
             $('#inputForm').fadeOut(700);
             $('#toggleButtons').fadeOut(700);
             // Open info window for newly created marker
-            infoWindow.setContent(getUtilInfo(util, true));
-            infoWindow.open(map, newMarker);
+            infoWindow.setContent(getUtilInfo(util, true, function after() {
+                infoWindow.open(map, newMarker);
+            }));
             activeUtil = util;
             activeMarker = newMarker;
             draggableMarker.setMap(null);
@@ -133,8 +134,9 @@ function markUtil(util) {
         $('#toggleButtons').fadeOut(700);
         activeUtil = util;
         activeMarker = marker;
-        infoWindow.setContent(getUtilInfo(activeUtil, false));
-        infoWindow.open(map, marker);
+        infoWindow.setContent(getUtilInfo(activeUtil, false, function after() {
+            infoWindow.open(map, marker);
+        }));
     });
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
         // Show input form and toggle buttons
@@ -147,13 +149,13 @@ function markUtil(util) {
     return marker;
 }
 
-function getUtilInfo(util, isNewlyCreatedUtil) {
+function getUtilInfo(util, isNewlyCreatedUtil, callback) {
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
     $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
-    cardInfo(util, utilType, utilPositionZero, utilPositionOne, isNewlyCreatedUtil);
+    cardInfo(util, utilType, utilPositionZero, utilPositionOne, isNewlyCreatedUtil, callback);
     return $('#infoWindow')[0].innerHTML;
 }
 
@@ -164,7 +166,7 @@ function addDescription() {
                                   ,"description": $("#description").val()
     }).done(function(data) {
         $("#description").val('');
-        infoWindow.setContent(getUtilInfo(activeUtil, false));
+        infoWindow.setContent(getUtilInfo(activeUtil, false, null));
         Materialize.toast(data, 4000);
     });
 }
@@ -272,10 +274,10 @@ function reportPlace(placeType, locationX, locationY) {
 }
 
 function letUserReportPlace(placeType, locationX, locationY) {
-    infoWindow.setContent("<input type='text' placeholder='Why are you reporting this place?' id='reason'><button type='submit' class='btn red darken-2 waves-effect waves-light' onclick='reportPlace(&quot;" + placeType + "&quot;, " + locationX + ", " + locationY + ")'>Report</button><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='infoWindow.setContent(getUtilInfo(activeUtil, false))'>Cancel</button>");
+    infoWindow.setContent("<input type='text' placeholder='Why are you reporting this place?' id='reason'><button type='submit' class='btn red darken-2 waves-effect waves-light' onclick='reportPlace(&quot;" + placeType + "&quot;, " + locationX + ", " + locationY + ")'>Report</button><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='infoWindow.setContent(getUtilInfo(activeUtil, false, null))'>Cancel</button>");
 }
 
-function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil) {
+function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, callback) {
     //TODO do this stuff in one post request, return tuples
     $.post("/api/createdplace",  {"placeType": placeType
                                  ,"locationX": locationX
@@ -353,6 +355,9 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil) {
             "<input type='hidden' id='placeType' value='" + utilType + "'>" +
             "<input type='hidden' id='locationX' value='" + utilPositionZero + "'>" +
             "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>");
+    }
+    if (callback) {
+        return callback();
     }
 }
 
