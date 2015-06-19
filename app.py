@@ -215,7 +215,7 @@ def add():
     return 'Utility marked!'
 
 @app.route('/api/getreviews', methods=['POST'])
-@limiter.limit("60 per minute", error_message="BRO, YOU GOTTA CHILL")
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get_reviews_front_end():
     required_keys = [ 'placeType'
                     , 'locationX'
@@ -239,6 +239,7 @@ def get_reviews_front_end():
         return "Malformed request"
 
 @app.route('/api/addfavorite', methods=['POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def add_favorite_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
@@ -254,6 +255,7 @@ def add_favorite_front_end():
         return "Malformed request"
 
 @app.route('/api/removefavorite', methods=['POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def remove_favorite_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
@@ -270,6 +272,7 @@ def remove_favorite_front_end():
         return "Malformed request"
 
 @app.route('/api/infavorites', methods=['POST'])
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def in_favorites_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
@@ -285,6 +288,7 @@ def in_favorites_front_end():
         return "Malformed request"
 
 @app.route('/api/reviewfromuserexists', methods=['POST'])
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def review_from_user_exists():
     required_keys = [ 'placeType'
                     , 'locationX'
@@ -300,6 +304,7 @@ def review_from_user_exists():
         return "Malformed request"
 
 @app.route('/api/createdplace', methods=['POST'])
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def created_place_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
@@ -314,6 +319,7 @@ def created_place_front_end():
         return "Malformed request"
 
 @app.route('/api/getdescription', methods=['POST'])
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get_description_front_end():
     required_keys = [ 'placeType'
                     , 'locationX'
@@ -327,6 +333,7 @@ def get_description_front_end():
         return "Malformed request"
 
 @app.route('/api/adddescription', methods=['POST'])
+@limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 def add_description_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
@@ -347,6 +354,7 @@ def add_description_front_end():
 @app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @app.route('/api/marionette/<thisisisneverusedwtf>',
         methods=['GET', 'POST', 'DELETE', 'PUT'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def marionette(thisidisneverusedwtf=None):
     user = session['email']
     user_id = usersdb.get_user_id(user)
@@ -370,6 +378,7 @@ def marionette(thisidisneverusedwtf=None):
     return "hello"
 
 @app.route('/api/directions/<origin>/<destination>')
+@limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 def show_directions(origin, destination):
     return render_template("directions.html", origin=origin,
             destination=destination)
@@ -413,6 +422,7 @@ def get():
     return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
 
 @app.route('/api/removeplace', methods=['POST'])
+@limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def remove_place_front_end():
     required_keys = [ 'placeType'
                     , 'locationX'
@@ -424,6 +434,7 @@ def remove_place_front_end():
     return placesdb.remove_place_by_id(place_id)
 
 @app.route('/api/reportplace', methods=['POST'])
+@limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
 def report_place_front_end():
     user_id = uuid.UUID(session['uid'])
     required_keys = [ 'placeType'
