@@ -278,8 +278,6 @@ function letUserReportPlace(placeType, locationX, locationY) {
 }
 
 function getDirections(locationX, locationY) {
-    console.log(locationX);
-    console.log(locationY);    
     var myLatlng;
     var address = [locationY, locationX];
     navigator.geolocation.getCurrentPosition(function(position) {
@@ -317,16 +315,19 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                                     ,"locationY": locationY
         }).done(function(data) {
             if (new String(data).valueOf()===new String("False").valueOf()) {
-                favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
-		    "<button class='btn green darken-2 waves-effect waves-light' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>Directions</button>" +
-                    removeButton;
+                favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" +
+                    util['type'] + "&quot;, " + util['position'][0] + ", " +
+                    util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
+                "<button class='btn waves-effect waves-light teal' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>" +
+                "<i class='mdi-maps-directions left'></i>Directions</button><br/><br/>" +
+                removeButton;
             }
             else {
                 favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button>";
             }
             $.post("/api/reviewfromuserexists",  {"placeType": placeType
-                ,"locationX": locationX
-                    ,"locationY": locationY
+                                                 ,"locationX": locationX
+                                                 ,"locationY": locationY
             })
             .done(function(data) {
                 var reviewStr = "Add Review";
