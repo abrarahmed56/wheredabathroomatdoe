@@ -137,9 +137,11 @@ function markUtil(util) {
         infoWindow.setContent(getUtilInfo(activeUtil, false, function after() {
             infoWindow.open(map, marker);
             setTimeout(function() {
+                // Override Google Maps' inline styling
                 var infoWindowContainer = $('.infoWindowCard')[0].parentElement;
                 infoWindowContainer.id = 'infoWindowContainer';
                 infoWindowContainer.style['overflow-x'] = "hidden";
+                infoWindowContainer.parentElement.style['margin-left'] = "10px";
             }, 100);
         }));
     });
