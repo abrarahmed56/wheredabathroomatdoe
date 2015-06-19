@@ -192,20 +192,24 @@ function getReviews(placeType, locationX, locationY) {
         else {
             $('#descriptionHeader').html("Here are the reviews for this " + placeType + ":");
             for (var i=0; i<_data.length; ++i) {
-                rating = _data[i]['Rating'];
-                review = _data[i]['Review'];
-                userFirstName = _data[i]['UserFirstName'];
-                userProfile = _data[i]['UserProfile'];
-                userPic = _data[i]['UserPic'];
+                var currReview = _data[i];
+                rating = currReview['rating'];
+                review = currReview['review'];
+                userFirstName = currReview['userFirstName'];
+                userProfile = currReview['userProfile'];
+                userPic = currReview['userPic'];
+                isRatable = currReview['isRatable']
                 reviews += "<div style='display:inline-block'>" +
                     "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
                     "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
                     "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
-                    "<i>" + review + "</i><br/><br/>" +
-                    "<div class='input field'>" +
+                    "<i>" + review + "</i><br/><br/>";
+                if (isRatable) {
+                    reviews += "<div class='input field'>" +
                     "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
                     "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
                     "</div><hr>";
+                }
             }
             $("#reviews").html(reviews);
         }

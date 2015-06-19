@@ -222,17 +222,19 @@ def get_reviews_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
+        uid = uuid.UUID(session['uid'])
         reviews = reviewsdb.get_reviews(
                 placesdb.get_place_id(request.form['placeType'],
                     request.form['locationX'], request.form['locationY']))
         data = []
         for review in reviews:
-            data.append({ "UserFirstName" : usersdb.get_user_firstname(review[3])
-                        , "Rating" : review[4]
-                        , "Review" : review[5]
-                        , "UserProfile" : usersdb.get_user_profile_url(review[3])
-                        , "UserPic" : usersdb.get_user_profile_pic_url(review[3],
+            data.append({ "userFirstName" : usersdb.get_user_firstname(review[3])
+                        , "rating" : review[4]
+                        , "review" : review[5]
+                        , "userProfile" : usersdb.get_user_profile_url(review[3])
+                        , "userPic" : usersdb.get_user_profile_pic_url(review[3],
                                                                        128)
+                        , "isRatable" : review[3] != uid
                         })
         return json.dumps(data)
     else:
