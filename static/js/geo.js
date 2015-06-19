@@ -374,19 +374,19 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                                         ,"locationY": locationY
         })
         .done(function(description) {
-            var title = utilType[0].toUpperCase() +
-                    utilType.substring(1) + "<br/><p class='font-small'>" 
-                    + description + "</p>";
+            var utilName = utilType[0].toUpperCase() + utilType.substring(1);
+            if (!description) {
+                description = "No description available."
+            }
+            var title = "<p class='font-small' style='line-height: normal;'>" +
+                        description + "</p>";
             if (!descriptionForm) {
-                if (!description) {
-                    description = "No description available."
-                }
-                $(".utilTitleFront").html(title);
-                $(".utilTitleBack").html(title);
+                $(".utilTitleFront").html(utilName + "<br/><br/>" + title);
+                $(".utilTitleBack").html(utilName + "<br/>" + title);
             }
             else {
                 $('#description').val(description);
-                $(".utilTitleBack").html(title);
+                $(".utilTitleBack").html(utilName + "<br/>" + title);
             }
         });
     }
