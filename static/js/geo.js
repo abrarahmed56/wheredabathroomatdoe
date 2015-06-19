@@ -284,7 +284,7 @@ function getDirections(locationX, locationY) {
         myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
         var replaceURL = "/api/directions/" + address + "/" + myLatlng
             replaceURL = replaceURL.replace("(", "").replace(")", "").replace(" ", "");
-        window.location.replace(replaceURL);
+        window.location.href = replaceURL;
     });
 }
 
