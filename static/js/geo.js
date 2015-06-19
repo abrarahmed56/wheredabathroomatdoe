@@ -310,6 +310,8 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                 "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
             $('.utilTitleFront').html(descriptionForm);
         }
+        directionsButton = "<button class='btn waves-effect waves-light teal' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>" +
+                "<i class='mdi-maps-directions left'></i>Directions</button><br/><br/>";
         $.post("/api/infavorites",  {"placeType": placeType
                                     ,"locationX": locationX
                                     ,"locationY": locationY
@@ -318,12 +320,13 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                 favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" +
                     util['type'] + "&quot;, " + util['position'][0] + ", " +
                     util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
-                "<button class='btn waves-effect waves-light teal' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>" +
-                "<i class='mdi-maps-directions left'></i>Directions</button><br/><br/>" +
-                removeButton;
+                    directionsButton + removeButton;
             }
             else {
-                favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button>";
+                favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" +
+                    util['type'] + "&quot;, " + util['position'][0] + ", " +
+                    util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button>" +
+                    directionsButton;
             }
             $.post("/api/reviewfromuserexists",  {"placeType": placeType
                                                  ,"locationX": locationX
