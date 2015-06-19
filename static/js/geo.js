@@ -94,7 +94,7 @@ function markActiveUtil() {
             infoWindow.open(map, newMarker);
             activeUtil = util;
             activeMarker.setMap(null);
-            activeMarker = newMarker;
+            activeMarker = false;
             $('#addButton')[0].value = 'Utility Spotted';
             Materialize.toast('Location marked', 3000);
             Materialize.toast('Please add a description', 5000);
@@ -129,7 +129,7 @@ function markUtil(util) {
         activeUtil = util;
         infoWindow.setContent(getUtilInfo(activeUtil, "old"));
         infoWindow.open(map, marker);
-	activeMarker = marker;});
+    });
     google.maps.event.addListener(infoWindow, 'closeclick', function(){
         // Show input form and toggle buttons
         $('#inputForm').fadeIn(700);
@@ -140,7 +140,6 @@ function markUtil(util) {
 }
 
 function getUtilInfo(util, newOrOld) {
-    console.log("getutilinfo");
     utilType = util['type'];
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
@@ -152,13 +151,13 @@ function getUtilInfo(util, newOrOld) {
 
 function addDescription() {
     $.post("/api/adddescription", {"placeType": $("#placeType").val()
-				   ,"locationX": $("#locationX").val()
-				   ,"locationY": $("#locationY").val()
-				   ,"description": $("#description").val()
+                                  ,"locationX": $("#locationX").val()
+                                  ,"locationY": $("#locationY").val()
+                                  ,"description": $("#description").val()
     }).done(function(data) {
-	Materialize.toast(data, 4000);
-        infoWindow.close();
-	activeMarker = false;
+        $("#description").val('');
+        infoWindow.setContent(getUtilInfo(activeUtil, "old"));
+        Materialize.toast(data, 4000);
     });
 }
 
@@ -339,9 +338,13 @@ function cardInfo(util, placeType, locationX, locationY, newOrOld) {
                     "</span>";
 	    });
     }
-    else {
+    else { // FIXME this should be the case when createdplace
 	$(".utilTitle")[0].innerHTML = utilType[0].toUpperCase() +
-	    utilType.substring(1) + "<br><input type='text' id='description' onBlur='addDescription()'><input type='hidden' id='placeType' value='" + utilType + "'><input type='hidden' id='locationX' value='" + utilPositionZero + "'><input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
+	    utilType.substring(1) + "<br><span><input type='text' id='description' placeholder='Your description' style='width: 225px'>" +
+        "<a style='float:right; padding-top: 10px' onclick='addDescription()'><i class='mdi-navigation-check'></i></a></span>" +
+	    "<input type='hidden' id='placeType' value='" + utilType + "'>" +
+	    "<input type='hidden' id='locationX' value='" + utilPositionZero + "'>" +
+	    "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
 
     }
 }
