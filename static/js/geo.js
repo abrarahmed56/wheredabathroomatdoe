@@ -154,7 +154,7 @@ function getUtilInfo(util, isNewlyCreatedUtil, callback) {
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
-    $(".utilTitle")[1].innerHTML = utilType[0].toUpperCase() + utilType.substring(1);
+    $(".utilTitleBack").html(utilType[0].toUpperCase() + utilType.substring(1));
     cardInfo(util, utilType, utilPositionZero, utilPositionOne, isNewlyCreatedUtil, callback);
     return $('#infoWindow')[0].innerHTML;
 }
@@ -278,6 +278,8 @@ function letUserReportPlace(placeType, locationX, locationY) {
 }
 
 function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, callback) {
+    var removeButton = '';
+    var descriptionForm = '';
     //TODO do this stuff in one post request, return tuples
     $.post("/api/createdplace",  {"placeType": placeType
                                  ,"locationX": locationX
@@ -289,10 +291,17 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         }
         else {
             removeButton = "<button type='submit' onclick='removePlace(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ")' class='btn red darken-2 waves-effect waves-light' value='Remove'>Remove<i class='mdi-alert-warning left'></i></button>";
+            descriptionForm = utilType[0].toUpperCase() +
+                utilType.substring(1) + "<br><span><input type='text' id='description' placeholder='Your description' style='width: 225px'>" +
+                "<a style='float:right; padding-top: 10px' onclick='addDescription()'><i class='mdi-navigation-check'></i></a></span>" +
+                "<input type='hidden' id='placeType' value='" + utilType + "'>" +
+                "<input type='hidden' id='locationX' value='" + utilPositionZero + "'>" +
+                "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
+            $('.utilTitleFront').html(descriptionForm);
         }
         $.post("/api/infavorites",  {"placeType": placeType
-            ,"locationX": locationX
-                ,"locationY": locationY
+                                    ,"locationX": locationX
+                                    ,"locationY": locationY
         }).done(function(data) {
             if (new String(data).valueOf()===new String("False").valueOf()) {
                 favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
@@ -340,21 +349,21 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                                         ,"locationY": locationY
         })
         .done(function(description) {
-            if (!description) {
-                description = "No description available."
+            var title = utilType[0].toUpperCase() +
+                    utilType.substring(1) + "<br/><span style='font-size:60%'>" 
+                    + description + "</span>";
+            if (!descriptionForm) {
+                if (!description) {
+                    description = "No description available."
+                }
+                $(".utilTitleFront").html(title);
+                $(".utilTitleBack").html(title);
             }
-            $(".utilTitle").html(utilType[0].toUpperCase() +
-                utilType.substring(1) + "<br/><span style='font-size:60%'>" + description +
-                "</span>");
+            else {
+                $('#description').val(description);
+                $(".utilTitleBack").html(title);
+            }
         });
-    }
-    else { // FIXME this should be the case when createdplace
-        $(".utilTitle").html(utilType[0].toUpperCase() +
-            utilType.substring(1) + "<br><span><input type='text' id='description' placeholder='Your description' style='width: 225px'>" +
-            "<a style='float:right; padding-top: 10px' onclick='addDescription()'><i class='mdi-navigation-check'></i></a></span>" +
-            "<input type='hidden' id='placeType' value='" + utilType + "'>" +
-            "<input type='hidden' id='locationX' value='" + utilPositionZero + "'>" +
-            "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>");
     }
     if (callback) {
         return callback();
