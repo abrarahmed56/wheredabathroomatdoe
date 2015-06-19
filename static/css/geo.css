@@ -7,22 +7,25 @@ body, html {
     height: 100%;
 }
 #map-canvas {
-    height: 90%;
+    height: -moz-calc(100% - 64px);
+    height: -webkit-calc(100% - 64px);
+    height: -o-calc(100% - 64px);
+    height: calc(100% - 64px);
     width: 100%;
     margin: 0px;
-    padding: 0px
+    padding: 0px;
 }
 .select-dropdown {
-    text-indent: 10px
+    text-indent: 10px;
 }
 
 #inputForm {
-        position: absolute;
-        top: 100px;
-	margin-left: -200px;
-        left: 50%;
-        z-index: 5;
-        background-color: transparent
+    position: absolute;
+    top: 100px;
+    margin-left: -200px;
+    left: 50%;
+    z-index: 5;
+    background-color: transparent;
 }
 
 #toggleButtons {
@@ -30,5 +33,5 @@ body, html {
     margin-left: 55px;
     right: 50px;
     bottom: 20px;
-    background-color: transparent
+    background-color: transparent;
 }
