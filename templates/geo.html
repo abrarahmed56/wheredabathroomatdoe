@@ -30,18 +30,19 @@
       </select>
     </div>
     <div class="input-field col s6">
-      <input type="button" id="addButton" value="Utility Spotted" onclick="getPosition(MARK);" class="btn green darken-3"/>
+      <input type="button" id="addButton" value="Utility Spotted"
+      class="btn green darken-3"/>
       <input type="button" id="cancelAddButton" value="Cancel"
-      onclick="cancelAddUtil();" class="btn red darken-3" style="display:none"/>
+      class="btn red darken-3" style="display:none"/>
     </div>
   </form>
 </div>
 {% endif %}
 <div id="map-canvas"></div>
 <div id="toggleButtons" class="row">
-  <input type="button" id="benchToggle" value="Hide Benches" onclick="toggleView('bench');" class="btn green darken-3"/>
-  <input type="button" id="bathroomToggle" value="Hide Bathrooms" onclick="toggleView('bathroom');" class="btn green darken-3"/>
-  <input type="button" id="fountainToggle" value="Hide Fountains" onclick="toggleView('fountain');" class="btn green darken-3"/>
+  <input type="button" id="benchToggle" value="Hide Benches" class="btn green darken-3"/>
+  <input type="button" id="bathroomToggle" value="Hide Bathrooms" class="btn green darken-3"/>
+  <input type="button" id="fountainToggle" value="Hide Fountains" class="btn green darken-3"/>
 </div>
 {% include 'util_info.html' %} 
 {% endblock bodycontent %}
