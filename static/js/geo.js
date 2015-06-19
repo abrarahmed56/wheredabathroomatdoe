@@ -375,8 +375,8 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         })
         .done(function(description) {
             var title = utilType[0].toUpperCase() +
-                    utilType.substring(1) + "<br/><span style='font-size:60%'>" 
-                    + description + "</span>";
+                    utilType.substring(1) + "<br/><p class='font-small'>" 
+                    + description + "</p>";
             if (!descriptionForm) {
                 if (!description) {
                     description = "No description available."
