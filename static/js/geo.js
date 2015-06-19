@@ -277,6 +277,19 @@ function letUserReportPlace(placeType, locationX, locationY) {
     infoWindow.setContent("<input type='text' placeholder='Why are you reporting this place?' id='reason'><button type='submit' class='btn red darken-2 waves-effect waves-light' onclick='reportPlace(&quot;" + placeType + "&quot;, " + locationX + ", " + locationY + ")'>Report</button><button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='infoWindow.setContent(getUtilInfo(activeUtil, false, null))'>Cancel</button>");
 }
 
+function getDirections(locationX, locationY) {
+    console.log(locationX);
+    console.log(locationY);    
+    var myLatlng;
+    var address = [locationY, locationX];
+    navigator.geolocation.getCurrentPosition(function(position) {
+        myLatlng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+        var replaceURL = "/api/directions/" + address + "/" + myLatlng
+            replaceURL = replaceURL.replace("(", "").replace(")", "").replace(" ", "");
+        window.location.replace(replaceURL);
+    });
+}
+
 function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, callback) {
     var removeButton = '';
     var descriptionForm = '';
@@ -305,6 +318,7 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         }).done(function(data) {
             if (new String(data).valueOf()===new String("False").valueOf()) {
                 favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
+		    "<button class='btn green darken-2 waves-effect waves-light' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>Directions</button>" +
                     removeButton;
             }
             else {
