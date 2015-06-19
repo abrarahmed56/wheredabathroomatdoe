@@ -35,3 +35,10 @@ body, html {
     bottom: 20px;
     background-color: transparent;
 }
+
+#infoWindowCard {
+    width: 300px;
+    box-shadow: none;
+    margin:0;
+    height:258px;
+}
