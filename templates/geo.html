@@ -20,7 +20,7 @@
 {% block bodycontent %}
 {% if loggedin %}
 <div id="inputForm" class="row">
-  <form>
+  <form class="col s12">
     <div class="input-field col s6">    
       <select name="utils" id="utilType" class="white">
 	<option value="NONE" disabled selected>Select Utility Type</option>
@@ -40,9 +40,12 @@
 {% endif %}
 <div id="map-canvas"></div>
 <div id="toggleButtons" class="row">
-  <input type="button" id="benchToggle" value="Hide Benches" class="btn green darken-3"/>
-  <input type="button" id="bathroomToggle" value="Hide Bathrooms" class="btn green darken-3"/>
-  <input type="button" id="fountainToggle" value="Hide Fountains" class="btn green darken-3"/>
+  <button type="button" id="benchToggle" class="btn toggle-button green
+  darken-3"><img src="static/img/bench.gif"/></button>
+  <button type="button" id="bathroomToggle" class="btn toggle-button
+  green darken-3"><img src="static/img/bathroom.gif"/></button>
+  <button type="button" id="fountainToggle" class="btn toggle-button green darken-3">
+      <img src="static/img/fountain.gif"/></button>
 </div>
 {% include 'util_info.html' %} 
 {% endblock bodycontent %}

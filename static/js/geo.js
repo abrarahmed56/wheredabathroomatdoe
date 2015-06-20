@@ -410,14 +410,13 @@ function toggleView(type) {
     else if (type === TYPE_BATHROOM) {
         btnId = '#bathroomToggle';
     }
-    var displayText = $(btnId)[0].value;
-    var show = (displayText.indexOf('Show') != -1);
+    var show = ($(btnId)[0].value === 'Hide');
     if (show) {
-        $(btnId)[0].value = displayText.replace('Show', 'Hide');
+        $(btnId)[0].value = 'Show';
         $(btnId).toggleClass('darken-3');
     }
     else {
-        $(btnId)[0].value = displayText.replace('Hide', 'Show');
+        $(btnId)[0].value = 'Hide';
         $(btnId).toggleClass('darken-3');
     }
     /* Toggle visibility of the markers */

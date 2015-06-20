@@ -169,7 +169,6 @@ def get_place_rating(pid):
     try:
         c.execute("SELECT Rating FROM Reviews WHERE PlacesID = %s", (pid,))
         result = c.fetchall()
-        print "get place rating: " + str(result)
         if result:
             ans = 0
             count = 0
