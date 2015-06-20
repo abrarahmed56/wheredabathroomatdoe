@@ -107,7 +107,6 @@ def get_place_id(place_type, location_x, location_y):
                 abs(LocationX - %s) < 0.0000000000001 AND 
                 abs(LocationY - %s) < 0.0000000000001 LIMIT 1""",
                 (place_type, location_x, location_y))
-        conn.commit()
         return c.fetchone()[0]
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e

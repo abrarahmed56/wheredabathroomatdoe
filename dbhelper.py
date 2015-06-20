@@ -77,7 +77,8 @@ def auth(type, _session, email, password, phone=None, bio=None, url_id=None):
         if conn: conn.close()
 
 def generate_id(datatype):
-    global ID_USER, ID_PLACE, ID_REVIEW
+    global ID_USER, ID_PLACE, ID_REVIEW, ID_TEMPORARY_URL,\
+           ID_REPORTS_USERS, ID_REPORTS_PLACES
     query = ""
     if datatype == ID_USER:
         query = "SELECT 1 FROM Users WHERE ID = %s LIMIT 1"
@@ -89,6 +90,8 @@ def generate_id(datatype):
         query = "SELECT 1 FROM TemporaryUrls WHERE ID = %s LIMIT 1"
     elif datatype == ID_REPORTS_USERS:
         query = "SELECT 1 FROM ReportsUsers WHERE ID = %s LIMIT 1"
+    elif datatype == ID_REPORTS_PLACES:
+        query = "SELECT 1 FROM ReportsPlaces WHERE ID = %s LIMIT 1"
     success = False
     u = uuid.uuid4()
     conn = connect()
@@ -98,7 +101,6 @@ def generate_id(datatype):
     try:
         while not success:
             c.execute(query, (u,))
-            conn.commit()
             if c.fetchone() == None:
                 success = True
             else:
