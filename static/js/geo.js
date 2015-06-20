@@ -38,9 +38,9 @@ function displayNearbyUtils() {
                 zoom: 17,
                 center: myLatlng
             };
-            map = new google.maps.Map($('#map-canvas')[0], mapOptions);
+            map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
             getNearbyUtils(position.coords.latitude,position.coords.longitude);
-        }, showError);
+        }, showError, { timeout: 20000, enableHighAccuracy: true, maximumAge: 60000 });
     }
     else {
         $('body').html("Geolocation is not supported by this browser.");
@@ -437,7 +437,9 @@ function showError(error) {
             $('body').html("Location information is unavailable.");
             break;
         case error.TIMEOUT:
-            $('body').html("The request to get user location timed out.");
+            $('body').html("The request to get user location timed out. " +
+                    "If your device has a high-accuracy geolocation option, " +
+                    "it is recommended that you enable it.");
             break;
         case error.UNKNOWN_ERROR:
             $('body').html("An unknown error occurred.");
