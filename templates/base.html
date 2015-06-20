@@ -12,23 +12,23 @@
     {% endblock headcontent %}
   </head>
   <body class="blue-grey lighten-4">
-    <header>
-        <nav class="top-nav green">
-	  <div class="nav-wrapper">
-            {% block navbar_left %}
-            <a href="{{ url_for('index') }}" class="brand-logo no-select" id="logo">WhereDaBathroomAtDoe?!</a>
-            {% endblock navbar_left %}
-            <a href="#" data-activates="mobile-version" class="button-collapse"><i id="nav-menu" class="mdi-navigation-menu"></i></a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-              {% block navbar_right %}
-              {% endblock navbar_right %}
-            </ul>
-            <ul class="side-nav" id="mobile-version">
-              {{ self.navbar_right() }}
-            </ul>
-          </div>
-        </nav>
-    </header>
+      <header>
+          <nav class="top-nav green">
+              <div class="nav-wrapper">
+                  {% block navbar_left %}
+                  <a href="{{ url_for('index') }}" class="brand-logo no-select" id="logo">WhereDaBathroomAtDoe?!</a>
+                  {% endblock navbar_left %}
+                  <a href="#" data-activates="mobile-version" class="button-collapse"><i id="nav-menu" class="mdi-navigation-menu"></i></a>
+                  <ul id="nav-mobile" class="right hide-on-med-and-down">
+                      {% block navbar_right %}
+                      {% endblock navbar_right %}
+                  </ul>
+                  <ul class="side-nav" id="mobile-version">
+                      {{ self.navbar_right() }}
+                  </ul>
+              </div>
+          </nav>
+      </header>
     <div id="flashed_messages">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -48,15 +48,17 @@
     {% include 'register.html' %}
     {% include 'reset_password.html' %}
     {% endif %}
+    <main>
     {% block bodycontent %}
     {% endblock bodycontent %}
+    </main>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- If jQuery was not loaded from CDN, use the local version -->
     <script>window.jQuery || document.write("<script src=\"{{ url_for('static',
 filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script>window.jQuery.fn.modal || document.write('<script src="static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
+    <script>window.jQuery.fn.modal || document.write('<script src="/static/js/twitter-bootstrap/bootstrap.min.js"><\/script>')</script>
     <script src="{{ url_for('static', filename='js/lodash.js') }}"></script>
     <script src="{{ url_for('static', filename='js/backbone.js') }}"></script>
     <script src="{{ url_for('static', filename='js/backbone.marionette.js') }}"></script>
@@ -64,5 +66,19 @@ filename='js/jquery-1.11.3.min.js') }}\"><\/script>")</script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     {% block scripts %}
     {% endblock scripts %}
+    {% block footercontent %}
+    <footer class="page-footer green" style="padding-top:0px">
+        <div class="footer-copyright">
+            <div class="container">
+                © 2015 Copyright Chesley Tan, Abrar Ahmed, Aaron Mortenson, Eric Kolbusz
+                <a class="grey-text text-lighten-4 right"
+                   href="https://github.com/abrarahmed56/wheredabathroomatdoe"><img
+                   src="/static/img/GitHub-Mark/PNG/GitHub-Mark-Light-32px.png"
+                   style="margin-top: 9px">
+                </a>
+            </div>
+        </div>
+    </footer>
+    {% endblock footercontent %}
   </body>
 </html>
