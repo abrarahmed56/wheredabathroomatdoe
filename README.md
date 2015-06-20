@@ -22,9 +22,9 @@ https://www.python.org/dev/peps/pep-0008/
 See `dependencies.md`  
 
 ## To-do List
+- Upvote/Downvote review feature
 - Delete utility review feature
 - Upload utility picture
-- Report utility feature
 - User search feature
 - User ranking feature
 - Sms confirmation
