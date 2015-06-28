@@ -350,7 +350,7 @@ def get_place_rating(place_id):
         c.execute("SELECT Rating FROM Places WHERE ID=%s LIMIT 1", (place_id,))
         rating = c.fetchone()
         if rating and rating[0]:
-            return str(rating[0])
+            return "%.2f" % rating[0]
         else:
             return "No rating"
     except psycopg2.DatabaseError, e:
