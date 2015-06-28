@@ -6,7 +6,21 @@
     </div>
     <div class="card-content" style="overflow:auto">
         <span class="card-title activator grey-text text-darken-4">
-            <div class="utilTitleFront" style="line-height:24px"></div>
+            <div class="utilTitleFront" style="line-height:24px">
+                <span class="utilTitleFrontTitle"></span>
+                <br/>
+                <span class="utilTitleFrontRating" style="font-size:80%"></span>
+                <p class='utilTitleFrontDescriptionText font-small'
+                style='line-height: normal; display:none'></p>
+                <div class='utilTitleFrontDescriptionForm'
+                style='display:none'>
+                    <span><input type='text' id='description' placeholder='Your description' style='width: 210px'>
+                    <a style='float:right; padding-top: 10px' onclick='addDescription()'><i class='mdi-navigation-check'></i></a></span>
+                    <input type='hidden' id='placeType' value=''>
+                    <input type='hidden' id='locationX' value=''>
+                    <input type='hidden' id='locationY' value=''>
+                </div>
+            </div>
             <span style="font-size: 50%; position: absolute; bottom: 0;"
                   class="activator">See reviews</span>
             <i class="mdi-navigation-more-vert left" style="position: absolute;
@@ -16,7 +30,11 @@
     <div class="card-reveal">
         <span class="card-title grey-text text-darken-4">
             <i class="mdi-navigation-close right red-text"></i>
-            <div class="utilTitleBack"></div>
+            <div class="utilTitleBack">
+                <span class="utilTitleBackTitle"></span>
+                <br/>
+                <p class='utilTitleBackDescription font-small' style='line-height: normal;'></p>
+            </div>
         </span>
         <div class="utilDescription">This is where the bathroom at doe. Log in to
             see ratings and reviews!</div>

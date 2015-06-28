@@ -214,6 +214,7 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
+# TODO consolidate api calls to a single request
 @app.route('/api/getreviews', methods=['POST'])
 @limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get_reviews_front_end():
@@ -348,6 +349,20 @@ def add_description_front_end():
                 request.form['locationX'], request.form['locationY'])
         description = request.form['description']
         return placesdb.update_place_description(place_id, description)
+    else:
+        return "Malformed request"
+
+@app.route('/api/getrating', methods=['POST'])
+@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
+def get_rating_front_end():
+    required_keys = [ 'placeType'
+                    , 'locationX'
+                    , 'locationY'
+                    ]
+    if is_valid_request(request.form, required_keys):
+        place_id = placesdb.get_place_id(request.form['placeType'],
+                request.form['locationX'], request.form['locationY'])
+        return placesdb.get_place_rating(place_id)
     else:
         return "Malformed request"
 

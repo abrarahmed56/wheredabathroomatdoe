@@ -161,7 +161,6 @@ function getUtilInfo(util, isNewlyCreatedUtil, callback) {
     utilPositionZero = util['position'][0];
     utilPositionOne = util['position'][1];
     $(".utilImage")[0].src = UTILITY_TYPES[utilType]['card'];
-    $(".utilTitleBack").html(utilType[0].toUpperCase() + utilType.substring(1));
     cardInfo(util, utilType, utilPositionZero, utilPositionOne, isNewlyCreatedUtil, callback);
     return $('#infoWindow')[0].innerHTML;
 }
@@ -301,8 +300,8 @@ function getDirections(locationX, locationY) {
 
 function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, callback) {
     var removeButton = '';
-    var descriptionForm = '';
-    //TODO do this stuff in one post request, return tuples
+    var descriptionForm = false;
+    var rating = '';
     $.post("/api/createdplace",  {"placeType": placeType
                                  ,"locationX": locationX
                                  ,"locationY": locationY
@@ -313,13 +312,11 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         }
         else {
             removeButton = "<button type='submit' onclick='removePlace(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ")' class='btn red darken-2 waves-effect waves-light' value='Remove'>Remove<i class='mdi-alert-warning left'></i></button>";
-            descriptionForm = utilType[0].toUpperCase() +
-                utilType.substring(1) + "<br><span><input type='text' id='description' placeholder='Your description' style='width: 225px'>" +
-                "<a style='float:right; padding-top: 10px' onclick='addDescription()'><i class='mdi-navigation-check'></i></a></span>" +
-                "<input type='hidden' id='placeType' value='" + utilType + "'>" +
-                "<input type='hidden' id='locationX' value='" + utilPositionZero + "'>" +
-                "<input type='hidden' id='locationY' value='" + utilPositionOne + "'>";
-            $('.utilTitleFront').html(descriptionForm);
+            descriptionForm = true;
+            // Set hidden field values
+            $("#placeType").val(utilType);
+            $("#locationX").val(utilPositionZero);
+            $("#locationY").val(utilPositionOne);
         }
         directionsButton = "<button class='btn waves-effect waves-light teal' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>" +
                 "<i class='mdi-maps-directions left'></i>Directions</button>";
@@ -372,6 +369,13 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
             });
         });
     });
+    $.post("/api/getrating",  {"placeType": placeType
+                              ,"locationX": locationX
+                              ,"locationY": locationY
+    })
+    .done(function(placeRating) {
+        rating = placeRating;
+    });
     if (!isNewlyCreatedUtil) {
         $.post("/api/getdescription",  {"placeType": placeType
                                         ,"locationX": locationX
@@ -382,15 +386,19 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
             if (!description) {
                 description = "No description available."
             }
-            var title = "<p class='font-small' style='line-height: normal;'>" +
-                        description + "</p>";
+            $(".utilTitleFrontTitle").text(utilName);
+            $(".utilTitleFrontRating").text(rating);
+            $(".utilTitleBackTitle").text(utilName);
+            $(".utilTitleBackDescription").text(description);
             if (!descriptionForm) {
-                $(".utilTitleFront").html(utilName + "<br/><br/>" + title);
-                $(".utilTitleBack").html(utilName + "<br/>" + title);
+                $(".utilTitleFrontDescriptionText").show();
+                $(".utilTitleFrontDescriptionForm").hide();
+                $(".utilTitleFrontDescriptionText").text(description);
             }
             else {
+                $(".utilTitleFrontDescriptionText").hide();
+                $(".utilTitleFrontDescriptionForm").show();
                 $('#description').val(description);
-                $(".utilTitleBack").html(utilName + "<br/>" + title);
             }
         });
     }

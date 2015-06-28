@@ -2,6 +2,7 @@ import psycopg2, psycopg2.extras
 import dbhelper
 from constants import *
 from utils import *
+from places_dbhelper import calc_rating
 
 def add_review(placeID, reviewer, rating, review):
     global ID_REVIEW
@@ -28,6 +29,7 @@ def add_review(placeID, reviewer, rating, review):
                 (rating, review, reviewer, placeID))
             ret_str = "Successfully updated review"
         conn.commit()
+        calc_rating(placeID)
         return (True, ret_str)
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e

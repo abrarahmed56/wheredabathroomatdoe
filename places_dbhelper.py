@@ -160,28 +160,6 @@ def get_place_location_y(pid):
         if conn:
             conn.close()
 
-def get_place_rating(pid):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("SELECT Rating FROM Reviews WHERE PlacesID = %s", (pid,))
-        result = c.fetchall()
-        if result:
-            ans = 0
-            count = 0
-            for val in result:
-                ans += val[0]
-                count += 1
-            return float(ans)/count
-        return None
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
 def get_place_description(pid):
     conn = dbhelper.connect()
     if conn == None:
@@ -330,12 +308,51 @@ def created_place(user_id, place_id):
         return (False, "Database Error")
     c = conn.cursor()
     try:
-        c.execute("SELECT * FROM PLACES WHERE FINDER=%s AND ID=%s LIMIT 1", (user_id, place_id))
+        c.execute("SELECT * FROM Places WHERE Finder=%s AND ID=%s LIMIT 1", (user_id, place_id))
         exists = c.fetchone()
         if exists:
             return "True"
         else:
             return "False"
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def calc_rating(place_id):
+    conn = dbhelper.connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Rating FROM Reviews WHERE PlacesId=%s", (place_id,))
+        ratings = c.fetchall()
+        total = 0
+        for rating in ratings:
+            total += rating[0]
+        avg = float(total / len(ratings))
+        c.execute("UPDATE Places SET Rating=%s WHERE ID=%s", (avg, place_id))
+        conn.commit()
+        return avg
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn:
+            conn.close()
+
+def get_place_rating(place_id):
+    conn = dbhelper.connect()
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Rating FROM Places WHERE ID=%s LIMIT 1", (place_id,))
+        rating = c.fetchone()
+        if rating and rating[0]:
+            return str(rating[0])
+        else:
+            return "No rating"
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
