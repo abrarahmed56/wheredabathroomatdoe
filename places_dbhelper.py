@@ -311,9 +311,9 @@ def created_place(user_id, place_id):
         c.execute("SELECT * FROM Places WHERE Finder=%s AND ID=%s LIMIT 1", (user_id, place_id))
         exists = c.fetchone()
         if exists:
-            return "True"
+            return True
         else:
-            return "False"
+            return False
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:

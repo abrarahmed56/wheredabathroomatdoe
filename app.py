@@ -214,33 +214,6 @@ def add():
         return "Malformed Request"
     return 'Utility marked!'
 
-# TODO consolidate api calls to a single request
-@app.route('/api/getreviews', methods=['POST'])
-@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def get_reviews_front_end():
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        uid = uuid.UUID(session['uid'])
-        reviews = reviewsdb.get_reviews(
-                placesdb.get_place_id(request.form['placeType'],
-                    request.form['locationX'], request.form['locationY']))
-        data = []
-        for review in reviews:
-            data.append({ "userFirstName" : usersdb.get_user_firstname(review[3])
-                        , "rating" : review[4]
-                        , "review" : review[5]
-                        , "userProfile" : usersdb.get_user_profile_url(review[3])
-                        , "userPic" : usersdb.get_user_profile_pic_url(review[3],
-                                                                       128)
-                        , "isRatable" : review[3] != uid
-                        })
-        return json.dumps(data)
-    else:
-        return "Malformed request"
-
 @app.route('/api/addfavorite', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def add_favorite_front_end():
@@ -274,66 +247,43 @@ def remove_favorite_front_end():
     else:
         return "Malformed request"
 
-@app.route('/api/infavorites', methods=['POST'])
+@app.route('/api/placeinfo', methods=['POST'])
 @limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def in_favorites_front_end():
-    user_id = uuid.UUID(session['uid'])
+def place_info():
     required_keys = [ 'placeType'
                     , 'locationX'
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        # FIXME needs float conversion
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        return favoritesdb.in_favorites(user_id, place_id)
-    else:
-        return "Malformed request"
-
-@app.route('/api/reviewfromuserexists', methods=['POST'])
-@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def review_from_user_exists():
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        reviewer_id = uuid.UUID(session['uid'])
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        exists = reviewsdb.review_exists(reviewer_id, place_id)
-        return "True" if exists else "False"
-    else:
-        return "Malformed request"
-
-@app.route('/api/createdplace', methods=['POST'])
-@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def created_place_front_end():
-    user_id = uuid.UUID(session['uid'])
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        return placesdb.created_place(user_id, place_id)
-    else:
-        return "Malformed request"
-
-@app.route('/api/getdescription', methods=['POST'])
-@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def get_description_front_end():
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        return placesdb.get_place_description(place_id)
-    else:
-        return "Malformed request"
+        uid = uuid.UUID(session['uid'])
+        data = {}
+        try:
+            location_x = float(request.form['locationX'])
+            location_y = float(request.form['locationY'])
+            review_data = []
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                    location_x, location_y)
+            reviews = reviewsdb.get_reviews(place_id)
+            for review in reviews:
+                review_data.append(
+                            { "userFirstName" : usersdb.get_user_firstname(review[3])
+                            , "rating" : review[4]
+                            , "review" : review[5]
+                            , "userProfile" : usersdb.get_user_profile_url(review[3])
+                            , "userPic" : usersdb.get_user_profile_pic_url(review[3],
+                                                                        128)
+                            , "isRatable" : review[3] != uid
+                            })
+            data['reviewFromUserExists'] = reviewsdb.review_exists(uid, place_id)
+            data['createdPlace'] = placesdb.created_place(uid, place_id)
+            data['placeDescription'] = placesdb.get_place_description(place_id)
+            data['placeRating'] = placesdb.get_place_rating(place_id)
+            data['inFavorites'] = favoritesdb.in_favorites(uid, place_id)
+            data['reviews'] = review_data
+            return json.dumps(data)
+        except ValueError, e:
+            pass
+    return "Malformed request"
 
 @app.route('/api/adddescription', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -349,20 +299,6 @@ def add_description_front_end():
                 request.form['locationX'], request.form['locationY'])
         description = request.form['description']
         return placesdb.update_place_description(place_id, description)
-    else:
-        return "Malformed request"
-
-@app.route('/api/getrating', methods=['POST'])
-@limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
-def get_rating_front_end():
-    required_keys = [ 'placeType'
-                    , 'locationX'
-                    , 'locationY'
-                    ]
-    if is_valid_request(request.form, required_keys):
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        return placesdb.get_place_rating(place_id)
     else:
         return "Malformed request"
 

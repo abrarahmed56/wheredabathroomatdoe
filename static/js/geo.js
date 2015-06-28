@@ -177,42 +177,36 @@ function addDescription() {
     });
 }
 
-function getReviews(placeType, locationX, locationY) {
-    $.post("/api/getreviews", {"placeType": placeType
-                              ,"locationX": locationX
-                              ,"locationY": locationY
-    }).done(function(data) {
-        _data = eval(data);
-        var reviews = "";
-        if (_data.length === 0) {
-            $('#descriptionHeader').html("Unfortunately there aren't any reviews for this " +
-                    placeType + " yet. That means you can be the first to write one!");
-        }
-        else {
-            $('#descriptionHeader').html("Here are the reviews for this " + placeType + ":");
-            for (var i=0; i<_data.length; ++i) {
-                var currReview = _data[i];
-                rating = currReview['rating'];
-                review = currReview['review'];
-                userFirstName = currReview['userFirstName'];
-                userProfile = currReview['userProfile'];
-                userPic = currReview['userPic'];
-                isRatable = currReview['isRatable']
-                reviews += "<div style='display:inline-block'>" +
-                    "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
-                    "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
-                    "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
-                    "<i>" + review + "</i><br/><br/>";
-                if (isRatable) {
-                    reviews += "<div class='input field'>" +
-                    "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
-                    "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
-                    "</div><hr>";
-                }
+function renderReviews(placeType, data) {
+    var reviews = "";
+    if (data.length === 0) {
+        $('#descriptionHeader').html("Unfortunately there aren't any reviews for this " +
+                placeType + " yet. That means you can be the first to write one!");
+    }
+    else {
+        $('#descriptionHeader').html("Here are the reviews for this " + placeType + ":");
+        for (var i=0; i<data.length; ++i) {
+            var currReview = data[i];
+            rating = currReview['rating'];
+            review = currReview['review'];
+            userFirstName = currReview['userFirstName'];
+            userProfile = currReview['userProfile'];
+            userPic = currReview['userPic'];
+            isRatable = currReview['isRatable']
+            reviews += "<div style='display:inline-block'>" +
+                "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
+                "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
+                "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
+                "<i>" + review + "</i><br/><br/>";
+            if (isRatable) {
+                reviews += "<div class='input field'>" +
+                "<button class='btn green darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-up'></i></button>" +
+                "<button class='btn red darken-2 waves-effect waves-light'><i class='mdi-hardware-keyboard-arrow-down'></i></button>" +
+                "</div><hr>";
             }
-            $("#reviews").html(reviews);
         }
-    });
+        $("#reviews").html(reviews);
+    }
 }
 
 function addReview(placeType, locationX, locationY) {
@@ -228,7 +222,6 @@ function addReview(placeType, locationX, locationY) {
     }).done(function(data) {
         Materialize.toast(data, 4000);
         // Refresh the reviews for the active util
-        getReviews(activeUtil['type'], activeUtil['position'][0], activeUtil['position'][1]);
         getUtilInfo(activeUtil, false);
     });
 }
@@ -301,13 +294,15 @@ function getDirections(locationX, locationY) {
 function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, callback) {
     var removeButton = '';
     var descriptionForm = false;
-    var rating = '';
-    $.post("/api/createdplace",  {"placeType": placeType
-                                 ,"locationX": locationX
-                                 ,"locationY": locationY
-                 })
+    var description = '';
+    var utilName = '';
+    $.post("/api/placeinfo",  {"placeType": placeType
+                              ,"locationX": locationX
+                              ,"locationY": locationY
+                              })
     .done(function(data) {
-        if (new String(data).valueOf()===new String("False").valueOf()) {
+        data = $.parseJSON(data);
+        if (!data['createdPlace']) {
             removeButton = "<button type='submit' onclick='letUserReportPlace(&quot;" + util['type'] + "&quot;, " + util['position'][0] + ", " + util['position'][1] + ")' class='btn red darken-2 waves-effect waves-light' value='Report'>Report<i class='mdi-alert-warning left'></i></button>";
         }
         else {
@@ -320,74 +315,51 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         }
         directionsButton = "<button class='btn waves-effect waves-light teal' onclick='getDirections(" + util['position'][0] + ", " + util['position'][1] + ");'>" +
                 "<i class='mdi-maps-directions left'></i>Directions</button>";
-        $.post("/api/infavorites",  {"placeType": placeType
-                                    ,"locationX": locationX
-                                    ,"locationY": locationY
-        }).done(function(data) {
-            if (new String(data).valueOf()===new String("False").valueOf()) {
-                favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" +
-                    util['type'] + "&quot;, " + util['position'][0] + ", " +
-                    util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
-                    directionsButton + "<br/><br/>" + removeButton;
-            }
-            else {
-                favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" +
-                    util['type'] + "&quot;, " + util['position'][0] + ", " +
-                    util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button><br/><br/>" +
-                    directionsButton;
-            }
-            $.post("/api/reviewfromuserexists",  {"placeType": placeType
-                                                 ,"locationX": locationX
-                                                 ,"locationY": locationY
-            })
-            .done(function(data) {
-                var reviewStr = "Add Review";
-                if (data === "True") {
-                    reviewStr = "Update Review";
-                }
-                $(".utilDescription").html(
-                    "<span id='descriptionHeader'></span>" +
-                    "<hr><div id='reviews'></div>" +
-                    "<div id='add-review' class='no-select'>" +
-                    "<h6 class='center-text'>Add a Review</h6>" +
-                    "<div class='input-field'>" +
-                    "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
-                    "<label for='review'>Review</label></div>" +
-                    "<div class='row'><div class='input-field col s3'><label>1</label></div>" +
-                    "<div class='input-field col s7'><label>Rating (1 to 5)</label></div>" +
-                    "<div class='input-field col s2'><label>5</label></div><br/>" +
-                    "<div class='input-field col s12'><p class='range-field'>" +
-                    "<input type='range' id='rating' min='1' max='5'/>" +
-                    "</p></div></div><div class='input-field center-all'>" +
-                    "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" +
-                    util['type'] + "&quot;, " + util['position'][0] + ", " +
-                    util['position'][1] +")'>" + reviewStr +
-                    "<i class='mdi-editor-border-color left'></i></button>" +
-                    "<br/><br/>" + favoritesButton + "</div></div>");
-                // Populate info window with reviews
-                getReviews(util['type'], util['position'][0], util['position'][1]);
-            });
-        });
-    });
-    $.post("/api/getrating",  {"placeType": placeType
-                              ,"locationX": locationX
-                              ,"locationY": locationY
-    })
-    .done(function(placeRating) {
-        rating = placeRating;
-    });
-    if (!isNewlyCreatedUtil) {
-        $.post("/api/getdescription",  {"placeType": placeType
-                                        ,"locationX": locationX
-                                        ,"locationY": locationY
-        })
-        .done(function(description) {
-            var utilName = utilType[0].toUpperCase() + utilType.substring(1);
+        if (!data['inFavorites']) {
+            favoritesButton = "<button type='submit' id='favoritesButton' class='btn green darken-2 waves-effect waves-light' onclick='addFavorite(&quot;" +
+                util['type'] + "&quot;, " + util['position'][0] + ", " +
+                util['position'][1] + ");'>Add to My Places<i class='mdi-action-stars left'></i></button><br/><br/>" +
+                directionsButton + "<br/><br/>" + removeButton;
+        }
+        else {
+            favoritesButton = "<button type='submit' id='favoritesButton' class='btn red darken-2 waves-effect waves-light' onclick='removeFavorite(&quot;" +
+                util['type'] + "&quot;, " + util['position'][0] + ", " +
+                util['position'][1] + ");'>Remove from My Places<i class='mdi-navigation-close left'></i></button><br/><br/>" +
+                directionsButton;
+        }
+        var reviewStr = "Add Review";
+        if (data['reviewFromUserExists']) {
+            reviewStr = "Update Review";
+        }
+        $(".utilDescription").html(
+            "<span id='descriptionHeader'></span>" +
+            "<hr><div id='reviews'></div>" +
+            "<div id='add-review' class='no-select'>" +
+            "<h6 class='center-text'>Add a Review</h6>" +
+            "<div class='input-field'>" +
+            "<textarea id='review' name='review' class='materialize-textarea validate' maxlength=500 length='500'></textarea>" +
+            "<label for='review'>Review</label></div>" +
+            "<div class='row'><div class='input-field col s3'><label>1</label></div>" +
+            "<div class='input-field col s7'><label>Rating (1 to 5)</label></div>" +
+            "<div class='input-field col s2'><label>5</label></div><br/>" +
+            "<div class='input-field col s12'><p class='range-field'>" +
+            "<input type='range' id='rating' min='1' max='5'/>" +
+            "</p></div></div><div class='input-field center-all'>" +
+            "<button type='submit' class='btn green darken-2 waves-effect waves-light' onclick='addReview(&quot;" +
+            util['type'] + "&quot;, " + util['position'][0] + ", " +
+            util['position'][1] +")'>" + reviewStr +
+            "<i class='mdi-editor-border-color left'></i></button>" +
+            "<br/><br/>" + favoritesButton + "</div></div>");
+            // Populate info window with reviews
+            renderReviews(util['type'], data['reviews']);
+        if (!isNewlyCreatedUtil) {
+            description = data['placeDescription'];
+            utilName = utilType[0].toUpperCase() + utilType.substring(1);
             if (!description) {
                 description = "No description available."
             }
             $(".utilTitleFrontTitle").text(utilName);
-            $(".utilTitleFrontRating").text(rating);
+            $(".utilTitleFrontRating").text(data['placeRating']);
             $(".utilTitleBackTitle").text(utilName);
             $(".utilTitleBackDescription").text(description);
             if (!descriptionForm) {
@@ -400,8 +372,8 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
                 $(".utilTitleFrontDescriptionForm").show();
                 $('#description').val(description);
             }
-        });
-    }
+        }
+    });
     if (callback) {
         return callback();
     }

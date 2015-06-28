@@ -15,7 +15,6 @@ def add_favorite(user_id, place_id):
                 LIMIT 1""", (user_id, place_id))
         conn.commit()
         exists = c.fetchone()
-        print exists
         if not exists:
             c.execute("""INSERT INTO FAVORITES VALUES (%s, %s)""",
                     (user_id, place_id))
@@ -61,10 +60,10 @@ def in_favorites(user_id, place_id):
             LIMIT 1""", (user_id, place_id))
         conn.commit()
         exists = c.fetchone()
-        # FIXME FIXME FIXME WTF is this?
-        if not exists:
-            return "False"
-        return "True"
+        if exists:
+            return True
+        else:
+            return False
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
