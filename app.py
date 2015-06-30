@@ -261,12 +261,14 @@ def place_info():
             location_x = float(request.form['locationX'])
             location_y = float(request.form['locationY'])
             review_data = []
+            conn = dbhelper.connect()
             place_id = placesdb.get_place_id(request.form['placeType'],
                     location_x, location_y)
             reviews = reviewsdb.get_reviews(place_id)
             for review in reviews:
                 review_data.append(
-                            { "userFirstName" : usersdb.get_user_firstname(review[3])
+                            { "userFirstName" :
+                                usersdb.get_user_firstname(review[3], conn)
                             , "rating" : review[4]
                             , "review" : review[5]
                             , "userProfile" : usersdb.get_user_profile_url(review[3])
@@ -280,6 +282,7 @@ def place_info():
             data['placeRating'] = placesdb.get_place_rating(place_id)
             data['inFavorites'] = favoritesdb.in_favorites(uid, place_id)
             data['reviews'] = review_data
+            conn.close()
             return json.dumps(data)
         except ValueError, e:
             pass
@@ -295,6 +298,7 @@ def add_description_front_end():
                     , 'description'
                     ]
     if is_valid_request(request.form, required_keys):
+        # FIXME needs float conversion
         place_id = placesdb.get_place_id(request.form['placeType'],
                 request.form['locationX'], request.form['locationY'])
         description = request.form['description']

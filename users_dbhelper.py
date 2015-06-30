@@ -11,9 +11,12 @@ from constants import *
 from utils import *
 import temporaryurls_dbhelper as tmpurldb
 
-def add_user(uid, email, password, phone, bio):
+def add_user(uid, email, password, phone, bio, conn=None):
     global UPLOAD_FOLDER, WEBSITE_URL_BASE
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -48,12 +51,15 @@ def add_user(uid, email, password, phone, bio):
     except psycopg2.DatabaseError, e:
         print "Error %s: " % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_user(uid):
+def remove_user(uid, conn=None):
     global UPLOAD_FOLDER
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -68,11 +74,14 @@ def remove_user(uid):
     except psycopg2.DatabaseError, e:
         print "Error %s: " % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_password(uid=None, email=None):
-    conn = dbhelper.connect()
+def get_user_password(uid=None, email=None, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -90,10 +99,10 @@ def get_user_password(uid=None, email=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_password(uid, new_password, verify_old_password=None):
+def update_user_password(uid, new_password, verify_old_password=None, conn=None):
     # NOTE: Make sure password is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_old_password to None
@@ -102,7 +111,10 @@ def update_user_password(uid, new_password, verify_old_password=None):
         if old_password:
             if not validate.check_password(old_password, verify_old_password):
                 return (False, "Invalid verification credentials")
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -114,10 +126,10 @@ def update_user_password(uid, new_password, verify_old_password=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_email(uid, new_email, verify_password=None):
+def update_user_email(uid, new_email, verify_password=None, conn=None):
     # NOTE: Make sure email is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_password to None
@@ -126,7 +138,10 @@ def update_user_email(uid, new_email, verify_password=None):
         if old_password:
             if not validate.check_password(old_password, verify_password):
                 return (False, "Invalid verification credentials")
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -140,10 +155,10 @@ def update_user_email(uid, new_email, verify_password=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_phone(uid, new_phone, verify_password=None):
+def update_user_phone(uid, new_phone, verify_password=None, conn=None):
     # NOTE: Make sure phone is validated before calling this method
     # Verification of the old password can be skipped by setting
     # verify_password to None
@@ -152,7 +167,10 @@ def update_user_phone(uid, new_phone, verify_password=None):
         if old_password:
             if not validate.check_password(old_password, verify_password):
                 return (False, "Invalid verification credentials")
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -164,11 +182,14 @@ def update_user_phone(uid, new_phone, verify_password=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_firstname(uid=None, email=None):
-    conn = dbhelper.connect()
+def get_user_firstname(uid=None, email=None, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -189,11 +210,14 @@ def get_user_firstname(uid=None, email=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_lastname(uid=None, email=None):
-    conn = dbhelper.connect()
+def get_user_lastname(uid=None, email=None, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -214,11 +238,14 @@ def get_user_lastname(uid=None, email=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_bio(uid=None, email=None):
-    conn = dbhelper.connect()
+def get_user_bio(uid=None, email=None, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -236,11 +263,14 @@ def get_user_bio(uid=None, email=None):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_email(uid):
-    conn = dbhelper.connect()
+def get_user_email(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -252,7 +282,7 @@ def get_user_email(uid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
 def get_user_profile_pic_url(uid, size):
@@ -261,8 +291,11 @@ def get_user_profile_pic_url(uid, size):
 def get_user_profile_url(uid):
     return "/profile/" + deflate_uuid(str(uid))
 
-def update_user_firstname(uid, new_firstname):
-    conn = dbhelper.connect()
+def update_user_firstname(uid, new_firstname, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -274,11 +307,14 @@ def update_user_firstname(uid, new_firstname):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_lastname(uid, new_lastname):
-    conn = dbhelper.connect()
+def update_user_lastname(uid, new_lastname, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -290,11 +326,14 @@ def update_user_lastname(uid, new_lastname):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_bio(uid, new_bio):
-    conn = dbhelper.connect()
+def update_user_bio(uid, new_bio, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -306,11 +345,14 @@ def update_user_bio(uid, new_bio):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_disabled(uid, disabled):
-    conn = dbhelper.connect()
+def update_user_disabled(uid, disabled, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -322,11 +364,14 @@ def update_user_disabled(uid, disabled):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_email_confirmed(uid, confirmed):
-    conn = dbhelper.connect()
+def update_user_email_confirmed(uid, confirmed, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -338,11 +383,14 @@ def update_user_email_confirmed(uid, confirmed):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_user_phone_confirmed(uid, confirmed):
-    conn = dbhelper.connect()
+def update_user_phone_confirmed(uid, confirmed, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -354,11 +402,14 @@ def update_user_phone_confirmed(uid, confirmed):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_phone(uid):
-    conn = dbhelper.connect()
+def get_user_phone(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -370,11 +421,14 @@ def get_user_phone(uid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_user_id(email):
-    conn = dbhelper.connect()
+def get_user_id(email, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -386,27 +440,204 @@ def get_user_id(email):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
+            conn.close()
+
+def get_user_disabled(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT Disabled FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        return c.fetchone()[0]
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def get_user_email_confirmed(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT EmailConfirmed FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        result = c.fetchone()
+        return result[0] if result else None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def get_user_phone_confirmed(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("SELECT PhoneConfirmed FROM USERS WHERE ID = %s LIMIT 1",
+                 (uid,))
+        result = c.fetchone()
+        return result[0] if result else None
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def email_exists(email, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM Users WHERE Email = %s LIMIT 1""", (email,))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def uid_exists(uid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return "Database Error"
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM Users WHERE UserId = %s LIMIT 1""", (uid,))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def add_user_report(reporter_id, reported_id, reason, conn=None):
+    global ID_REPORTS_USERS, USER_REPORT_LIMIT
+    ruid = dbhelper.generate_id(ID_REPORTS_USERS)
+    if not ruid[0]:
+        return (False, "UUID error")
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""INSERT INTO ReportsUsers (ID, ReportID, ReporterId, ReportedId,
+                Reason)  VALUES (%s, %s, %s, %s, %s)""",
+                (ruid[1], ruid[1], reporter_id, reported_id, reason))
+        conn.commit()
+        if get_num_reports_for_user(reported_id) >= USER_REPORT_LIMIT:
+            update_user_disabled(reported_id, True)
+        return (True, "User report successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def remove_user_report(reporter_id, reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""REMOVE FROM ReportsUsers WHERE ReporterId = %s AND
+        ReportedId = %s
+                  """, (reporter_id, reported_id))
+        conn.commit()
+        return (True, "User report removal successful")
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def is_user_reported_by(reporter_id, reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReporterId = %s AND
+        ReportedId = %s LIMIT 1
+                  """, (reporter_id, reported_id))
+        return c.fetchone()
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
+            conn.close()
+
+def can_user_be_reported(reporter_id, reported_id, conn=None):
+    return reporter_id != reported_id and\
+            not is_user_reported_by(reporter_id, reported_id, conn)
+
+def get_num_reports_for_user(reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
+    if conn == None:
+        return (False, "Database Error")
+    c = conn.cursor()
+    try:
+        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReportedId = %s""",
+                (reported_id,))
+        return len(c.fetchall())
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e
+    finally:
+        if conn and not persist_conn:
             conn.close()
 
 def get_user_data(_uid):
-    # TODO condense this to a single query... lmao
+    conn = dbhelper.connect()
     uid_str = str(_uid)
-    user_email = get_user_email(_uid)
-    user_phone = get_user_phone(_uid)
-    user_firstname = get_user_firstname(_uid)
-    user_lastname = get_user_lastname(_uid)
-    user_bio = get_user_bio(_uid)
-    user_email_confirmed = get_user_email_confirmed(_uid)
+    user_email = get_user_email(_uid, conn)
+    user_phone = get_user_phone(_uid, conn)
+    user_firstname = get_user_firstname(_uid, conn)
+    user_lastname = get_user_lastname(_uid, conn)
+    user_bio = get_user_bio(_uid, conn)
+    user_email_confirmed = get_user_email_confirmed(_uid, conn)
     user_email_confirm_timeout_pending = tmpurldb.get_temporary_url_timeout_pending(
                                             _uid,
                                             TEMP_URL_EMAIL_CONFIRM)[0]
-    user_phone_confirmed = get_user_phone_confirmed(_uid)
+    user_phone_confirmed = get_user_phone_confirmed(_uid, conn)
     user_profile_pic = get_user_profile_pic_url(_uid, 256)
     user_can_be_reported = True
     try:
         user_can_be_reported = can_user_be_reported(uuid.UUID(session['uid']),
-                                                    _uid)
+                                                    _uid, conn)
     except ValueError, e:
         user_can_be_reported = False
     user_data = {
@@ -423,155 +654,6 @@ def get_user_data(_uid):
         'profile_pic' : user_profile_pic,
         'user_can_be_reported' : user_can_be_reported,
     }
+    conn.close()
     return user_data
-
-def get_user_disabled(uid):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("SELECT Disabled FROM USERS WHERE ID = %s LIMIT 1",
-                 (uid,))
-        return c.fetchone()[0]
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def get_user_email_confirmed(uid):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("SELECT EmailConfirmed FROM USERS WHERE ID = %s LIMIT 1",
-                 (uid,))
-        result = c.fetchone()
-        return result[0] if result else None
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def get_user_phone_confirmed(uid):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("SELECT PhoneConfirmed FROM USERS WHERE ID = %s LIMIT 1",
-                 (uid,))
-        result = c.fetchone()
-        return result[0] if result else None
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def email_exists(email):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("""SELECT 1 FROM Users WHERE Email = %s LIMIT 1""", (email,))
-        return c.fetchone()
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def uid_exists(uid):
-    conn = dbhelper.connect()
-    if conn == None:
-        return "Database Error"
-    c = conn.cursor()
-    try:
-        c.execute("""SELECT 1 FROM Users WHERE UserId = %s LIMIT 1""", (uid,))
-        return c.fetchone()
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def add_user_report(reporter_id, reported_id, reason):
-    global ID_REPORTS_USERS, USER_REPORT_LIMIT
-    ruid = dbhelper.generate_id(ID_REPORTS_USERS)
-    if not ruid[0]:
-        return (False, "UUID error")
-    conn = connect()
-    if conn == None:
-        return (False, "Database Error")
-    c = conn.cursor()
-    try:
-        c.execute("""INSERT INTO ReportsUsers (ID, ReportID, ReporterId, ReportedId,
-                Reason)  VALUES (%s, %s, %s, %s, %s)""",
-                (ruid[1], ruid[1], reporter_id, reported_id, reason))
-        conn.commit()
-        if get_num_reports_for_user(reported_id) >= USER_REPORT_LIMIT:
-            update_user_disabled(reported_id, True)
-        return (True, "User report successful")
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def remove_user_report(reporter_id, reported_id):
-    conn = connect()
-    if conn == None:
-        return (False, "Database Error")
-    c = conn.cursor()
-    try:
-        c.execute("""REMOVE FROM ReportsUsers WHERE ReporterId = %s AND
-        ReportedId = %s
-                  """, (reporter_id, reported_id))
-        conn.commit()
-        return (True, "User report removal successful")
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def is_user_reported_by(reporter_id, reported_id):
-    conn = connect()
-    if conn == None:
-        return (False, "Database Error")
-    c = conn.cursor()
-    try:
-        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReporterId = %s AND
-        ReportedId = %s LIMIT 1
-                  """, (reporter_id, reported_id))
-        return c.fetchone()
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
-
-def can_user_be_reported(reporter_id, reported_id):
-    return reporter_id != reported_id and\
-            not is_user_reported_by(reporter_id, reported_id)
-
-def get_num_reports_for_user(reported_id):
-    conn = dbhelper.connect()
-    if conn == None:
-        return (False, "Database Error")
-    c = conn.cursor()
-    try:
-        c.execute("""SELECT 1 FROM ReportsUsers WHERE ReportedId = %s""",
-                (reported_id,))
-        return len(c.fetchall())
-    except psycopg2.DatabaseError, e:
-        print 'Error %s' % e
-    finally:
-        if conn:
-            conn.close()
 
