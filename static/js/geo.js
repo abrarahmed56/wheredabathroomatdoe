@@ -177,6 +177,30 @@ function addDescription() {
     });
 }
 
+function getRatingClass(rating) {
+    rating = parseInt(rating);
+    if (isNaN(rating)) {
+        return "";
+    }
+    ratingClass = "";
+    if (rating >= 4) {
+        ratingClass = 'green-text text-accent-4';
+    }
+    else if (rating >= 3) {
+        ratingClass = 'teal-text text-accent-3';
+    }
+    else if (rating >= 2) {
+        ratingClass = 'deep-orange-text';
+    }
+    else if (rating >= 1) {
+        ratingClass = 'red-text';
+    }
+    else {
+        ratingClass = 'red-text text-darken-3';
+    }
+    return ratingClass;
+}
+
 function renderReviews(placeType, data) {
     var reviews = "";
     if (data.length === 0) {
@@ -192,11 +216,12 @@ function renderReviews(placeType, data) {
             userFirstName = currReview['userFirstName'];
             userProfile = currReview['userProfile'];
             userPic = currReview['userPic'];
-            isRatable = currReview['isRatable']
+            isRatable = currReview['isRatable'];
             reviews += "<div style='display:inline-block'>" +
                 "<img src='" + userPic + "' width='32px' height='32px' style='margin-right: 10px'></img>" +
                 "<div style='display:inline-block;'><a href='" + userProfile + "'>" + userFirstName + "</a>" +
-                "</br> rated this a <b>" + rating + "</b>.</div></div><br/><br/>" +
+                "</br> rated this a <b class=" + getRatingClass(rating) + ">" + rating + "</b>." +
+                "</div></div><br/><br/>" +
                 "<i>" + review + "</i><br/><br/>";
             if (isRatable) {
                 reviews += "<div class='input field'>" +
@@ -331,7 +356,7 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
         if (data['reviewFromUserExists']) {
             reviewStr = "Update Review";
         }
-        $(".utilDescription").html(
+        $("#utilDescription").html(
             "<span id='descriptionHeader'></span>" +
             "<hr><div id='reviews'></div>" +
             "<div id='add-review' class='no-select'>" +
@@ -358,18 +383,20 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
             if (!description) {
                 description = "No description available."
             }
-            $(".utilTitleFrontTitle").text(utilName);
-            $(".utilTitleFrontRating").text(data['placeRating']);
-            $(".utilTitleBackTitle").text(utilName);
-            $(".utilTitleBackDescription").text(description);
+            $("#utilTitleFrontTitle").text(utilName);
+            $("#utilTitleFrontRating")
+                .text(data['placeRating'])
+                .attr('class', getRatingClass(data['placeRating']));
+            $("#utilTitleBackTitle").text(utilName);
+            $("#utilTitleBackDescription").text(description);
             if (!descriptionForm) {
-                $(".utilTitleFrontDescriptionText").show();
-                $(".utilTitleFrontDescriptionForm").hide();
-                $(".utilTitleFrontDescriptionText").text(description);
+                $("#utilTitleFrontDescriptionText").show();
+                $("#utilTitleFrontDescriptionForm").hide();
+                $("#utilTitleFrontDescriptionText").text(description);
             }
             else {
-                $(".utilTitleFrontDescriptionText").hide();
-                $(".utilTitleFrontDescriptionForm").show();
+                $("#utilTitleFrontDescriptionText").hide();
+                $("#utilTitleFrontDescriptionForm").show();
                 $('#description').val(description);
             }
         }
