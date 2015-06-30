@@ -39,12 +39,12 @@ App.CompositeView = Marionette.CompositeView.extend({
 
 var Place = Backbone.Model.extend({
     idAttribute: "PlacesID",
-    urlRoot: "/api/marionette",
+    urlRoot: "/api/myplaces",
 });
 
 var Places = Backbone.Collection.extend({
     model: Place,
-    url: "/api/marionette",
+    url: "/api/myplaces",
     initialize: function() {
         this.fetch();
     }

@@ -85,7 +85,7 @@ def welcome():
                 if result[0]:
                     return redirect(url_for('welcome'))
             else:
-                return "Malformed request"
+                return "Malformed Request"
         elif request.form.has_key("reset_password"):
             required_keys = [ 'forgotEmail'
                             , 'sourceUrl'
@@ -101,7 +101,7 @@ def welcome():
                     flash(emailhelper.send_password_reset_email(email,
                         usersdb.get_user_firstname(uid), url_id))
             else:
-                return "Malformed request"
+                return "Malformed Request"
         elif request.form.has_key("login"):
             required_keys = [ 'loginEmail'
                             , 'loginPassword'
@@ -116,7 +116,7 @@ def welcome():
                 if result[0]:
                     return redirect(url_for('index'))
             else:
-                flash("Malformed request")
+                flash("Malformed Request")
         return render_template('redirect.html', url=request.form['sourceUrl'])
     else:
         return render_template('welcome.html',
@@ -223,12 +223,16 @@ def add_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        # FIXME needs float conversion of locationX and locationY
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
+        try:
+            locationX = float(request.form['locationX'])
+            locationY = float(request.form['locationY'])
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                    locationX, locationY)
+        except ValueError, e:
+            return "Malformed Request"
         return favoritesdb.add_favorite(user_id, place_id)
     else:
-        return "Malformed request"
+        return "Malformed Request"
 
 @app.route('/api/removefavorite', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -239,13 +243,15 @@ def remove_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
-        # FIXME wrap float conversion in a try-except block
-        place_id = placesdb.get_place_id(request.form['placeType'],
-               float(request.form['locationX']),
-               float(request.form['locationY']))
+        try:
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                float(request.form['locationX']),
+                float(request.form['locationY']))
+        except ValueError, e:
+            return "Malformed Request"
         return favoritesdb.remove_favorite(user_id, place_id)
     else:
-        return "Malformed request"
+        return "Malformed Request"
 
 @app.route('/api/placeinfo', methods=['POST'])
 @limiter.limit("30 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -286,7 +292,7 @@ def place_info():
             return json.dumps(data)
         except ValueError, e:
             pass
-    return "Malformed request"
+    return "Malformed Request"
 
 @app.route('/api/adddescription', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -298,21 +304,20 @@ def add_description_front_end():
                     , 'description'
                     ]
     if is_valid_request(request.form, required_keys):
-        # FIXME needs float conversion
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
+        try:
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                    float(request.form['locationX']),
+                    float(request.form['locationY']))
+        except ValueError, e:
+            return "Malformed Request"
         description = request.form['description']
         return placesdb.update_place_description(place_id, description)
     else:
-        return "Malformed request"
+        return "Malformed Request"
 
-# FIXME rename this route, "marionette" literally says nothing about what it
-# actually does/returns
-@app.route('/api/marionette', methods=['GET', 'POST', 'DELETE', 'PUT'])
-@app.route('/api/marionette/<thisisisneverusedwtf>',
-        methods=['GET', 'POST', 'DELETE', 'PUT'])
+@app.route('/api/myplaces', methods=['GET', 'POST', 'DELETE', 'PUT'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
-def marionette(thisidisneverusedwtf=None):
+def myplaces():
     user = session['email']
     user_id = usersdb.get_user_id(user)
     if request.method == "GET":
@@ -327,12 +332,14 @@ def marionette(thisidisneverusedwtf=None):
         return json.dumps(ans)
     elif request.method == "POST":
         place = request.get_json()
-        # FIXME needs float conversion
-        place_id = placesdb.get_place_id(place['type'],
-                place['address'][0], place['address'][1])
+        try:
+            place_id = placesdb.get_place_id(place['type'],
+                    float(place['address'][0]),
+                    float(place['address'][1]))
+        except ValueError, e:
+            return "Malformed Request"
         return favoritesdb.remove_favorite(user_id, place_id)
-    # TODO finish this function
-    return "hello"
+    return ""
 
 @app.route('/api/directions/<origin>/<destination>')
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -356,16 +363,16 @@ def add_review_front_end():
             location_x = float(request.form["locationX"])
             location_y = float(request.form["locationY"])
         except ValueError, e:
-            return "Malformed request"
+            return "Malformed Request"
         placeid = placesdb.get_place_id(request.form["placeType"],
                 location_x, location_y)
         if validate.is_valid_rating(rating):
             return reviewsdb.add_review(placeid, user, rating,
                     request.form["review"])[1]
         else:
-            return "Malformed request"
+            return "Malformed Request"
     else:
-        return "Malformed request"
+        return "Malformed Request"
 
 @app.route('/api/get', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -374,7 +381,7 @@ def get():
         location_x = float(request.form['longitude'])
         location_y = float(request.form['latitude'])
     except ValueError:
-        return "Malformed request"
+        return "Malformed Request"
     radius = .014
     return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
 
@@ -496,7 +503,7 @@ def settings():
                     flash(usersdb.update_user_bio(uid,
                               request.form['new_bio'])[1])
         else:
-            flash("Malformed request")
+            flash("Malformed Request")
     return render_template('settings.html',
                             user_data=usersdb.get_user_data(uid),
                             loggedin=True,
@@ -517,7 +524,7 @@ def delete_account():
         flash("Account successfully deleted")
         return redirect(url_for('index'))
     else:
-        return "Malformed request"
+        return "Malformed Request"
 
 @app.route('/confirm/email/<url_id>', methods=['GET'])
 @limiter.limit("2 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -571,7 +578,7 @@ def password_reset(url_id=None):
                 if response[0]:
                     return redirect(url_for('index'))
             else:
-                flash("Malformed request")
+                flash("Malformed Request")
         return render_template('password_reset_page.html')
     return redirect(url_for('index'))
 
