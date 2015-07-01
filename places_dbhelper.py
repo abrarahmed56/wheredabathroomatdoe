@@ -1,4 +1,3 @@
-
 import psycopg2, psycopg2.extras
 import dbhelper
 import validate
@@ -7,9 +6,12 @@ import users_dbhelper as usersdb
 from constants import *
 from utils import *
 
-def add_place(place_type, location_x, location_y, finder, description):
+def add_place(place_type, location_x, location_y, finder, description, conn=None):
     global ID_PLACE
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -32,11 +34,14 @@ def add_place(place_type, location_x, location_y, finder, description):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_place(place_type, location_x, location_y):
-    conn = dbhelper.connect()
+def remove_place(place_type, location_x, location_y, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -47,11 +52,14 @@ def remove_place(place_type, location_x, location_y):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_place_by_id(place_id):
-    conn = dbhelper.connect()
+def remove_place_by_id(place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -62,12 +70,15 @@ def remove_place_by_id(place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_finder(place_id):
+def get_place_finder(place_id, conn=None):
     global ID_PLACE
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -79,11 +90,14 @@ def get_place_finder(place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_places():
-    conn = dbhelper.connect()
+def get_places(conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -94,11 +108,14 @@ def get_places():
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_id(place_type, location_x, location_y):
-    conn = dbhelper.connect()
+def get_place_id(place_type, location_x, location_y, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -111,11 +128,14 @@ def get_place_id(place_type, location_x, location_y):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_type(pid):
-    conn = dbhelper.connect()
+def get_place_type(pid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -126,12 +146,15 @@ def get_place_type(pid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
 # TODO merge this with get_place_location_y because stop being stupid
-def get_place_location_x(pid):
-    conn = dbhelper.connect()
+def get_place_location_x(pid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -142,11 +165,14 @@ def get_place_location_x(pid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_location_y(pid):
-    conn = dbhelper.connect()
+def get_place_location_y(pid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -157,11 +183,14 @@ def get_place_location_y(pid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_description(pid):
-    conn = dbhelper.connect()
+def get_place_description(pid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -176,11 +205,14 @@ def get_place_description(pid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def update_place_description(pid, description):
-    conn = dbhelper.connect()
+def update_place_description(pid, description, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -192,7 +224,7 @@ def update_place_description(pid, description):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
 def dictionarify(places_list):
@@ -208,8 +240,11 @@ def dictionarify(places_list):
         ans.append(place_dict)
     return ans
 
-def get_local_places(location_x, location_y, radius):
-    conn = dbhelper.connect()
+def get_local_places(location_x, location_y, radius, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -224,15 +259,18 @@ def get_local_places(location_x, location_y, radius):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def add_place_report(reporter_id, reported_id, reason):
+def add_place_report(reporter_id, reported_id, reason, conn=None):
     global ID_REPORTS_PLACES, PLACE_REPORT_LIMIT
     ruid = dbhelper.generate_id(ID_REPORTS_PLACES)
     if not ruid[0]:
         return (False, "UUID error")
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -249,11 +287,14 @@ def add_place_report(reporter_id, reported_id, reason):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_place_report(reporter_id, reported_id):
-    conn = dbhelper.connect()
+def remove_place_report(reporter_id, reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -265,11 +306,14 @@ def remove_place_report(reporter_id, reported_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def is_place_reported_by(reporter_id, reported_id):
-    conn = dbhelper.connect()
+def is_place_reported_by(reporter_id, reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -280,15 +324,18 @@ def is_place_reported_by(reporter_id, reported_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def can_place_be_reported(reporter_id, reported_id):
-    return get_place_finder(reported_id) != reporter_id and\
-            not is_place_reported_by(reporter_id, reported_id)
+def can_place_be_reported(reporter_id, reported_id, conn=None):
+    return get_place_finder(reported_id, conn) != reporter_id and\
+            not is_place_reported_by(reporter_id, reported_id, conn)
 
-def get_num_reports_for_place(reported_id):
-    conn = dbhelper.connect()
+def get_num_reports_for_place(reported_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -299,11 +346,14 @@ def get_num_reports_for_place(reported_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def created_place(user_id, place_id):
-    conn = dbhelper.connect()
+def created_place(user_id, place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -317,11 +367,14 @@ def created_place(user_id, place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def calc_rating(place_id):
-    conn = dbhelper.connect()
+def calc_rating(place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -338,11 +391,14 @@ def calc_rating(place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_place_rating(place_id):
-    conn = dbhelper.connect()
+def get_place_rating(place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -356,5 +412,5 @@ def get_place_rating(place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()

@@ -28,6 +28,8 @@ UPLOAD_FOLDER = "static/uploads"
 USER_REPORT_LIMIT = 10
 PLACE_REPORT_LIMIT = 10
 
+GEO_LOCAL_RADIUS = 0.14
+
 ALLOWED_EXTENSIONS = set(["png", "bmp", "jpg"])
 ALLOWED_TYPES = set(["bench", "fountain", "bathroom"])
 def is_allowed_file_ext(filename):

@@ -223,14 +223,17 @@ def add_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
+        conn = dbhelper.connect()
         try:
             locationX = float(request.form['locationX'])
             locationY = float(request.form['locationY'])
             place_id = placesdb.get_place_id(request.form['placeType'],
-                    locationX, locationY)
+                    locationX, locationY, conn)
+            return favoritesdb.add_favorite(user_id, place_id)
         except ValueError, e:
             return "Malformed Request"
-        return favoritesdb.add_favorite(user_id, place_id)
+        finally:
+            conn.close()
     else:
         return "Malformed Request"
 
@@ -243,13 +246,16 @@ def remove_favorite_front_end():
                     , 'locationY'
                     ]
     if is_valid_request(request.form, required_keys):
+        conn = dbhelper.connect()
         try:
             place_id = placesdb.get_place_id(request.form['placeType'],
                 float(request.form['locationX']),
-                float(request.form['locationY']))
+                float(request.form['locationY']), conn)
+            return favoritesdb.remove_favorite(user_id, place_id)
         except ValueError, e:
             return "Malformed Request"
-        return favoritesdb.remove_favorite(user_id, place_id)
+        finally:
+            conn.close()
     else:
         return "Malformed Request"
 
@@ -269,7 +275,7 @@ def place_info():
             review_data = []
             conn = dbhelper.connect()
             place_id = placesdb.get_place_id(request.form['placeType'],
-                    location_x, location_y)
+                    location_x, location_y, conn)
             reviews = reviewsdb.get_reviews(place_id)
             for review in reviews:
                 review_data.append(
@@ -283,9 +289,10 @@ def place_info():
                             , "isRatable" : review[3] != uid
                             })
             data['reviewFromUserExists'] = reviewsdb.review_exists(uid, place_id)
-            data['createdPlace'] = placesdb.created_place(uid, place_id)
-            data['placeDescription'] = placesdb.get_place_description(place_id)
-            data['placeRating'] = placesdb.get_place_rating(place_id)
+            data['createdPlace'] = placesdb.created_place(uid, place_id, conn)
+            data['placeDescription'] = placesdb.get_place_description(place_id,
+                                                                      conn)
+            data['placeRating'] = placesdb.get_place_rating(place_id, conn)
             data['inFavorites'] = favoritesdb.in_favorites(uid, place_id)
             data['reviews'] = review_data
             conn.close()
@@ -304,42 +311,52 @@ def add_description_front_end():
                     , 'description'
                     ]
     if is_valid_request(request.form, required_keys):
+        conn = dbhelper.connect()
         try:
             place_id = placesdb.get_place_id(request.form['placeType'],
                     float(request.form['locationX']),
-                    float(request.form['locationY']))
+                    float(request.form['locationY']), conn)
+            description = request.form['description']
+            return placesdb.update_place_description(place_id, description, conn)
         except ValueError, e:
             return "Malformed Request"
-        description = request.form['description']
-        return placesdb.update_place_description(place_id, description)
+        finally:
+            conn.close()
     else:
         return "Malformed Request"
 
-@app.route('/api/myplaces', methods=['GET', 'POST', 'DELETE', 'PUT'])
+@app.route('/api/myplaces', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def myplaces():
     user = session['email']
     user_id = usersdb.get_user_id(user)
     if request.method == "GET":
         ans = []
-        for favorite in favoritesdb.get_favorites(user_id):
-            fav = {"type": placesdb.get_place_type(favorite[1])
-                  , "address": (placesdb.get_place_location_x(favorite[1]),
-                      placesdb.get_place_location_y(favorite[1]))
-                  , "rating": placesdb.get_place_rating(favorite[1])
+        conn = dbhelper.connect()
+        favorites = favoritesdb.get_favorites(user_id)
+        for favorite in favorites:
+            fav = {"type": placesdb.get_place_type(favorite[1], conn)
+                  , "address": (
+                      placesdb.get_place_location_x(favorite[1], conn),
+                      placesdb.get_place_location_y(favorite[1], conn)
+                      )
+                  , "rating": placesdb.get_place_rating(favorite[1], conn)
             }
             ans.append(fav)
+        conn.close()
         return json.dumps(ans)
     elif request.method == "POST":
         place = request.get_json()
+        conn = dbhelper.connect()
         try:
             place_id = placesdb.get_place_id(place['type'],
                     float(place['address'][0]),
-                    float(place['address'][1]))
+                    float(place['address'][1]), conn)
+            return favoritesdb.remove_favorite(user_id, place_id)
         except ValueError, e:
             return "Malformed Request"
-        return favoritesdb.remove_favorite(user_id, place_id)
-    return ""
+        finally:
+            conn.close()
 
 @app.route('/api/directions/<origin>/<destination>')
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -358,32 +375,36 @@ def add_review_front_end():
                     , 'review'
                     ]
     if is_valid_request(request.form, required_keys):
+        conn = dbhelper.connect()
         try:
             rating = int(request.form['rating'])
             location_x = float(request.form["locationX"])
             location_y = float(request.form["locationY"])
+            placeid = placesdb.get_place_id(request.form["placeType"],
+                    location_x, location_y, conn)
+            if validate.is_valid_rating(rating):
+                return reviewsdb.add_review(placeid, user, rating,
+                        request.form["review"])[1]
+            else:
+                return "Malformed Request"
         except ValueError, e:
             return "Malformed Request"
-        placeid = placesdb.get_place_id(request.form["placeType"],
-                location_x, location_y)
-        if validate.is_valid_rating(rating):
-            return reviewsdb.add_review(placeid, user, rating,
-                    request.form["review"])[1]
-        else:
-            return "Malformed Request"
+        finally:
+            conn.close()
     else:
         return "Malformed Request"
 
 @app.route('/api/get', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def get():
+    global GEO_LOCAL_RADIUS
     try:
         location_x = float(request.form['longitude'])
         location_y = float(request.form['latitude'])
     except ValueError:
         return "Malformed Request"
-    radius = .014
-    return json.dumps(placesdb.get_local_places(location_x, location_y, radius))
+    return json.dumps(placesdb.get_local_places(location_x, location_y,
+        GEO_LOCAL_RADIUS))
 
 @app.route('/api/removeplace', methods=['POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -392,10 +413,17 @@ def remove_place_front_end():
                     , 'locationX'
                     , 'locationY'
                     ]
-    if is_valid_request(request.form, required_keys):
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-    return placesdb.remove_place_by_id(place_id)
+    conn = dbhelper.connect()
+    try:
+        if is_valid_request(request.form, required_keys):
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                    float(request.form['locationX']),
+                    float(request.form['locationY']), conn)
+        return placesdb.remove_place_by_id(place_id, conn)
+    except ValueError, e:
+        return "Malformed Request"
+    finally:
+        conn.close()
 
 @app.route('/api/reportplace', methods=['POST'])
 @limiter.limit("3 per minute", error_message="BRO, YOU GOTTA CHILL")
@@ -406,11 +434,19 @@ def report_place_front_end():
                     , 'locationY'
                     , 'reason'
                     ]
-    if is_valid_request(request.form, required_keys):
-        place_id = placesdb.get_place_id(request.form['placeType'],
-                request.form['locationX'], request.form['locationY'])
-        reason = request.form['reason']
-        return placesdb.add_place_report(user_id, place_id, reason)[1]
+    conn = dbhelper.connect()
+    try:
+        if is_valid_request(request.form, required_keys):
+            place_id = placesdb.get_place_id(request.form['placeType'],
+                    float(request.form['locationX']),
+                    float(request.form['locationY']), conn)
+            reason = request.form['reason']
+            return placesdb.add_place_report(user_id, place_id,
+                    reason, conn)[1]
+    except ValueError, e:
+        return "Malformed Request"
+    finally:
+        conn.close()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -537,8 +573,10 @@ def confirm_email(url_id=None):
             url_id = uuid.UUID(url_id)
             if tmpurldb.get_temporary_url(url_id,
               uid, TEMP_URL_EMAIL_CONFIRM)[0]:
-                usersdb.update_user_email_confirmed(uid, True)
+                conn = dbhelper.connect()
+                usersdb.update_user_email_confirmed(uid, True, conn)
                 tmpurldb.remove_temporary_url(url_id)
+                conn.close()
                 return redirect(url_for('settings'))
     return redirect(url_for('index'))
 
