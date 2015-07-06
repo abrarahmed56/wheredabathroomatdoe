@@ -228,7 +228,7 @@ def add_favorite_front_end():
             locationY = float(request.form['locationY'])
             place_id = placesdb.get_place_id(request.form['placeType'],
                     locationX, locationY, conn)
-            return favoritesdb.add_favorite(user_id, place_id)
+            return favoritesdb.add_favorite(user_id, place_id, conn)
         except ValueError, e:
             return "Malformed Request"
         finally:
@@ -250,7 +250,7 @@ def remove_favorite_front_end():
             place_id = placesdb.get_place_id(request.form['placeType'],
                 float(request.form['locationX']),
                 float(request.form['locationY']), conn)
-            return favoritesdb.remove_favorite(user_id, place_id)
+            return favoritesdb.remove_favorite(user_id, place_id, conn)
         except ValueError, e:
             return "Malformed Request"
         finally:
@@ -293,7 +293,7 @@ def place_info():
             data['placeDescription'] = placesdb.get_place_description(place_id,
                                                                       conn)
             data['placeRating'] = placesdb.get_place_rating(place_id, conn)
-            data['inFavorites'] = favoritesdb.in_favorites(uid, place_id)
+            data['inFavorites'] = favoritesdb.in_favorites(uid, place_id, conn)
             data['reviews'] = review_data
             conn.close()
             return json.dumps(data)
@@ -333,7 +333,7 @@ def myplaces():
     if request.method == "GET":
         ans = []
         conn = dbhelper.connect()
-        favorites = favoritesdb.get_favorites(user_id)
+        favorites = favoritesdb.get_favorites(user_id, conn)
         for favorite in favorites:
             fav = {"type": placesdb.get_place_type(favorite[1], conn)
                   , "address": (
@@ -352,7 +352,7 @@ def myplaces():
             place_id = placesdb.get_place_id(place['type'],
                     float(place['address'][0]),
                     float(place['address'][1]), conn)
-            return favoritesdb.remove_favorite(user_id, place_id)
+            return favoritesdb.remove_favorite(user_id, place_id, conn)
         except ValueError, e:
             return "Malformed Request"
         finally:

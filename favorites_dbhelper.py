@@ -4,9 +4,11 @@ from constants import *
 from utils import *
 
 # TODO favorites should have a primary key
-#TODO test favorites
-def add_favorite(user_id, place_id):
-    conn = dbhelper.connect()
+def add_favorite(user_id, place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -27,11 +29,14 @@ def add_favorite(user_id, place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_favorite(user_id, place_id):
-    conn = dbhelper.connect()
+def remove_favorite(user_id, place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -47,11 +52,14 @@ def remove_favorite(user_id, place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def in_favorites(user_id, place_id):
-    conn = dbhelper.connect()
+def in_favorites(user_id, place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -67,11 +75,14 @@ def in_favorites(user_id, place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_favorites(user_id):
-    conn = dbhelper.connect()
+def get_favorites(user_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -82,5 +93,5 @@ def get_favorites(user_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
