@@ -328,8 +328,7 @@ def add_description_front_end():
 @app.route('/api/myplaces', methods=['GET', 'POST'])
 @limiter.limit("10 per minute", error_message="BRO, YOU GOTTA CHILL")
 def myplaces():
-    user = session['email']
-    user_id = usersdb.get_user_id(user)
+    user_id = uuid.UUID(session['uid'])
     if request.method == "GET":
         ans = []
         conn = dbhelper.connect()
@@ -510,6 +509,7 @@ def settings():
                     if valid_email[0]:
                         flash(usersdb.update_user_email(uid,
                             request.form['new_email'])[1])
+                        session['email'] = usersdb.get_user_email(uid)
                     else:
                         flash(valid_email[1])
                 valid_phone = validate.is_valid_telephone(
