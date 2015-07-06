@@ -3,8 +3,11 @@ import dbhelper
 from constants import *
 from utils import *
 
-def expire_temporary_urls():
-    conn = dbhelper.connect()
+def expire_temporary_urls(conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -15,10 +18,10 @@ def expire_temporary_urls():
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def add_temporary_url(uid, url_type):
+def add_temporary_url(uid, url_type, conn=None):
     global TEMP_URL_EXPIRY_TIME
     expire_temporary_urls()
     if get_temporary_url_timeout_pending(uid, url_type)[0]:
@@ -26,7 +29,10 @@ def add_temporary_url(uid, url_type):
     uuid = dbhelper.generate_id(ID_USER)
     if not uuid[0]:
         return (False, "UUID error")
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -39,11 +45,14 @@ def add_temporary_url(uid, url_type):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_temporary_url(uuid, uid, url_type):
-    conn = dbhelper.connect()
+def get_temporary_url(uuid, uid, url_type, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -58,11 +67,14 @@ def get_temporary_url(uuid, uid, url_type):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def remove_temporary_url(uuid):
-    conn = dbhelper.connect()
+def remove_temporary_url(uuid, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -73,14 +85,17 @@ def remove_temporary_url(uuid):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_temporary_url_timeout_pending(uid, url_type):
+def get_temporary_url_timeout_pending(uid, url_type, conn=None):
     # Returns whether there is a timeout on creating a temporary url because one
     # is still pending
     global TEMP_URL_TIMEOUT_PENDING
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return (False, "Database Error")
     c = conn.cursor()
@@ -95,5 +110,5 @@ def get_temporary_url_timeout_pending(uid, url_type):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()

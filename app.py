@@ -571,13 +571,15 @@ def confirm_email(url_id=None):
         if url_id:
             uid = uuid.UUID(session['uid'])
             url_id = uuid.UUID(url_id)
+            conn = dbhelper.connect()
             if tmpurldb.get_temporary_url(url_id,
-              uid, TEMP_URL_EMAIL_CONFIRM)[0]:
-                conn = dbhelper.connect()
+              uid, TEMP_URL_EMAIL_CONFIRM, conn)[0]:
                 usersdb.update_user_email_confirmed(uid, True, conn)
-                tmpurldb.remove_temporary_url(url_id)
+                tmpurldb.remove_temporary_url(url_id, conn)
                 conn.close()
                 return redirect(url_for('settings'))
+            else:
+                conn.close()
     return redirect(url_for('index'))
 
 @app.route('/confirm/send/email', methods=['POST'])

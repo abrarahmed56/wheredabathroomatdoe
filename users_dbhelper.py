@@ -631,7 +631,7 @@ def get_user_data(_uid):
     user_email_confirmed = get_user_email_confirmed(_uid, conn)
     user_email_confirm_timeout_pending = tmpurldb.get_temporary_url_timeout_pending(
                                             _uid,
-                                            TEMP_URL_EMAIL_CONFIRM)[0]
+                                            TEMP_URL_EMAIL_CONFIRM, conn)[0]
     user_phone_confirmed = get_user_phone_confirmed(_uid, conn)
     user_profile_pic = get_user_profile_pic_url(_uid, 256)
     user_can_be_reported = True
