@@ -4,9 +4,12 @@ from constants import *
 from utils import *
 from places_dbhelper import calc_rating
 
-def add_review(placeID, reviewer, rating, review):
+def add_review(placeID, reviewer, rating, review, conn=None):
     global ID_REVIEW
-    conn = dbhelper.connect()
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -34,11 +37,14 @@ def add_review(placeID, reviewer, rating, review):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def get_reviews(placeID):
-    conn = dbhelper.connect()
+def get_reviews(placeID, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -49,11 +55,14 @@ def get_reviews(placeID):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()
 
-def review_exists(reviewer_id, place_id):
-    conn = dbhelper.connect()
+def review_exists(reviewer_id, place_id, conn=None):
+    persist_conn = True
+    if not conn:
+        conn = dbhelper.connect()
+        persist_conn = False
     if conn == None:
         return "Database Error"
     c = conn.cursor()
@@ -64,5 +73,5 @@ def review_exists(reviewer_id, place_id):
     except psycopg2.DatabaseError, e:
         print 'Error %s' % e
     finally:
-        if conn:
+        if conn and not persist_conn:
             conn.close()

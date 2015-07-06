@@ -15,7 +15,6 @@ import json
 import uuid
 import os
 import sys
-from werkzeug import secure_filename
 from PIL import Image
 
 app = Flask(__name__)
@@ -276,7 +275,7 @@ def place_info():
             conn = dbhelper.connect()
             place_id = placesdb.get_place_id(request.form['placeType'],
                     location_x, location_y, conn)
-            reviews = reviewsdb.get_reviews(place_id)
+            reviews = reviewsdb.get_reviews(place_id, conn)
             for review in reviews:
                 review_data.append(
                             { "userFirstName" :
@@ -288,7 +287,8 @@ def place_info():
                                                                         128)
                             , "isRatable" : review[3] != uid
                             })
-            data['reviewFromUserExists'] = reviewsdb.review_exists(uid, place_id)
+            data['reviewFromUserExists'] = reviewsdb.review_exists(uid,
+                                                     place_id, conn)
             data['createdPlace'] = placesdb.created_place(uid, place_id, conn)
             data['placeDescription'] = placesdb.get_place_description(place_id,
                                                                       conn)
@@ -384,7 +384,7 @@ def add_review_front_end():
                     location_x, location_y, conn)
             if validate.is_valid_rating(rating):
                 return reviewsdb.add_review(placeid, user, rating,
-                        request.form["review"])[1]
+                        request.form["review"], conn)[1]
             else:
                 return "Malformed Request"
         except ValueError, e:
