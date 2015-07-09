@@ -377,28 +377,26 @@ function cardInfo(util, placeType, locationX, locationY, isNewlyCreatedUtil, cal
             "<br/><br/>" + favoritesButton + "</div></div>");
             // Populate info window with reviews
             renderReviews(util['type'], data['reviews']);
-        if (!isNewlyCreatedUtil) {
-            description = data['placeDescription'];
-            utilName = utilType[0].toUpperCase() + utilType.substring(1);
-            if (!description) {
-                description = "No description available."
-            }
-            $("#utilTitleFrontTitle").text(utilName);
-            $("#utilTitleFrontRating")
-                .text(data['placeRating'])
-                .attr('class', getRatingClass(data['placeRating']));
-            $("#utilTitleBackTitle").text(utilName);
-            $("#utilTitleBackDescription").text(description);
-            if (!descriptionForm) {
-                $("#utilTitleFrontDescriptionText").show();
-                $("#utilTitleFrontDescriptionForm").hide();
-                $("#utilTitleFrontDescriptionText").text(description);
-            }
-            else {
-                $("#utilTitleFrontDescriptionText").hide();
-                $("#utilTitleFrontDescriptionForm").show();
-                $('#description').val(description);
-            }
+        description = data['placeDescription'];
+        utilName = utilType[0].toUpperCase() + utilType.substring(1);
+        if (!description) {
+            description = "No description available."
+        }
+        $("#utilTitleFrontTitle").text(utilName);
+        $("#utilTitleFrontRating")
+            .text(data['placeRating'])
+            .attr('class', getRatingClass(data['placeRating']));
+        $("#utilTitleBackTitle").text(utilName);
+        $("#utilTitleBackDescription").text(description);
+        if (!descriptionForm) {
+            $("#utilTitleFrontDescriptionText").show();
+            $("#utilTitleFrontDescriptionForm").hide();
+            $("#utilTitleFrontDescriptionText").text(description);
+        }
+        else {
+            $("#utilTitleFrontDescriptionText").hide();
+            $("#utilTitleFrontDescriptionForm").show();
+            $('#description').val(description);
         }
     });
     if (callback) {
