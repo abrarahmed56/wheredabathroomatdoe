@@ -28,3 +28,8 @@ See `dependencies.md`
 - User search feature
 - User ranking feature
 - Sms confirmation
+- Email change duplicate check
+- Use blueprints for routing
+- Add emergency button that finds the nearest utility
+- Mobile optimization
+- Fix issues on Firefox
